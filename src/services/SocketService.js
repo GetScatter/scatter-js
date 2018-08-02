@@ -13,8 +13,11 @@ let rsaKey = null;
 
 let openRequests = [];
 
+let allowReconnects = true;
 let reconnectionTimeout = null;
 const reconnectOnAbnormalDisconnection = async () => {
+    if(!allowReconnects) return;
+
     if(await keyGetter()) {
         clearTimeout(reconnectionTimeout);
         reconnectionTimeout = setTimeout(() => {
@@ -90,6 +93,10 @@ export default class SocketService {
 
                     // If bad disconnect, retry connection
                     reconnectOnAbnormalDisconnection();
+                });
+
+                socket.on('connect_error', async () => {
+                    allowReconnects = false;
                 });
             })
         ])

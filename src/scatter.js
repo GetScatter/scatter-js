@@ -18,17 +18,29 @@ class Scatter {
         });
 
         this.identity = null;
+
+
     }
 
-    async connect(pluginName, keyGetter = null, keySetter = null, origin = ''){
-        if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
+    async connect(pluginName, keyGetter = null, keySetter = null){
+        return new Promise(resolve => {
+            if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
 
-        SocketService.init(pluginName, keyGetter, keySetter);
-        return SocketService.link().then(async authenticated => {
-           if(!authenticated) return false;
-           this.identity = await this.getIdentityFromPermissions();
-           return true;
-        });
+            const checkForPlugin = (tries) => {
+                if(tries > 10) return;
+                if(scatter.hasOwnProperty('isExtension')) return resolve(true);
+                setTimeout(() => checkForPlugin(tries + 1), 100);
+            };
+
+            checkForPlugin();
+
+            SocketService.init(pluginName, keyGetter, keySetter);
+            return SocketService.link().then(async authenticated => {
+                if(!authenticated) return false;
+                this.identity = await this.getIdentityFromPermissions();
+                return resolve(true);
+            });
+        })
     }
 
     disconnect(){
@@ -125,6 +137,22 @@ class Scatter {
     }
 }
 
-const scatter = new Scatter();
-if(typeof window !== 'undefined') window.scatter = scatter;
+
+
+let scatter = new Scatter();
+
+// For nodejs
 export default scatter;
+
+// For browsers
+if(typeof window !== 'undefined') window.scatter = scatter;
+
+// Catching extension instead of Desktop
+if(typeof document !== 'undefined'){
+    document.addEventListener('scatterLoaded', scatterExtension => {
+        scatter = window.scatter;
+        scatter.isExtension = true;
+    });
+}
+
+
