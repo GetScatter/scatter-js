@@ -54,7 +54,7 @@ RSA key by default.
 
 ```
 
-##Catching Scatter Desktop and Scatter Classic
+## Catching Scatter Desktop and Scatter Classic
 
 This library catches both Scatter Desktop and Scatter Classic ( old extension ) depending on the
 existence of either.
@@ -62,7 +62,7 @@ All you have to do is call `scatter.connect(...)` and it will feed you back one 
 it connects, or time out after 5 seconds and return false in the `connected` result.
 
 
-##Scatter ( eosjs / web3 ) Usage
+## Scatter ( eosjs / web3 ) Usage
 
 See the [Developer Documentation](https://get-scatter.com/docs/dev/getting-started) to find out how to 
 interact with Scatter and various blockchains.
