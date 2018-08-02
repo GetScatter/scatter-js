@@ -26,16 +26,23 @@ class Scatter {
         return new Promise(resolve => {
             if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
 
+            // Auto failer
+            setTimeout(() => {
+                resolve(false);
+            }, 5000);
+
+            // Defaults to scatter extension if exists
             const checkForPlugin = (tries) => {
-                if(tries > 10) return;
+                if(tries > 20) return;
                 if(scatter.hasOwnProperty('isExtension')) return resolve(true);
                 setTimeout(() => checkForPlugin(tries + 1), 100);
             };
 
             checkForPlugin();
 
+            // Tries to set up Desktop Connection
             SocketService.init(pluginName, keyGetter, keySetter);
-            return SocketService.link().then(async authenticated => {
+            SocketService.link().then(async authenticated => {
                 if(!authenticated) return false;
                 this.identity = await this.getIdentityFromPermissions();
                 return resolve(true);
