@@ -31,6 +31,9 @@ export default class SocketService {
     static init(_plugin, _keyGetter = null, _keySetter = null, timeout = 60000){
         plugin = _plugin;
 
+        if (typeof(Storage) === "undefined" && !_keyGetter || !_keySetter)
+            throw new Error("This website doesn't have local storage enabled, please use key setters and getters");
+
         if(_keyGetter === null) _keyGetter = StorageService.get;
         if(_keySetter === null) _keySetter = StorageService.set;
 
