@@ -29,7 +29,7 @@ plugin.connect("Test Plugin", getter, setter);
 
 let identity;
 
-describe('Plugin', () => {
+describe('Api', () => {
 
     it('should create a connection to Scatter', done => {
         new Promise(async() => {

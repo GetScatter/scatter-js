@@ -34,17 +34,35 @@ describe('Plugin', () => {
     it('should create a connection to Scatter', done => {
         new Promise(async() => {
             setTimeout(() => {
-                console.log(scatter);
+                assert(scatter.isConnected(), "Could not connect")
                 done();
             }, 1000)
         });
     });
 
-    it('should get an eosjs reference', done => {
+    it('should forget an identity if existing', done => {
+        new Promise(async() => {
+            setTimeout(async () => {
+                assert(await scatter.forgetIdentity(), "Could not forget");
+                done();
+            }, 1000)
+        });
+    });
+
+    it('should get an identity', done => {
+        new Promise(async() => {
+            setTimeout(async () => {
+                assert(await scatter.getIdentity({accounts:[network]}), "Could not get identity");
+                done();
+            }, 1000)
+        });
+    });
+
+    it('should send a transaction with eos proxy object', done => {
         new Promise(async() => {
             const eos = scatter.eos(network, Eos);
             const transfer = await eos.transfer('testacc', 'eosio', '1.0000 EOS', '');
-            console.log('transfer', transfer);
+            assert(transfer.hasOwnProperty('transaction_id'), "Couldn't sign transfer")
             done();
         });
     });

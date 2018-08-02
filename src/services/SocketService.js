@@ -1,5 +1,6 @@
 import io from 'socket.io-client';
 import RSAService from './RSAService';
+import StorageService from './StorageService';
 
 const host = 'http://localhost:50005';
 
@@ -27,10 +28,15 @@ const reconnectOnAbnormalDisconnection = async () => {
 
 export default class SocketService {
 
-    static init(_plugin, _keyGetter, _keySetter, timeout = 60000){
+    static init(_plugin, _keyGetter = null, _keySetter = null, timeout = 60000){
         plugin = _plugin;
+
+        if(_keyGetter === null) _keyGetter = StorageService.get;
+        if(_keySetter === null) _keySetter = StorageService.set;
+
         keyGetter = _keyGetter;
         keySetter = _keySetter;
+
         this.timeout = timeout;
     }
 
@@ -88,6 +94,7 @@ export default class SocketService {
 
     static async identify(){
         let privatePin = await keyGetter();
+        console.log('privatePin', privatePin);
         let publicPin = '';
         if(!privatePin){
             const [key, publicKey, privateKey] = RSAService.generateKeypair();

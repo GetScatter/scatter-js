@@ -20,13 +20,8 @@ class Scatter {
         this.identity = null;
     }
 
-    async connect(pluginName, keyGetter, keySetter, origin = ''){
+    async connect(pluginName, keyGetter = null, keySetter = null, origin = ''){
         if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
-        if(!keyGetter || typeof keySetter !== 'function') throw new Error("You must inject a Key Getter to be able to provide RSA keys");
-        if(!keySetter || typeof keySetter !== 'function') throw new Error("You must inject a Key Setter to be able to be given RSA keys");
-
-        // origin = typeof location !== undefined && location.host && location.host !== 'localhost' ? location.host : origin;
-        // console.log('origin', origin);
 
         SocketService.init(pluginName, keyGetter, keySetter);
         return SocketService.link().then(async authenticated => {

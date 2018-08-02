@@ -66,7 +66,6 @@ class ScatterEthereumWallet {
     }
 
     async signTransaction(transaction){
-        console.log('signing?', transaction);
         if(!ethNetwork) throw Error.noNetwork();
 
         // Basic settings

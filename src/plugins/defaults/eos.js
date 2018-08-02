@@ -39,7 +39,6 @@ export default class EOS extends Plugin {
 
                         // The signature provider which gets elevated into the user's Scatter
                         const signProvider = async signargs => {
-                            console.log('signargs', signargs);
                             throwIfNoIdentity();
 
                             const requiredFields = args.find(arg => arg.hasOwnProperty('requiredFields')) || {requiredFields:{}};
