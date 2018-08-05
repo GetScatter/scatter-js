@@ -22,14 +22,17 @@ class Scatter {
 
     }
 
-    async connect(pluginName, keyGetter = null, keySetter = null, timeout = 20000){
+    async connect(pluginName, options){
         return new Promise(resolve => {
             if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
+
+            // Setting options defaults
+            options = Object.assign({keyGetter:null, keySetter:null, initTimeout:10000, linkTimeout:30000}, options);
 
             // Auto failer
             setTimeout(() => {
                 resolve(false);
-            }, timeout);
+            }, options.initTimeout);
 
             // Defaults to scatter extension if exists
             const checkForPlugin = (tries) => {
@@ -41,7 +44,7 @@ class Scatter {
             checkForPlugin();
 
             // Tries to set up Desktop Connection
-            SocketService.init(pluginName, keyGetter, keySetter);
+            SocketService.init(pluginName, options.keyGetter, options.keySetter, options.linkTimeout);
             SocketService.link().then(async authenticated => {
                 if(!authenticated) return false;
                 this.identity = await this.getIdentityFromPermissions();

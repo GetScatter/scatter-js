@@ -21,15 +21,15 @@ yQIgNhrkyd+Zf8ZYlBYJ/ldkTZByzsdnm57543qdWE4u0ecCIBVdXZeFazJIH3cS
 g8wSrLUO8roc8qtGXHxxRhZIbZzhAiAShQ3cx+AOxNwUxhK27mUDjtODHZ9HD4oU
 p/EbR1pVXQ==
 -----END PRIVATE KEY-----`;
-        function getter(){
+        function keyGetter(){
             return new Promise(function(resolve){ resolve(KEY)});
         }
 
-        function setter(x){
+        function keySetter(x){
             return new Promise(function(resolve){ KEY = x; resolve(true)});
         }
 
-        scatter.connect("TestPage").then(function(connected){
+        scatter.connect("TestPage", {keyGetter, keySetter}).then(function(connected){
             console.log('connected', connected)
 
             setTimeout(function(){
