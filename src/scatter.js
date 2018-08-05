@@ -4,7 +4,7 @@ import PluginRepository from './plugins/PluginRepository'
 let origin;
 
 const throwNoAuth = () => {
-    if(!scatter.hasOwnProperty('isExtension') && !SocketService.isAuthenticated())
+    if(!SocketService.isAuthenticated())
         throw new Error('Connect and Authenticate first ( scatter.connect(pluginName, keyGetter, keySetter )');
 };
 
