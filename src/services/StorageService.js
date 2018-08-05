@@ -6,29 +6,18 @@ export default class StorageService {
 
     static set(scatter){
         return new Promise(resolve => {
-            console.log('api', apis, apis.storage);
-            apis.storage.local.set({scatter}, () => {
-                resolve(scatter);
-            });
+            window.localStorage.setItem('scatter', scatter);
         })
     };
 
     static get() {
         return new Promise(resolve => {
-            console.log('api', apis, apis.storage);
-            apis.storage.local.get('scatter', (possible) => {
-                (possible && Object.keys(possible).length && possible.hasOwnProperty('scatter'))
-                    ? resolve(possible.scatter)
-                    : resolve(null);
-            });
-        })
-    }
-
-    static remove(){
-        return new Promise(resolve => {
-            apis.storage.local.remove('scatter', () => {
-                resolve();
-            });
+            resolve(window.localStorage.getItem('scatter'));
+            // apis.storage.local.get('scatter', (possible) => {
+            //     (possible && Object.keys(possible).length && possible.hasOwnProperty('scatter'))
+            //         ? resolve(possible.scatter)
+            //         : resolve(null);
+            // });
         })
     }
 }

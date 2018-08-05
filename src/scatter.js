@@ -22,14 +22,14 @@ class Scatter {
 
     }
 
-    async connect(pluginName, keyGetter = null, keySetter = null){
+    async connect(pluginName, keyGetter = null, keySetter = null, timeout = 20000){
         return new Promise(resolve => {
             if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
 
             // Auto failer
             setTimeout(() => {
                 resolve(false);
-            }, 5000);
+            }, timeout);
 
             // Defaults to scatter extension if exists
             const checkForPlugin = (tries) => {
@@ -72,6 +72,9 @@ class Scatter {
             payload:{
                 fields:requiredFields
             }
+        }).then(id => {
+            if(id) this.identity = id;
+            return id;
         });
     }
 
@@ -80,6 +83,9 @@ class Scatter {
         return SocketService.sendApiRequest({
             type:'identityFromPermissions',
             payload:{}
+        }).then(id => {
+            if(id) this.identity = id;
+            return id;
         });
     }
 
@@ -88,6 +94,9 @@ class Scatter {
         return SocketService.sendApiRequest({
             type:'forgetIdentity',
             payload:{}
+        }).then(res => {
+            this.identity = null;
+            return res;
         });
     }
 

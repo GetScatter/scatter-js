@@ -29,7 +29,7 @@ p/EbR1pVXQ==
             return new Promise(function(resolve){ KEY = x; resolve(true)});
         }
 
-        scatter.connect("TestPage", getter, setter).then(function(connected){
+        scatter.connect("TestPage").then(function(connected){
             console.log('connected', connected)
 
             setTimeout(function(){
