@@ -5,15 +5,19 @@ This is an importable javascript library that allows web applications to directl
 ## Installation
 
 ```js
-import ScatterJS from 'scatter-js'
+// ES Module style
+import ScatterJS from 'scatter-js/dist/scatter.esm';
+
+// CommonJS style
+import ScatterJS from 'scatter-js/dist/scatter.cjs';
  
 //or
  
-const ScatterJS = require('scatter-js');
+const ScatterJS = require('scatter-js/dist/scatter.<SUFFIX>');
 ```
 
 You can also just drop the `scatter.min.js` bundle from the `dist/` directory here right into 
-your html file use it from there.
+your html file and use it as a fully packed browser-ready package.
 
 ```html
 <script src="path/to/scatter.min.js"></script>

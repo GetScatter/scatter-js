@@ -171,9 +171,6 @@ class Holder {
 let holder = new Holder(new Scatter());
 if(typeof window !== 'undefined') window.scatter = holder.scatter;
 
-// For nodejs
-export default holder;
-
 // Catching extension instead of Desktop
 if(typeof document !== 'undefined'){
     document.addEventListener('scatterLoaded', scatterExtension => {
@@ -182,5 +179,7 @@ if(typeof document !== 'undefined'){
         window.scatter = null;
     });
 }
+
+export default holder;
 
 

@@ -1,13 +1,16 @@
 {
   "name": "scatter-js",
-  "version": "1.1.8",
+  "version": "1.1.9",
   "description": "",
-  "main": "dist/scatter.min.js",
+  "main": "dist/scatter.esm.js",
+  "module": "dist/scatter.cjs.js",
+  "browser": "dist/scatter.min.js",
   "scripts": {
     "pack": "./node_modules/.bin/webpack --watch",
-    "build": "./node_modules/.bin/babel  ./src --experimental --source-maps-inline --out-file dist/scatter.min.js",
+    "build": "rollup -c",
     "testfile": "mocha --require babel-core/register --exit --timeout 1000000",
-    "test": "npm run testfile \"test/**/*.spec.js\" --timeout 1000000"
+    "test": "npm run testfile \"test/**/*.spec.js\" --timeout 1000000",
+    "touch":"./node_modules/.bin/webpack && npm run build"
   },
   "author": "",
   "license": "ISC",
@@ -33,8 +36,31 @@
     "babel-preset-minify": "^0.4.3",
     "babel-preset-stage-3": "^6.24.1",
     "babel-watch": "^2.0.7",
+    "babelrc-rollup": "^3.0.0",
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
+    "rollup-plugin-babel": "^3.0.7",
+    "rollup-plugin-commonjs": "^9.1.4",
+    "rollup-plugin-json": "^3.0.0",
+    "rollup-plugin-node-builtins": "^2.1.2",
+    "rollup-plugin-node-resolve": "^3.3.0",
+    "uglifyjs-webpack-plugin": "^1.2.7",
     "webpack": "^3.12.0"
+  },
+  "babel": {
+    "presets": [
+      "es2015"
+    ],
+    "plugins": [
+      "syntax-async-functions",
+      "transform-regenerator",
+      [
+        "transform-runtime",
+        {
+          "polyfill": false,
+          "regenerator": true
+        }
+      ]
+    ]
   }
 }

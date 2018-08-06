@@ -1,5 +1,6 @@
 const path = require('path');
 const webpack = require('webpack');
+const UglifyJsPlugin = require('uglifyjs-webpack-plugin');
 
 module.exports = {
     entry: {
@@ -7,7 +8,7 @@ module.exports = {
     },
     output: {
         path: path.resolve(__dirname, './dist'),
-        filename: 'scatter.min.js'
+        filename: 'scatter.min.js',
     },
     module: {
         loaders: [
@@ -16,9 +17,17 @@ module.exports = {
                 loader: 'babel-loader',
                 exclude: /node_modules/,
                 query: {
-                    presets: ['es2015']
+                    "presets": [["env", {
+                        targets: { "node": true }
+                    }], "stage-3"],
+                    "plugins": [
+                        "transform-runtime"
+                    ]
                 }
             }
         ]
-    }
+    },
+    plugins:[
+        new UglifyJsPlugin()
+    ]
 }
