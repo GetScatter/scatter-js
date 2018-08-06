@@ -104,7 +104,6 @@ export default class SocketService {
 
     static async identify(){
         let privatePin = await keyGetter();
-        console.log('privatePin', privatePin);
         let publicPin = '';
         if(!privatePin){
             const [key, publicKey, privateKey] = RSAService.generateKeypair();

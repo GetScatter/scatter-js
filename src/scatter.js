@@ -4,7 +4,7 @@ import PluginRepository from './plugins/PluginRepository'
 let origin;
 
 const throwNoAuth = () => {
-    if(!SocketService.isAuthenticated())
+    if(!holder.scatter.isExtension && !SocketService.isAuthenticated())
         throw new Error('Connect and Authenticate first ( scatter.connect(pluginName, keyGetter, keySetter )');
 };
 
@@ -17,6 +17,7 @@ class Scatter {
             this[sigProvider.name] = sigProvider.signatureProvider(noIdFunc);
         });
 
+        this.isExtension = false;
         this.identity = null;
 
 
@@ -37,7 +38,10 @@ class Scatter {
             // Defaults to scatter extension if exists
             const checkForPlugin = (tries) => {
                 if(tries > 20) return;
-                if(scatter.hasOwnProperty('isExtension')) return resolve(true);
+                if(holder.scatter.isExtension) {
+                    console.log('is ext', holder.scatter)
+                    return resolve(true);
+                }
                 setTimeout(() => checkForPlugin(tries + 1), 100);
             };
 
@@ -157,17 +161,25 @@ class Scatter {
 }
 
 
+class Holder {
+    constructor(_scatter){
+        this.scatter = _scatter;
+    }
+}
 
-export let scatter = new Scatter();
 
-// For browsers
-if(typeof window !== 'undefined') window.scatter = scatter;
+let holder = new Holder(new Scatter());
+if(typeof window !== 'undefined') window.scatter = holder.scatter;
+
+// For nodejs
+export default holder;
 
 // Catching extension instead of Desktop
 if(typeof document !== 'undefined'){
     document.addEventListener('scatterLoaded', scatterExtension => {
-        scatter = window.scatter;
-        scatter.isExtension = true;
+        holder.scatter = window.scatter;
+        holder.scatter.isExtension = true;
+        window.scatter = null;
     });
 }
 

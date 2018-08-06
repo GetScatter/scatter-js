@@ -4,14 +4,12 @@ This is an importable javascript library that allows web applications to directl
 
 ## Installation
 
-scatter-js binds to the `window` reference.
-
 ```js
-import 'scatter-js'
+import ScatterJS from 'scatter-js'
  
 //or
  
-require('scatter-js');
+const ScatterJS = require('scatter-js');
 ```
 
 You can also just drop the `scatter.min.js` bundle from the `dist/` directory here right into 
@@ -33,14 +31,14 @@ All you have to do is call `scatter.connect(...)` and it will feed you back one 
 it connects, or time out after 5 seconds and return false in the `connected` result.
 
 ```js
-window.scatter.connect("Put_Your_App_Name_Here").then(connected => {
+ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
     if(!connected) {
         // User does not have Scatter Desktop or Classic installed. 
         return false;
     }
     
     // Use `scatter` normally now.
-    window.scatter.getIdentity(...);
+    ScatterJS.scatter.getIdentity(...);
 });
 ```
 
@@ -63,7 +61,7 @@ let KEY = ``;
 const keyGetter = () => new Promise(resolve => resolve(KEY));
 const keySetter = (x) => new Promise(resolve => resolve(KEY = x));
  
-window.scatter.connect("Put_Your_App_Name_Here", {keyGetter, keySetter}).then(...);
+ScatterJS.scatter.connect("Put_Your_App_Name_Here", {keyGetter, keySetter}).then(...);
 ```
 
 
@@ -86,6 +84,9 @@ window.scatter.connect("Put_Your_App_Name_Here", {keyGetter, keySetter}).then(..
 
  
 ### Don't forget to null out the window.scatter reference!
+
+scatter-js binds to the `window` reference if it notices that an application has a `window` on global scope.
+This is useful for `<script src="...">` imports for sites without nodejs/npm, but is also semi-dangerous.
 
 If you don't null out the window reference then extensions will be able to catch it on the window's scope 
 and pretend to send requests from your authorized application.
