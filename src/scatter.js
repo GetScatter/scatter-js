@@ -161,7 +161,8 @@ class Scatter {
 let scatter = new Scatter();
 
 // For nodejs
-export default scatter;
+//export default scatter;
+module.exports = scatter;
 
 // For browsers
 if(typeof window !== 'undefined') window.scatter = scatter;
