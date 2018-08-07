@@ -1,4 +1,3 @@
-import 'node-rsa';
 import io from 'socket.io-client';
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
@@ -6,28 +5,6 @@ import WebsocketSubprovider from 'web3-provider-engine/subproviders/websocket';
 import HookedWalletSubprovider from 'web3-provider-engine/subproviders/hooked-wallet';
 import ethUtil from 'ethereumjs-util';
 import 'isomorphic-fetch';
-
-const swallow = fn => {try { fn(); } catch(e){}};
-
-class ApiGenerator {
-    constructor(){
-        [
-            'app',
-            'storage',
-            'extension',
-            'runtime',
-            'windows'
-        ]
-            .map(api => {
-                if(typeof chrome !== 'undefined') swallow(() => {if(chrome[api]) this[api] = chrome[api];});
-                if(typeof browser !== 'undefined') swallow(() => {if(browser[api]) this[api] = browser[api];});
-            });
-
-        if(typeof browser !== 'undefined') swallow(() => {if (browser && browser.runtime) this.runtime = browser.runtime;});
-    }
-}
-
-const apis = new ApiGenerator();
 
 const host = 'http://localhost:50005';
 

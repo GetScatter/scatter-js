@@ -2,7 +2,6 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-require('node-rsa');
 var io = _interopDefault(require('socket.io-client'));
 var ProviderEngine = _interopDefault(require('web3-provider-engine'));
 var RpcSubprovider = _interopDefault(require('web3-provider-engine/subproviders/rpc'));
@@ -10,28 +9,6 @@ var WebsocketSubprovider = _interopDefault(require('web3-provider-engine/subprov
 var HookedWalletSubprovider = _interopDefault(require('web3-provider-engine/subproviders/hooked-wallet'));
 var ethUtil = _interopDefault(require('ethereumjs-util'));
 require('isomorphic-fetch');
-
-const swallow = fn => {try { fn(); } catch(e){}};
-
-class ApiGenerator {
-    constructor(){
-        [
-            'app',
-            'storage',
-            'extension',
-            'runtime',
-            'windows'
-        ]
-            .map(api => {
-                if(typeof chrome !== 'undefined') swallow(() => {if(chrome[api]) this[api] = chrome[api];});
-                if(typeof browser !== 'undefined') swallow(() => {if(browser[api]) this[api] = browser[api];});
-            });
-
-        if(typeof browser !== 'undefined') swallow(() => {if (browser && browser.runtime) this.runtime = browser.runtime;});
-    }
-}
-
-const apis = new ApiGenerator();
 
 const host = 'http://localhost:50005';
 
