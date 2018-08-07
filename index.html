@@ -11,46 +11,45 @@
 
     <script>
 
-        let KEY = `-----BEGIN PRIVATE KEY-----
-MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEA2ndHeUenLxef1GcQ
-vmUC6VU3JxJX/caEXH0wmZeNUE9iSTAFlSeTW08iyUIGyRMdYgyD3hMEI0mzEGAI
-SCt7GwIDAQABAkBggebCDcQuCnqhovIDma3Ck9FsYi8avVKFZQxOHWPgwI97hab2
-PwmC749N2zaz4nZ5bhjhuHjXMJJLdt60E+PxAiEA+lzHRo4GK6GCRri7DLthPn/x
-hpw/5YMgj9Df5ZoA58MCIQDfYqHvdZLbYJ9qbzVdOLiYvIUGr1PRUYL5NdoUhh9B
-yQIgNhrkyd+Zf8ZYlBYJ/ldkTZByzsdnm57543qdWE4u0ecCIBVdXZeFazJIH3cS
-g8wSrLUO8roc8qtGXHxxRhZIbZzhAiAShQ3cx+AOxNwUxhK27mUDjtODHZ9HD4oU
-p/EbR1pVXQ==
------END PRIVATE KEY-----`;
-        function keyGetter(){
-            return new Promise(function(resolve){ resolve(KEY)});
-        }
-
-        function keySetter(x){
-            return new Promise(function(resolve){ KEY = x; resolve(true)});
-        }
-
-        scatter.connect("TestPage", {keyGetter, keySetter}).then(function(connected){
-            console.log('connected', connected)
-
-            setTimeout(function(){
-                var network = {blockchain:'eos', protocol:'http', host:'192.168.1.7', port:8888, chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f'};
-                var eos = scatter.eos(network, Eos);
-                scatter.getIdentity({accounts:[network]}).then(function(id){
-                    const account = id.accounts.find(function(x){ return x.blockchain === 'eos' });
-                    console.log('acc', account);
-                    eos.transfer(account.name, 'eosio', '1.0000 EOS', '').then(function(res){
-                        console.log('res', res);
-                    })
-                })
-            }, 1000);
-        }).catch(function(x){
+        scatter.isInstalled().then(function(x){
             console.log('x', x);
-        });
+        })
 
-
-//        setTimeout(function(){
-//            console.log('s', window.scatter);
-//        }, 2000);
+//        let KEY = `-----BEGIN PRIVATE KEY-----
+//MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEA2ndHeUenLxef1GcQ
+//vmUC6VU3JxJX/caEXH0wmZeNUE9iSTAFlSeTW08iyUIGyRMdYgyD3hMEI0mzEGAI
+//SCt7GwIDAQABAkBggebCDcQuCnqhovIDma3Ck9FsYi8avVKFZQxOHWPgwI97hab2
+//PwmC749N2zaz4nZ5bhjhuHjXMJJLdt60E+PxAiEA+lzHRo4GK6GCRri7DLthPn/x
+//hpw/5YMgj9Df5ZoA58MCIQDfYqHvdZLbYJ9qbzVdOLiYvIUGr1PRUYL5NdoUhh9B
+//yQIgNhrkyd+Zf8ZYlBYJ/ldkTZByzsdnm57543qdWE4u0ecCIBVdXZeFazJIH3cS
+//g8wSrLUO8roc8qtGXHxxRhZIbZzhAiAShQ3cx+AOxNwUxhK27mUDjtODHZ9HD4oU
+//p/EbR1pVXQ==
+//-----END PRIVATE KEY-----`;
+//        function keyGetter(){
+//            return new Promise(function(resolve){ resolve(KEY)});
+//        }
+//
+//        function keySetter(x){
+//            return new Promise(function(resolve){ KEY = x; resolve(true)});
+//        }
+//
+//        scatter.connect("TestPage", {keyGetter, keySetter}).then(function(connected){
+//            console.log('connected', connected)
+//
+//            setTimeout(function(){
+//                var network = {blockchain:'eos', protocol:'http', host:'192.168.1.7', port:8888, chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f'};
+//                var eos = scatter.eos(network, Eos);
+//                scatter.getIdentity({accounts:[network]}).then(function(id){
+//                    const account = id.accounts.find(function(x){ return x.blockchain === 'eos' });
+//                    console.log('acc', account);
+//                    eos.transfer(account.name, 'eosio', '1.0000 EOS', '').then(function(res){
+//                        console.log('res', res);
+//                    })
+//                })
+//            }, 1000);
+//        }).catch(function(x){
+//            console.log('x', x);
+//        });
 
     </script>
 </body>

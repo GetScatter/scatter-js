@@ -46,6 +46,20 @@ export default class SocketService {
         this.timeout = timeout;
     }
 
+    static async ping(){
+        return new Promise(resolve => {
+            const tester = io.connect(`${host}/scatter`, { reconnection: false });
+
+            tester.on('connected', async () => {
+                resolve(true);
+            });
+
+            tester.on('connect_error', async () => {
+                resolve(false);
+            });
+        })
+    }
+
     static async link(){
         return Promise.race([
             new Promise((resolve, reject) => setTimeout(async () => {
@@ -97,6 +111,11 @@ export default class SocketService {
 
                 socket.on('connect_error', async () => {
                     allowReconnects = false;
+                });
+
+                socket.on('rejected', async reason => {
+                    console.error('reason', reason);
+                    reject(reason);
                 });
             })
         ])

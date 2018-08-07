@@ -1,11 +1,18 @@
 import SocketService from './services/SocketService';
 import PluginRepository from './plugins/PluginRepository'
+import "isomorphic-fetch"
 
 let origin;
 
 const throwNoAuth = () => {
     if(!holder.scatter.isExtension && !SocketService.isAuthenticated())
         throw new Error('Connect and Authenticate first ( scatter.connect(pluginName, keyGetter, keySetter )');
+};
+
+const checkForPlugin = (resolve, tries = 0) => {
+    if(tries > 20) return;
+    if(holder.scatter.isExtension) return resolve(true);
+    setTimeout(() => checkForPlugin(resolve, tries + 1), 100);
 };
 
 class Scatter {
@@ -19,8 +26,27 @@ class Scatter {
 
         this.isExtension = false;
         this.identity = null;
+    }
+
+    async isInstalled(){
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve(false);
+            }, 3000);
+
+            Promise.race([
+                checkForPlugin(resolve),
+                SocketService.ping().then(found => {
+                    console.log('found', found);
+                    if(found) resolve(true);
+                })
+            ])
 
 
+
+            // Tries to set up Desktop Connection
+
+        })
     }
 
     async connect(pluginName, options){
@@ -36,16 +62,7 @@ class Scatter {
             }, options.initTimeout);
 
             // Defaults to scatter extension if exists
-            const checkForPlugin = (tries) => {
-                if(tries > 20) return;
-                if(holder.scatter.isExtension) {
-                    console.log('is ext', holder.scatter)
-                    return resolve(true);
-                }
-                setTimeout(() => checkForPlugin(tries + 1), 100);
-            };
-
-            checkForPlugin();
+            checkForPlugin(resolve);
 
             // Tries to set up Desktop Connection
             SocketService.init(pluginName, options.keyGetter, options.keySetter, options.linkTimeout);
@@ -176,7 +193,6 @@ if(typeof document !== 'undefined'){
     document.addEventListener('scatterLoaded', scatterExtension => {
         holder.scatter = window.scatter;
         holder.scatter.isExtension = true;
-        window.scatter = null;
     });
 }
 

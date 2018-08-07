@@ -5,6 +5,7 @@ import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
 import WebsocketSubprovider from 'web3-provider-engine/subproviders/websocket';
 import HookedWalletSubprovider from 'web3-provider-engine/subproviders/hooked-wallet';
 import ethUtil from 'ethereumjs-util';
+import 'isomorphic-fetch';
 
 const pkcs = 'pkcs8';
 
@@ -139,6 +140,20 @@ class SocketService {
         this.timeout = timeout;
     }
 
+    static async ping(){
+        return new Promise(resolve => {
+            const tester = io.connect(`${host}/scatter`, { reconnection: false });
+
+            tester.on('connected', async () => {
+                resolve(true);
+            });
+
+            tester.on('connect_error', async () => {
+                resolve(false);
+            });
+        })
+    }
+
     static async link(){
         return Promise.race([
             new Promise((resolve, reject) => setTimeout(async () => {
@@ -190,6 +205,11 @@ class SocketService {
 
                 socket.on('connect_error', async () => {
                     allowReconnects = false;
+                });
+
+                socket.on('rejected', async reason => {
+                    console.error('reason', reason);
+                    reject(reason);
                 });
             })
         ])
@@ -527,6 +547,12 @@ const throwNoAuth = () => {
         throw new Error('Connect and Authenticate first ( scatter.connect(pluginName, keyGetter, keySetter )');
 };
 
+const checkForPlugin = (resolve, tries = 0) => {
+    if(tries > 20) return;
+    if(holder.scatter.isExtension) return resolve(true);
+    setTimeout(() => checkForPlugin(resolve, tries + 1), 100);
+};
+
 class Scatter {
 
     constructor(){
@@ -538,8 +564,27 @@ class Scatter {
 
         this.isExtension = false;
         this.identity = null;
+    }
+
+    async isInstalled(){
+        return new Promise(resolve => {
+            setTimeout(() => {
+                resolve(false);
+            }, 3000);
+
+            Promise.race([
+                checkForPlugin(resolve),
+                SocketService.ping().then(found => {
+                    console.log('found', found);
+                    if(found) resolve(true);
+                })
+            ]);
 
 
+
+            // Tries to set up Desktop Connection
+
+        })
     }
 
     async connect(pluginName, options){
@@ -555,16 +600,7 @@ class Scatter {
             }, options.initTimeout);
 
             // Defaults to scatter extension if exists
-            const checkForPlugin = (tries) => {
-                if(tries > 20) return;
-                if(holder.scatter.isExtension) {
-                    console.log('is ext', holder.scatter);
-                    return resolve(true);
-                }
-                setTimeout(() => checkForPlugin(tries + 1), 100);
-            };
-
-            checkForPlugin();
+            checkForPlugin(resolve);
 
             // Tries to set up Desktop Connection
             SocketService.init(pluginName, options.keyGetter, options.keySetter, options.linkTimeout);
@@ -695,7 +731,6 @@ if(typeof document !== 'undefined'){
     document.addEventListener('scatterLoaded', scatterExtension => {
         holder.scatter = window.scatter;
         holder.scatter.isExtension = true;
-        window.scatter = null;
     });
 }
 
