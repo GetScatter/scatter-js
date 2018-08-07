@@ -27,12 +27,24 @@ your html file and use it as a fully packed browser-ready package.
 
 Coming soon.
 
-## Setup
+## ScatterJS Usage
 
 This library catches both Scatter Desktop and Scatter Classic ( old extension ) depending on the
 existence of either.
-All you have to do is call `scatter.connect(...)` and it will feed you back one or the other once 
-it connects, or time out after 5 seconds and return false in the `connected` result.
+
+#### Checking if Scatter is installed
+
+```js
+ScatterJS.scatter.isInstalled().then(installed => {
+    if(!installed){
+        // Scatter is not installed
+    }
+});
+```
+
+#### Making a connection
+
+Now that you're sure the user has Scatter installed you can prompt them to allow a connection to your app/website.
 
 ```js
 ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
@@ -45,6 +57,11 @@ ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
     ScatterJS.scatter.getIdentity(...);
 });
 ```
+
+- **Note:** The reason we don't call this to check the existence of Scatter is because if the user **does** have Scatter Desktop installed 
+  but has never reached your page before they will automatically be prompted to add the app link to their Scatter when they land on your page,
+  and will time-out if they miss the prompt because they are not expecting it at all.
+  
 
 ### Using your own RSA Keypairs
 
@@ -102,6 +119,22 @@ the window ref.
 setStateVariable(window.scatter);
  
 window.scatter = null;
+```
+
+
+### Offloading the scatter object to state from nodejs/es/cjs
+
+A lot of projects already integrated with Scatter expect `scatter` to be it's own object. 
+You can easily mimic that by offloading the `ScatterJS.scatter` object to your previously saved state variables.
+
+_( The reason this ScatterJS wrapper/holder exists is because if the extension is found it needs to overwrite the `.scatter` object 
+ without losing the reference passed down the tree to your app. )_
+
+```js
+const scatter = ScatterJS.scatter;
+ 
+// or state savers ( store ) such as redux or vuex 
+setStateVariable(ScatterJS.scatter);
 ```
 
 
