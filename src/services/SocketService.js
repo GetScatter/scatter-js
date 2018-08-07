@@ -6,58 +6,30 @@ const host = 'http://localhost:50005';
 
 let socket = null;
 let connected = false;
-let authenticated = false;
 
-let plugin, keyGetter, keySetter;
-let rsaKey = null;
-
+let plugin;
 let openRequests = [];
 
 let allowReconnects = true;
 let reconnectionTimeout = null;
+
 const reconnectOnAbnormalDisconnection = async () => {
     if(!allowReconnects) return;
 
-    if(await keyGetter()) {
-        clearTimeout(reconnectionTimeout);
-        reconnectionTimeout = setTimeout(() => {
-            SocketService.link();
-        }, 1000);
-    }
-
+	clearTimeout(reconnectionTimeout);
+	reconnectionTimeout = setTimeout(() => {
+		SocketService.link();
+	}, 1000);
 };
 
 
 
 export default class SocketService {
 
-    static init(_plugin, _keyGetter = null, _keySetter = null, timeout = 60000){
+    static init(_plugin, timeout = 60000){
         plugin = _plugin;
 
-        if (typeof window === "undefined" && (!_keyGetter || !_keySetter))
-            throw new Error("This website doesn't have local storage enabled, please use key setters and getters");
-
-        if(_keyGetter === null) _keyGetter = StorageService.get;
-        if(_keySetter === null) _keySetter = StorageService.set;
-
-        keyGetter = _keyGetter;
-        keySetter = _keySetter;
-
         this.timeout = timeout;
-    }
-
-    static async ping(){
-        return new Promise(resolve => {
-            const tester = io.connect(`${host}/scatter`, { reconnection: false });
-
-            tester.on('connected', async () => {
-                resolve(true);
-            });
-
-            tester.on('connect_error', async () => {
-                resolve(false);
-            });
-        })
     }
 
     static async link(){
@@ -80,13 +52,7 @@ export default class SocketService {
                 socket.on('connected', async () => {
                     clearTimeout(reconnectionTimeout);
                     connected = true;
-                    await SocketService.identify();
-                });
-
-                socket.on('auth', _authed => {
-                    if(!_authed) console.log('Denied, blacklisted.')
-                    authenticated = _authed;
-                    resolve(_authed);
+                    resolve(true);
                 });
 
                 socket.on('event', event => {
@@ -102,7 +68,6 @@ export default class SocketService {
                 socket.on('disconnect', async () => {
                     console.log('Disconnected')
                     connected = false;
-                    authenticated = false;
                     socket = null;
 
                     // If bad disconnect, retry connection
@@ -111,6 +76,7 @@ export default class SocketService {
 
                 socket.on('connect_error', async () => {
                     allowReconnects = false;
+                    resolve(false);
                 });
 
                 socket.on('rejected', async reason => {
@@ -121,32 +87,11 @@ export default class SocketService {
         ])
     }
 
-    static async identify(){
-        let privatePin = await keyGetter();
-        let publicPin = '';
-        if(!privatePin){
-            const [key, publicKey, privateKey] = RSAService.generateKeypair();
-            publicPin = publicKey;
-            rsaKey = key;
-            keySetter(privateKey);
-        } else {
-            rsaKey = RSAService.privateToKey(privatePin);
-            publicPin = RSAService.keyToPublicKey(rsaKey);
-        }
-        socket.emit('identify', {pin:publicPin, plugin});
-        return true;
-    }
-
     static isConnected(){
         return connected;
     }
 
-    static isAuthenticated(){
-        return authenticated;
-    }
-
     static async disconnect(){
-        await keySetter(null);
         socket.disconnect();
         return true;
     }
@@ -167,8 +112,7 @@ export default class SocketService {
             }
 
             openRequests.push(Object.assign(request, {resolve, reject}));
-            const data = RSAService.encrypt(request, rsaKey);
-            socket.emit('api', {data, plugin});
+            socket.emit('api', {data:request, plugin});
         });
     }
 

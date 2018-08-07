@@ -5,7 +5,7 @@ import "isomorphic-fetch"
 let origin;
 
 const throwNoAuth = () => {
-    if(!holder.scatter.isExtension && !SocketService.isAuthenticated())
+    if(!holder.scatter.isExtension && !SocketService.isConnected())
         throw new Error('Connect and Authenticate first ( scatter.connect(pluginName, keyGetter, keySetter )');
 };
 
@@ -54,7 +54,7 @@ class Scatter {
             if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
 
             // Setting options defaults
-            options = Object.assign({keyGetter:null, keySetter:null, initTimeout:10000, linkTimeout:30000}, options);
+            options = Object.assign({initTimeout:10000, linkTimeout:30000}, options);
 
             // Auto failer
             setTimeout(() => {
@@ -65,7 +65,7 @@ class Scatter {
             checkForPlugin(resolve);
 
             // Tries to set up Desktop Connection
-            SocketService.init(pluginName, options.keyGetter, options.keySetter, options.linkTimeout);
+            SocketService.init(pluginName, options.linkTimeout);
             SocketService.link().then(async authenticated => {
                 if(!authenticated) return false;
                 this.identity = await this.getIdentityFromPermissions();

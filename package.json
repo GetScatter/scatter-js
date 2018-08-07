@@ -10,13 +10,14 @@
     "build": "rollup -c",
     "testfile": "mocha --require babel-core/register --exit --timeout 1000000",
     "test": "npm run testfile \"test/**/*.spec.js\" --timeout 1000000",
-    "touch":"./node_modules/.bin/webpack && npm run build"
+    "touch": "./node_modules/.bin/webpack && npm run build"
   },
   "author": "",
   "license": "ISC",
   "dependencies": {
     "eosjs": "^16.0.0",
     "es6-promise": "^4.2.4",
+    "ethereumjs-abi": "^0.6.5",
     "ethereumjs-util": "^5.2.0",
     "get-random-values": "^1.2.0",
     "isomorphic-fetch": "^2.2.1",

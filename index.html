@@ -11,29 +11,7 @@
 
     <script>
 
-        scatter.isInstalled().then(function(x){
-            console.log('x', x);
-        })
-
-        let KEY = `-----BEGIN PRIVATE KEY-----
-MIIBUwIBADANBgkqhkiG9w0BAQEFAASCAT0wggE5AgEAAkEA2ndHeUenLxef1GcQ
-vmUC6VU3JxJX/caEXH0wmZeNUE9iSTAFlSeTW08iyUIGyRMdYgyD3hMEI0mzEGAI
-SCt7GwIDAQABAkBggebCDcQuCnqhovIDma3Ck9FsYi8avVKFZQxOHWPgwI97hab2
-PwmC749N2zaz4nZ5bhjhuHjXMJJLdt60E+PxAiEA+lzHRo4GK6GCRri7DLthPn/x
-hpw/5YMgj9Df5ZoA58MCIQDfYqHvdZLbYJ9qbzVdOLiYvIUGr1PRUYL5NdoUhh9B
-yQIgNhrkyd+Zf8ZYlBYJ/ldkTZByzsdnm57543qdWE4u0ecCIBVdXZeFazJIH3cS
-g8wSrLUO8roc8qtGXHxxRhZIbZzhAiAShQ3cx+AOxNwUxhK27mUDjtODHZ9HD4oU
-p/EbR1pVXQ==
------END PRIVATE KEY-----`;
-        function keyGetter(){
-            return new Promise(function(resolve){ resolve(KEY)});
-        }
-
-        function keySetter(x){
-            return new Promise(function(resolve){ KEY = x; resolve(true)});
-        }
-
-        scatter.connect("TestPage", {keyGetter, keySetter}).then(function(connected){
+        scatter.connect("TestPage").then(function(connected){
             console.log('connected', connected)
 
             setTimeout(function(){

@@ -32,19 +32,7 @@ Coming soon.
 This library catches both Scatter Desktop and Scatter Classic ( old extension ) depending on the
 existence of either.
 
-#### Checking if Scatter is installed
-
-```js
-ScatterJS.scatter.isInstalled().then(installed => {
-    if(!installed){
-        // Scatter is not installed
-    }
-});
-```
-
 #### Making a connection
-
-Now that you're sure the user has Scatter installed you can prompt them to allow a connection to your app/website.
 
 ```js
 ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
@@ -58,50 +46,13 @@ ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
 });
 ```
 
-- **Note:** The reason we don't call this to check the existence of Scatter is because if the user **does** have Scatter Desktop installed 
-  but has never reached your page before they will automatically be prompted to add the app link to their Scatter when they land on your page,
-  and will time-out if they miss the prompt because they are not expecting it at all.
-- You might want to display a message about getting Scatter before checking if they have permissions or logging them in.
-  
 
-### Using your own RSA Keypairs
-
-scatter-js requires that you supply an RSA key for local socket encryption to the desktop client. 
-This key only allows your app to prove itself to Scatter Desktop. How you choose to save the key ( local storage, session, backend )
-is up to you, but if it changes then it will not re-prompt the user to accept connections from 
-your application, they will have to know to manually remove the app link and resync with your application.
-
-It is best to serve this key deterministically.
-
-If no getter/setter is provided then `scatter-js` will use `localStorage` to store a randomly generated 
-RSA key by default.
-
-**Getters and Setters must be promises!**
-
-```js
-let KEY = ``;
-const keyGetter = () => new Promise(resolve => resolve(KEY));
-const keySetter = (x) => new Promise(resolve => resolve(KEY = x));
- 
-ScatterJS.scatter.connect("Put_Your_App_Name_Here", {keyGetter, keySetter}).then(...);
-```
-
-
-### Other Options
+### Connection Options
 
 ```js
 {
-    keyGetter,
-    keySetter,
-    
     // You may specify a maximum timeout for checking if a user has Scatter installed
-    // This defaults to 10 seconds, you might want to elongate this to make sure they 
-    // have ample time to notice and respond to the app connection
     initTimeout:10000,
-    
-    // You may also specify a maximum timeout for checking if a user has accepted the app link
-    // inside of their Scatter desktop. This defaults to 30 seconds.
-    linkTimeout:30000
 }
 ```
 

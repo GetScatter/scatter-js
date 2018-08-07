@@ -2,7 +2,7 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var NodeRSA = _interopDefault(require('node-rsa'));
+require('node-rsa');
 var io = _interopDefault(require('socket.io-client'));
 var ProviderEngine = _interopDefault(require('web3-provider-engine'));
 var RpcSubprovider = _interopDefault(require('web3-provider-engine/subproviders/rpc'));
@@ -10,51 +10,6 @@ var WebsocketSubprovider = _interopDefault(require('web3-provider-engine/subprov
 var HookedWalletSubprovider = _interopDefault(require('web3-provider-engine/subproviders/hooked-wallet'));
 var ethUtil = _interopDefault(require('ethereumjs-util'));
 require('isomorphic-fetch');
-
-const pkcs = 'pkcs8';
-
-
-
-class RSAService {
-
-    static init(keyGetter, keySetter){
-
-    }
-
-    static generateKeypair(){
-        const key = new NodeRSA({ b: 512 });
-        key.setOptions({ encryptionScheme: 'pkcs1' });
-        const publicKey = key.exportKey(`${pkcs}-public-pem`);
-        const privateKey = key.exportKey(`${pkcs}-private-pem`);
-        return [key, publicKey, privateKey];
-    }
-
-    static privateToKey(data){
-        const key = new NodeRSA({ b: 512 });
-        key.importKey(data, pkcs);
-        return key;
-    }
-
-    static publicToKey(data){
-        const key = new NodeRSA({ b: 512 });
-        key.importKey(data, `${pkcs}-public-pem`);
-        return key;
-    }
-
-    static keyToPublicKey(key){
-        return key.exportKey(`${pkcs}-public-pem`)
-    }
-
-    static encrypt(data, key){
-        return key.encryptPrivate(JSON.stringify(data), 'base64', 'utf8');
-    }
-
-    static decrypt(data, key){
-        try {return JSON.parse(key.decryptPublic(data, 'utf8'));}
-        catch(e){ return null; }
-    }
-
-}
 
 const swallow = fn => {try { fn(); } catch(e){}};
 
@@ -78,84 +33,34 @@ class ApiGenerator {
 
 const apis = new ApiGenerator();
 
-class StorageService {
-
-    constructor(){}
-
-    static set(scatter){
-        return new Promise(resolve => {
-            window.localStorage.setItem('scatter', scatter);
-        })
-    };
-
-    static get() {
-        return new Promise(resolve => {
-            resolve(window.localStorage.getItem('scatter'));
-            // apis.storage.local.get('scatter', (possible) => {
-            //     (possible && Object.keys(possible).length && possible.hasOwnProperty('scatter'))
-            //         ? resolve(possible.scatter)
-            //         : resolve(null);
-            // });
-        })
-    }
-}
-
 const host = 'http://localhost:50005';
 
 let socket = null;
 let connected = false;
-let authenticated = false;
 
-let plugin, keyGetter, keySetter;
-let rsaKey = null;
-
+let plugin;
 let openRequests = [];
 
 let allowReconnects = true;
 let reconnectionTimeout = null;
+
 const reconnectOnAbnormalDisconnection = async () => {
     if(!allowReconnects) return;
 
-    if(await keyGetter()) {
-        clearTimeout(reconnectionTimeout);
-        reconnectionTimeout = setTimeout(() => {
-            SocketService.link();
-        }, 1000);
-    }
-
+	clearTimeout(reconnectionTimeout);
+	reconnectionTimeout = setTimeout(() => {
+		SocketService.link();
+	}, 1000);
 };
 
 
 
 class SocketService {
 
-    static init(_plugin, _keyGetter = null, _keySetter = null, timeout = 60000){
+    static init(_plugin, timeout = 60000){
         plugin = _plugin;
 
-        if (typeof window === "undefined" && (!_keyGetter || !_keySetter))
-            throw new Error("This website doesn't have local storage enabled, please use key setters and getters");
-
-        if(_keyGetter === null) _keyGetter = StorageService.get;
-        if(_keySetter === null) _keySetter = StorageService.set;
-
-        keyGetter = _keyGetter;
-        keySetter = _keySetter;
-
         this.timeout = timeout;
-    }
-
-    static async ping(){
-        return new Promise(resolve => {
-            const tester = io.connect(`${host}/scatter`, { reconnection: false });
-
-            tester.on('connected', async () => {
-                resolve(true);
-            });
-
-            tester.on('connect_error', async () => {
-                resolve(false);
-            });
-        })
     }
 
     static async link(){
@@ -178,13 +83,7 @@ class SocketService {
                 socket.on('connected', async () => {
                     clearTimeout(reconnectionTimeout);
                     connected = true;
-                    await SocketService.identify();
-                });
-
-                socket.on('auth', _authed => {
-                    if(!_authed) console.log('Denied, blacklisted.');
-                    authenticated = _authed;
-                    resolve(_authed);
+                    resolve(true);
                 });
 
                 socket.on('event', event => {
@@ -200,7 +99,6 @@ class SocketService {
                 socket.on('disconnect', async () => {
                     console.log('Disconnected');
                     connected = false;
-                    authenticated = false;
                     socket = null;
 
                     // If bad disconnect, retry connection
@@ -209,6 +107,7 @@ class SocketService {
 
                 socket.on('connect_error', async () => {
                     allowReconnects = false;
+                    resolve(false);
                 });
 
                 socket.on('rejected', async reason => {
@@ -219,32 +118,11 @@ class SocketService {
         ])
     }
 
-    static async identify(){
-        let privatePin = await keyGetter();
-        let publicPin = '';
-        if(!privatePin){
-            const [key, publicKey, privateKey] = RSAService.generateKeypair();
-            publicPin = publicKey;
-            rsaKey = key;
-            keySetter(privateKey);
-        } else {
-            rsaKey = RSAService.privateToKey(privatePin);
-            publicPin = RSAService.keyToPublicKey(rsaKey);
-        }
-        socket.emit('identify', {pin:publicPin, plugin});
-        return true;
-    }
-
     static isConnected(){
         return connected;
     }
 
-    static isAuthenticated(){
-        return authenticated;
-    }
-
     static async disconnect(){
-        await keySetter(null);
         socket.disconnect();
         return true;
     }
@@ -265,8 +143,7 @@ class SocketService {
             }
 
             openRequests.push(Object.assign(request, {resolve, reject}));
-            const data = RSAService.encrypt(request, rsaKey);
-            socket.emit('api', {data, plugin});
+            socket.emit('api', {data:request, plugin});
         });
     }
 
@@ -547,7 +424,7 @@ class PluginRepositorySingleton {
 const PluginRepository = new PluginRepositorySingleton();
 
 const throwNoAuth = () => {
-    if(!holder.scatter.isExtension && !SocketService.isAuthenticated())
+    if(!holder.scatter.isExtension && !SocketService.isConnected())
         throw new Error('Connect and Authenticate first ( scatter.connect(pluginName, keyGetter, keySetter )');
 };
 
@@ -596,7 +473,7 @@ class Scatter {
             if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
 
             // Setting options defaults
-            options = Object.assign({keyGetter:null, keySetter:null, initTimeout:10000, linkTimeout:30000}, options);
+            options = Object.assign({initTimeout:10000, linkTimeout:30000}, options);
 
             // Auto failer
             setTimeout(() => {
@@ -607,7 +484,7 @@ class Scatter {
             checkForPlugin(resolve);
 
             // Tries to set up Desktop Connection
-            SocketService.init(pluginName, options.keyGetter, options.keySetter, options.linkTimeout);
+            SocketService.init(pluginName, options.linkTimeout);
             SocketService.link().then(async authenticated => {
                 if(!authenticated) return false;
                 this.identity = await this.getIdentityFromPermissions();
