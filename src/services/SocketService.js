@@ -1,6 +1,4 @@
 import io from 'socket.io-client';
-import RSAService from './RSAService';
-import StorageService from './StorageService';
 
 const host = 'http://localhost:50005';
 
