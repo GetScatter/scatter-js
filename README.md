@@ -61,6 +61,7 @@ ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
 - **Note:** The reason we don't call this to check the existence of Scatter is because if the user **does** have Scatter Desktop installed 
   but has never reached your page before they will automatically be prompted to add the app link to their Scatter when they land on your page,
   and will time-out if they miss the prompt because they are not expecting it at all.
+- You might want to display a message about getting Scatter before checking if they have permissions or logging them in.
   
 
 ### Using your own RSA Keypairs
@@ -94,7 +95,8 @@ ScatterJS.scatter.connect("Put_Your_App_Name_Here", {keyGetter, keySetter}).then
     keySetter,
     
     // You may specify a maximum timeout for checking if a user has Scatter installed
-    // This defaults to 10 seconds
+    // This defaults to 10 seconds, you might want to elongate this to make sure they 
+    // have ample time to notice and respond to the app connection
     initTimeout:10000,
     
     // You may also specify a maximum timeout for checking if a user has accepted the app link
