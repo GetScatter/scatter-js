@@ -66,7 +66,8 @@ class SocketService {
                 socket.on('api', result => {
                     const openRequest = openRequests.find(x => x.id === result.id);
                     if(!openRequest) return;
-                    openRequest.resolve(result.result);
+                    if(result.result.hasOwnProperty('isError')) openRequest.reject(result.result);
+                    else openRequest.resolve(result.result);
                 });
 
                 socket.on('disconnect', async () => {

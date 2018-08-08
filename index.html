@@ -15,13 +15,15 @@
             console.log('connected', connected)
 
             setTimeout(function(){
-                var network = {blockchain:'eos', protocol:'http', host:'192.168.1.7', port:8888, chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f'};
+                var network = {blockchain:'eos', protocol:'http', host:'192.168.1.6', port:8888, chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f'};
                 var eos = scatter.eos(network, Eos);
                 scatter.getIdentity({accounts:[network]}).then(function(id){
                     const account = id.accounts.find(function(x){ return x.blockchain === 'eos' });
                     console.log('acc', account);
                     eos.transfer(account.name, 'eosio', '1.0000 EOS', '').then(function(res){
                         console.log('res', res);
+                    }).catch(function(err){
+                        console.log('err', err);
                     })
                 })
             }, 1000);
