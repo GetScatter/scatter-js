@@ -126,9 +126,9 @@ ScatterJS.scatter.connect('YOUR_APP_NAME').then(connected => {
 ```js
 <script src="path/to/scatter.min.js"></script>
 
-window.scatter.connect('YOUR_APP_NAME').then(connected => {
+scatter.connect('YOUR_APP_NAME').then(connected => {
     if(connected){
-        this.scatter = window.scatter;
+        this.scatter = scatter;
         window.scatter = null;
     }
 });
