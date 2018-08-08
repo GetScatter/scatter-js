@@ -66,7 +66,9 @@ class SocketService {
                 socket.on('api', result => {
                     const openRequest = openRequests.find(x => x.id === result.id);
                     if(!openRequest) return;
-                    if(result.result.hasOwnProperty('isError')) openRequest.reject(result.result);
+                    if(typeof result.result === 'object'
+                        && result.result !== null
+                        && result.result.hasOwnProperty('isError')) openRequest.reject(result.result);
                     else openRequest.resolve(result.result);
                 });
 
