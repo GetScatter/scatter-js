@@ -98,3 +98,40 @@ interact with Scatter and various blockchains.
 
 Scatter sits on top of [eosjs](https://github.com/EOSIO/eosjs) or [web3](https://github.com/ethereum/web3.js/), 
 so learn to use those depending on which blockchain you are interfacing with. 
+
+
+## Switching from Extension only to Extension+Desktop support.
+
+**Replace**
+```js
+document.addEventListener('scatterLoaded', () => {
+    this.scatter = window.scatter;
+    window.scatter = null;
+});
+```
+
+**With ( for nodejs )**
+```js
+import ScatterJS from 'scatter-js/dist/scatter.esm';
+
+ScatterJS.scatter.connect('YOUR_APP_NAME').then(connected => {
+    if(connected){
+        this.scatter = ScatterJS.scatter;
+        window.scatter = null;
+    }
+});
+```
+
+**Or ( for html/js )**
+```js
+<script src="path/to/scatter.min.js"></script>
+
+scatter.connect('YOUR_APP_NAME').then(connected => {
+    if(connected){
+        this.scatter = scatter;
+        window.scatter = null;
+    }
+});
+```
+
+
