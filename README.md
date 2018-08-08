@@ -122,7 +122,7 @@ ScatterJS.scatter.connect('YOUR_APP_NAME').then(connected => {
 });
 ```
 
-**Or ( for javascript only )**
+**Or ( for html/js )**
 ```js
 <script src="path/to/scatter.min.js"></script>
 
