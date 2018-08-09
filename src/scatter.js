@@ -193,6 +193,7 @@ if(typeof document !== 'undefined'){
     document.addEventListener('scatterLoaded', scatterExtension => {
         holder.scatter = window.scatter;
         holder.scatter.isExtension = true;
+        holder.scatter.connect = () => new Promise(resolve => resolve(true));
     });
 }
 
