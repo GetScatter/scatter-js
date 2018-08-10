@@ -10,7 +10,7 @@ var HookedWalletSubprovider = _interopDefault(require('web3-provider-engine/subp
 var ethUtil = _interopDefault(require('ethereumjs-util'));
 require('isomorphic-fetch');
 
-const host = 'http://localhost:50005';
+const host = 'http://127.0.0.1:50005';
 
 let socket = null;
 let connected = false;
@@ -55,7 +55,8 @@ class SocketService {
             }, this.timeout)),
             new Promise(async (resolve, reject) => {
 
-                socket = io.connect(`${host}/scatter`, { reconnection: false });
+                console.log('trying', `${host}/scatter`);
+                socket = io.connect(`${host}/scatter`, { secure:true, reconnection: false, rejectUnauthorized : false });
 
                 socket.on('connected', async () => {
                     clearTimeout(reconnectionTimeout);
@@ -405,7 +406,7 @@ const PluginRepository = new PluginRepositorySingleton();
 
 const throwNoAuth = () => {
     if(!holder.scatter.isExtension && !SocketService.isConnected())
-        throw new Error('Connect and Authenticate first ( scatter.connect(pluginName, keyGetter, keySetter )');
+        throw new Error('Connect and Authenticate first - scatter.connect( pluginName )');
 };
 
 const checkForPlugin = (resolve, tries = 0) => {
@@ -592,6 +593,7 @@ if(typeof document !== 'undefined'){
     document.addEventListener('scatterLoaded', scatterExtension => {
         holder.scatter = window.scatter;
         holder.scatter.isExtension = true;
+        holder.scatter.connect = () => new Promise(resolve => resolve(true));
     });
 }
 

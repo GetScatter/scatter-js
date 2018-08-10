@@ -1,6 +1,6 @@
 {
   "name": "scatter-js",
-  "version": "2.0.4",
+  "version": "2.1.0",
   "description": "",
   "main": "dist/scatter.esm.js",
   "module": "dist/scatter.cjs.js",

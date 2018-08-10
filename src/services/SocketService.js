@@ -1,6 +1,6 @@
 import io from 'socket.io-client';
 
-const host = 'http://localhost:50005';
+const host = 'http://127.0.0.1:50005';
 
 let socket = null;
 let connected = false;
@@ -44,8 +44,7 @@ export default class SocketService {
                 reconnectOnAbnormalDisconnection();
             }, this.timeout)),
             new Promise(async (resolve, reject) => {
-
-                socket = io.connect(`${host}/scatter`, { reconnection: false });
+                socket = io.connect(`${host}/scatter`, { secure:true, reconnection: false, rejectUnauthorized : false });
 
                 socket.on('connected', async () => {
                     clearTimeout(reconnectionTimeout);

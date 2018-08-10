@@ -6,7 +6,7 @@ let origin;
 
 const throwNoAuth = () => {
     if(!holder.scatter.isExtension && !SocketService.isConnected())
-        throw new Error('Connect and Authenticate first ( scatter.connect(pluginName, keyGetter, keySetter )');
+        throw new Error('Connect and Authenticate first - scatter.connect( pluginName )');
 };
 
 const checkForPlugin = (resolve, tries = 0) => {
