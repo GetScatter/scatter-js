@@ -54,8 +54,6 @@ class SocketService {
                 reconnectOnAbnormalDisconnection();
             }, this.timeout)),
             new Promise(async (resolve, reject) => {
-
-                console.log('trying', `${host}/scatter`);
                 socket = io.connect(`${host}/scatter`, { secure:true, reconnection: false, rejectUnauthorized : false });
 
                 socket.on('connected', async () => {
