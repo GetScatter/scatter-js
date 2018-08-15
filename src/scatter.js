@@ -186,16 +186,25 @@ class Holder {
 
 
 let holder = new Holder(new Scatter());
-if(typeof window !== 'undefined') window.scatter = holder.scatter;
+if(typeof window !== 'undefined') {
 
-// Catching extension instead of Desktop
-if(typeof document !== 'undefined'){
-    document.addEventListener('scatterLoaded', scatterExtension => {
-        holder.scatter = window.scatter;
-        holder.scatter.isExtension = true;
-        holder.scatter.connect = () => new Promise(resolve => resolve(true));
-    });
+    // Catching extension instead of Desktop
+    if(typeof document !== 'undefined'){
+        const bindScatterClassic = () => {
+            holder.scatter = window.scatter;
+            holder.scatter.isExtension = true;
+            holder.scatter.connect = () => new Promise(resolve => resolve(true));
+        };
+
+        if(typeof window.scatter !== 'undefined') bindScatterClassic();
+        else document.addEventListener('scatterLoaded', () => bindScatterClassic());
+    }
+
+    if(!holder.scatter.isExtension)
+        window.scatter = holder.scatter;
 }
+
+
 
 export default holder;
 
