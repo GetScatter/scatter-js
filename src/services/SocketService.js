@@ -156,10 +156,8 @@ export default class SocketService {
         return new Promise(async (resolve, reject) => {
             if(request.type === 'identityFromPermissions' && !paired) return resolve(false);
 
-            if(!paired) {
-                await pair();
-                if(!paired) return reject({code:'not_paired', message:'The user did not allow this app to connect to their Scatter'});
-            }
+            await pair();
+            if(!paired) return reject({code:'not_paired', message:'The user did not allow this app to connect to their Scatter'});
 
             // Request ID used for resolving promises
             request.id = random();
