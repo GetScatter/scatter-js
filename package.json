@@ -1,6 +1,6 @@
 {
   "name": "scatter-js",
-  "version": "2.1.0",
+  "version": "2.1.1",
   "description": "",
   "main": "dist/scatter.esm.js",
   "module": "dist/scatter.cjs.js",
@@ -40,6 +40,7 @@
     "babelrc-rollup": "^3.0.0",
     "chai": "^4.1.2",
     "mocha": "^5.2.0",
+    "rollup": "^0.64.1",
     "rollup-plugin-babel": "^3.0.7",
     "rollup-plugin-commonjs": "^9.1.4",
     "rollup-plugin-json": "^3.0.0",
