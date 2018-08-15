@@ -39,6 +39,18 @@ class StorageService {
     static removeAppKey() {
         return getWindow().localStorage.removeItem('appkey');
     }
+
+    static setNonce(nonce){
+        getWindow().localStorage.setItem('nonce', nonce);
+    };
+
+    static getNonce() {
+        return getWindow().localStorage.getItem('nonce');
+    }
+
+    static removeNonce() {
+        return getWindow().localStorage.removeItem('nonce');
+    }
 }
 
 const {ecc} = Eos.modules;
@@ -82,15 +94,16 @@ const getOrigin = () => {
 
 
 // StorageService.removeAppKey();
+// StorageService.removeNonce();
 
 let appkey = StorageService.getAppKey();
 if(!appkey) appkey = 'appkey:'+random();
 
 let pairingPromise = null;
-const pair = () => {
+const pair = (passthrough = false) => {
     return new Promise((resolve, reject) => {
         pairingPromise = {resolve, reject};
-        socket.emit('pair', {data:{ appkey, origin:getOrigin() }, plugin});
+        socket.emit('pair', {data:{ appkey, origin:getOrigin(), passthrough }, plugin});
     })
 };
 
@@ -121,8 +134,7 @@ class SocketService {
                 socket.on('connected', async () => {
                     clearTimeout(reconnectionTimeout);
                     connected = true;
-
-                    await pair();
+                    await pair(true);
                     resolve(true);
                 });
 
@@ -203,6 +215,13 @@ class SocketService {
 
             // Set Application Key
             request.appkey = appkey;
+
+            // Nonce used to authenticate this request
+            request.nonce = StorageService.getNonce() || 0;
+            // Next nonce used to authenticate the next request
+            const nextNonce = random();
+            request.nextNonce = ecc.sha256(nextNonce);
+            StorageService.setNonce(nextNonce);
 
             if(request.hasOwnProperty('payload') && !request.payload.hasOwnProperty('origin'))
                 request.payload.origin = getOrigin();

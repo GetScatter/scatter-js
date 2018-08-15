@@ -25,4 +25,16 @@ export default class StorageService {
     static removeAppKey() {
         return getWindow().localStorage.removeItem('appkey');
     }
+
+    static setNonce(nonce){
+        getWindow().localStorage.setItem('nonce', nonce);
+    };
+
+    static getNonce() {
+        return getWindow().localStorage.getItem('nonce');
+    }
+
+    static removeNonce() {
+        return getWindow().localStorage.removeItem('nonce');
+    }
 }

@@ -25,16 +25,18 @@
         var eos = scatter.eos(network, Eos);
 
         console.log('id before', scatter.identity)
-        scatter.forgetIdentity();
-        scatter.getIdentity({accounts:[network]}).then(function(id){
-            const account = id.accounts.find(function(x){ return x.blockchain === 'eos' });
-            console.log('acc', account);
-            eos.transfer(account.name, 'eosio', '1.0000 EOS', '').then(function(res){
-                console.log('res', res);
-            }).catch(function(err){
-                console.log('err', err);
+        scatter.forgetIdentity().then(function(){
+            scatter.getIdentity({accounts:[network]}).then(function(id){
+                const account = id.accounts.find(function(x){ return x.blockchain === 'eos' });
+                console.log('acc', account);
+                eos.transfer(account.name, 'eosio', '1.0000 EOS', '').then(function(res){
+                    console.log('res', res);
+                }).catch(function(err){
+                    console.log('err', err);
+                })
             })
         })
+
     }
 
 </script>
