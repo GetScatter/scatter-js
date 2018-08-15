@@ -1,10 +1,43 @@
 import io from 'socket.io-client';
+import getRandomValues from 'get-random-values';
+import Eos from 'eosjs';
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
 import WebsocketSubprovider from 'web3-provider-engine/subproviders/websocket';
 import HookedWalletSubprovider from 'web3-provider-engine/subproviders/hooked-wallet';
 import ethUtil from 'ethereumjs-util';
 import 'isomorphic-fetch';
+
+class StorageService {
+
+    constructor(){}
+
+    static setNonce(nonce){
+        window.localStorage.setItem('nonce', nonce);
+    };
+
+    static getNonce() {
+        return window.localStorage.getItem('nonce');
+    }
+
+    static removeNonce() {
+        return window.localStorage.removeItem('nonce');
+    }
+
+    static setAppKey(nonce){
+        window.localStorage.setItem('appkey', nonce);
+    };
+
+    static getAppKey() {
+        return window.localStorage.getItem('appkey');
+    }
+
+    static removeAppKey() {
+        return window.localStorage.removeItem('appkey');
+    }
+}
+
+const {ecc} = Eos.modules;
 
 const host = 'http://127.0.0.1:50005';
 
@@ -104,7 +137,41 @@ class SocketService {
 
     static async sendApiRequest(request){
         return new Promise(async (resolve, reject) => {
-            request.id = Math.round(Math.random() * 100000000 + 1);
+
+            StorageService.removeAppKey();
+            StorageService.removeNonce();
+
+            const random = () => {
+                const array = new Uint8Array(24);
+                getRandomValues(array);
+                return array.join('');
+            };
+
+            // Request ID used for resolving promises
+            request.id = random();
+
+
+            // App key used to backwards authenticate this browser
+            let appkey = StorageService.getAppKey();
+            if(!appkey){
+                appkey = random();
+                StorageService.setAppKey(ecc.sha256(appkey));
+            }
+            request.appkey = appkey;
+
+            // Nonce used to authenticate this request
+            request.nonce = StorageService.getNonce() || 0;
+
+            // Next nonce used to authenticate the next request
+            const nextNonce = random();
+            request.nextNonce = ecc.sha256(nextNonce);
+            StorageService.setNonce(nextNonce);
+
+
+
+
+            console.log(request);
+
 
             if(request.hasOwnProperty('payload') && !request.payload.hasOwnProperty('origin')) {
                 let origin;
@@ -580,7 +647,15 @@ class Holder {
 
 
 let holder = new Holder(new Scatter());
-if(typeof window !== 'undefined') window.scatter = holder.scatter;
+if(typeof window !== 'undefined') {
+    // Check if extension has already been loaded
+    if(typeof window.scatter !== 'undefined') {
+        holder.scatter = window.scatter;
+        holder.scatter.isExtension = true;
+        holder.scatter.connect = () => new Promise(resolve => resolve(true));
+    }
+    window.scatter = holder.scatter;
+}
 
 // Catching extension instead of Desktop
 if(typeof document !== 'undefined'){

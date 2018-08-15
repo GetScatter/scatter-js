@@ -186,7 +186,15 @@ class Holder {
 
 
 let holder = new Holder(new Scatter());
-if(typeof window !== 'undefined') window.scatter = holder.scatter;
+if(typeof window !== 'undefined') {
+    // Check if extension has already been loaded
+    if(typeof window.scatter !== 'undefined') {
+        holder.scatter = window.scatter;
+        holder.scatter.isExtension = true;
+        holder.scatter.connect = () => new Promise(resolve => resolve(true));
+    }
+    window.scatter = holder.scatter;
+}
 
 // Catching extension instead of Desktop
 if(typeof document !== 'undefined'){
