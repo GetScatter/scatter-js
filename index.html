@@ -16,8 +16,6 @@
 
     scatter.connect("TestPage").then(function(connected){
         console.log('connected', connected)
-        console.log('index id', scatter.identity);
-
     }).catch(function(x){
         console.log('x', x);
     });
