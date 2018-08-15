@@ -1,16 +1,28 @@
+let storage = {};
+const getWindow = () => {
+    if(typeof window !== 'undefined') return window;
+    return {
+        localStorage:{
+            setItem:(key, val) => storage[key] = val,
+            getItem:(key) => storage[key] || null,
+            removeItem:(key) => delete storage[key]
+        }
+    }
+}
+
 export default class StorageService {
 
     constructor(){}
 
-    static setAppKey(nonce){
-        window.localStorage.setItem('appkey', nonce);
+    static setAppKey(appkey){
+        getWindow().localStorage.setItem('appkey', appkey);
     };
 
     static getAppKey() {
-        return window.localStorage.getItem('appkey');
+        return getWindow().localStorage.getItem('appkey');
     }
 
     static removeAppKey() {
-        return window.localStorage.removeItem('appkey');
+        return getWindow().localStorage.removeItem('appkey');
     }
 }

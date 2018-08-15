@@ -42,7 +42,7 @@ const getOrigin = () => {
 }
 
 
-StorageService.removeAppKey();
+// StorageService.removeAppKey();
 
 let appkey = StorageService.getAppKey();
 if(!appkey) appkey = 'appkey:'+random();
@@ -166,8 +166,6 @@ export default class SocketService {
 
             // Set Application Key
             request.appkey = appkey;
-
-            console.log(request);
 
             if(request.hasOwnProperty('payload') && !request.payload.hasOwnProperty('origin'))
                 request.payload.origin = getOrigin();
