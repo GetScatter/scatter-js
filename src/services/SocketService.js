@@ -1,4 +1,8 @@
 import io from 'socket.io-client';
+import StorageService from '../services/StorageService'
+import getRandomValues from 'get-random-values';
+import Eos from 'eosjs';
+const {ecc} = Eos.modules;
 
 const host = 'http://127.0.0.1:50005';
 
@@ -98,7 +102,41 @@ export default class SocketService {
 
     static async sendApiRequest(request){
         return new Promise(async (resolve, reject) => {
-            request.id = Math.round(Math.random() * 100000000 + 1);
+
+            StorageService.removeAppKey();
+            StorageService.removeNonce();
+
+            const random = () => {
+                const array = new Uint8Array(24);
+                getRandomValues(array);
+                return array.join('');
+            };
+
+            // Request ID used for resolving promises
+            request.id = random();
+
+
+            // App key used to backwards authenticate this browser
+            let appkey = StorageService.getAppKey();
+            if(!appkey){
+                appkey = random();
+                StorageService.setAppKey(ecc.sha256(appkey));
+            }
+            request.appkey = appkey;
+
+            // Nonce used to authenticate this request
+            request.nonce = StorageService.getNonce() || 0;
+
+            // Next nonce used to authenticate the next request
+            const nextNonce = random();
+            request.nextNonce = ecc.sha256(nextNonce);
+            StorageService.setNonce(nextNonce);
+
+
+
+
+            console.log(request);
+
 
             if(request.hasOwnProperty('payload') && !request.payload.hasOwnProperty('origin')) {
                 let origin;
