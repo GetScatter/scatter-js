@@ -145,6 +145,22 @@ class Scatter {
         });
     }
 
+    getPublicKey(blockchain){
+        throwNoAuth();
+        return SocketService.sendApiRequest({
+            type:'getPublicKey',
+            payload:{ blockchain }
+        });
+    }
+
+    linkAccount(publicKey, account, network){
+        throwNoAuth();
+        return SocketService.sendApiRequest({
+            type:'linkAccount',
+            payload:{ publicKey, account, network }
+        });
+    }
+
     suggestNetwork(network){
         throwNoAuth();
         return SocketService.sendApiRequest({
