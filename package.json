@@ -2,66 +2,26 @@
   "name": "scatter-js",
   "version": "2.4.0",
   "description": "",
-  "main": "dist/scatter.esm.js",
-  "module": "dist/scatter.cjs.js",
-  "browser": "dist/scatter.min.js",
   "scripts": {
-    "pack": "./node_modules/.bin/webpack --watch",
-    "build": "rollup -c",
-    "testfile": "mocha --require babel-core/register --exit --timeout 1000000",
-    "test": "npm run testfile \"test/**/*.spec.js\" --timeout 1000000",
-    "touch": "./node_modules/.bin/webpack && npm run build"
+    "postinstall": "lerna bootstrap",
+    "build": "lerna exec -- babel --config ../../.babelrc --out-dir dist src",
+    "links": "lerna exec -- yarn link"
   },
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "eosjs": "^16.0.2",
-    "es6-promise": "^4.2.4",
-    "ethereumjs-abi": "^0.6.5",
-    "ethereumjs-util": "^5.2.0",
-    "get-random-values": "^1.2.0",
-    "isomorphic-fetch": "^2.2.1",
-    "node-rsa": "^1.0.1",
-    "socket.io-client": "^2.1.1",
-    "web3-provider-engine": "^14.0.6"
-  },
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-core": "^6.26.3",
-    "babel-loader": "^7.1.5",
     "babel-plugin-transform-async-to-generator": "^6.24.1",
     "babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
     "babel-plugin-transform-runtime": "^6.23.0",
     "babel-preset-env": "^1.7.0",
-    "babel-preset-es2015": "^6.24.1",
     "babel-preset-minify": "^0.4.3",
-    "babel-preset-stage-3": "^6.24.1",
+    "babel-preset-stage-0": "^6.24.1",
     "babel-watch": "^2.0.7",
-    "babelrc-rollup": "^3.0.0",
     "chai": "^4.1.2",
+    "lerna": "^3.0.6",
     "mocha": "^5.2.0",
-    "rollup-plugin-babel": "^3.0.7",
-    "rollup-plugin-commonjs": "^9.1.5",
-    "rollup-plugin-json": "^3.0.0",
-    "rollup-plugin-node-builtins": "^2.1.2",
-    "rollup-plugin-node-resolve": "^3.3.0",
-    "uglifyjs-webpack-plugin": "^1.3.0",
-    "webpack": "^3.12.0"
-  },
-  "babel": {
-    "presets": [
-      "es2015"
-    ],
-    "plugins": [
-      "syntax-async-functions",
-      "transform-regenerator",
-      [
-        "transform-runtime",
-        {
-          "polyfill": false,
-          "regenerator": true
-        }
-      ]
-    ]
+    "yarn": "^1.9.4"
   }
 }
