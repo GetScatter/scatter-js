@@ -5,11 +5,6 @@ function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'defau
 var io = _interopDefault(require('socket.io-client'));
 var getRandomValues = _interopDefault(require('get-random-values'));
 var Eos = _interopDefault(require('eosjs'));
-var ProviderEngine = _interopDefault(require('web3-provider-engine'));
-var RpcSubprovider = _interopDefault(require('web3-provider-engine/subproviders/rpc'));
-var WebsocketSubprovider = _interopDefault(require('web3-provider-engine/subproviders/websocket'));
-var HookedWalletSubprovider = _interopDefault(require('web3-provider-engine/subproviders/hooked-wallet'));
-var ethUtil = _interopDefault(require('ethereumjs-util'));
 require('isomorphic-fetch');
 
 let storage = {};
@@ -55,7 +50,7 @@ class StorageService {
 
 const {ecc} = Eos.modules;
 
-const host = 'http://127.0.0.1:50005';
+const host = 'ws://127.0.0.1:50005/socket.io/?EIO=3&transport=websocket';
 
 let socket = null;
 let connected = false;
@@ -67,7 +62,7 @@ let openRequests = [];
 let allowReconnects = true;
 let reconnectionTimeout = null;
 
-const reconnectOnAbnormalDisconnection = async () => {
+const reconnectOnAbnormalDisconnection = () => {
     if(!allowReconnects) return;
 
 	clearTimeout(reconnectionTimeout);
@@ -114,10 +109,10 @@ class SocketService {
         this.timeout = timeout;
     }
 
-    static async link(){
+    static link(){
 
         return Promise.race([
-            new Promise((resolve, reject) => setTimeout(async () => {
+            new Promise((resolve, reject) => setTimeout(() => {
                 if(connected) return;
                 resolve(false);
 
@@ -128,17 +123,18 @@ class SocketService {
 
                 reconnectOnAbnormalDisconnection();
             }, this.timeout)),
-            new Promise(async (resolve, reject) => {
+            new Promise((resolve, reject) => {
                 socket = io.connect(`${host}/scatter`, { secure:true, reconnection: false, rejectUnauthorized : false });
 
-                socket.on('connected', async () => {
+                socket.on('connected', () => {
                     clearTimeout(reconnectionTimeout);
                     connected = true;
-                    await pair(true);
-                    resolve(true);
+                    pair(true).then(() => {
+                        resolve(true);
+                    });
                 });
 
-                socket.on('paired', async result => {
+                socket.on('paired', result => {
                     paired = result;
 
                     if(paired) {
@@ -154,7 +150,7 @@ class SocketService {
                     pairingPromise.resolve(result);
                 });
 
-                socket.on('rekey', async () => {
+                socket.on('rekey', () => {
                     appkey = 'appkey:'+random();
                     socket.emit('rekeyed', {data:{ appkey, origin:getOrigin() }, plugin});
                 });
@@ -172,7 +168,7 @@ class SocketService {
                     else openRequest.resolve(result.result);
                 });
 
-                socket.on('disconnect', async () => {
+                socket.on('disconnect', () => {
                     console.log('Disconnected');
                     connected = false;
                     socket = null;
@@ -181,12 +177,12 @@ class SocketService {
                     reconnectOnAbnormalDisconnection();
                 });
 
-                socket.on('connect_error', async () => {
+                socket.on('connect_error', () => {
                     allowReconnects = false;
                     resolve(false);
                 });
 
-                socket.on('rejected', async reason => {
+                socket.on('rejected', reason => {
                     console.error('reason', reason);
                     reject(reason);
                 });
@@ -198,37 +194,38 @@ class SocketService {
         return connected;
     }
 
-    static async disconnect(){
+    static disconnect(){
         socket.disconnect();
         return true;
     }
 
-    static async sendApiRequest(request){
-        return new Promise(async (resolve, reject) => {
+    static sendApiRequest(request){
+        return new Promise((resolve, reject) => {
             if(request.type === 'identityFromPermissions' && !paired) return resolve(false);
 
-            await pair();
-            if(!paired) return reject({code:'not_paired', message:'The user did not allow this app to connect to their Scatter'});
+            pair().then(() => {
+                if(!paired) return reject({code:'not_paired', message:'The user did not allow this app to connect to their Scatter'});
 
-            // Request ID used for resolving promises
-            request.id = random();
+                // Request ID used for resolving promises
+                request.id = random();
 
-            // Set Application Key
-            request.appkey = appkey;
+                // Set Application Key
+                request.appkey = appkey;
 
-            // Nonce used to authenticate this request
-            request.nonce = StorageService.getNonce() || 0;
-            // Next nonce used to authenticate the next request
-            const nextNonce = random();
-            request.nextNonce = ecc.sha256(nextNonce);
-            StorageService.setNonce(nextNonce);
+                // Nonce used to authenticate this request
+                request.nonce = StorageService.getNonce() || 0;
+                // Next nonce used to authenticate the next request
+                const nextNonce = random();
+                request.nextNonce = ecc.sha256(nextNonce);
+                StorageService.setNonce(nextNonce);
 
-            if(request.hasOwnProperty('payload') && !request.payload.hasOwnProperty('origin'))
-                request.payload.origin = getOrigin();
+                if(request.hasOwnProperty('payload') && !request.payload.hasOwnProperty('origin'))
+                    request.payload.origin = getOrigin();
 
 
-            openRequests.push(Object.assign(request, {resolve, reject}));
-            socket.emit('api', {data:request, plugin});
+                openRequests.push(Object.assign(request, {resolve, reject}));
+                socket.emit('api', {data:request, plugin});
+            });
         });
     }
 
@@ -390,87 +387,7 @@ class EOS extends Plugin {
     }
 }
 
-let ethNetwork;
-
-class ETH extends Plugin {
-
-    constructor(){
-        super(Blockchains.ETH, BLOCKCHAIN_SUPPORT);
-    }
-
-    signatureProvider(...args){
-
-        return (_network, _web3) => {
-            ethNetwork = Network.fromJson(_network);
-            if(!ethNetwork.isValid()) throw Error.noNetwork();
-
-            const rpcUrl = `${ethNetwork.protocol}://${ethNetwork.hostport()}`;
-
-            const engine = new ProviderEngine();
-            const web3 = new _web3(engine);
-
-            const walletSubprovider = new HookedWalletSubprovider(new ScatterEthereumWallet());
-            engine.addProvider(walletSubprovider);
-
-            if(ethNetwork.protocol.indexOf('http') > -1) engine.addProvider(new RpcSubprovider({rpcUrl}));
-            else engine.addProvider(new WebsocketSubprovider({rpcUrl}));
-
-            engine.start();
-
-            return web3;
-        }
-    }
-}
-
-
-
-class ScatterEthereumWallet {
-    constructor(){
-        this.getAccounts = this.getAccounts.bind(this);
-        this.signTransaction = this.signTransaction.bind(this);
-    }
-
-    async getAccounts(callback) {
-        const result = await SocketService.sendApiRequest({
-            type:'identityFromPermissions',
-            payload:{}
-        });
-        const accounts = !result ? [] : result.accounts
-            .filter(account => account.blockchain === Blockchains.ETH)
-            .map(account => account.address);
-
-        callback(null, accounts);
-        return accounts;
-    }
-
-    async signTransaction(transaction){
-        if(!ethNetwork) throw Error.noNetwork();
-
-        // Basic settings
-        if (transaction.gas !== undefined) transaction.gasLimit = transaction.gas;
-        transaction.value = transaction.value || '0x00';
-        if(transaction.hasOwnProperty('data')) transaction.data = ethUtil.addHexPrefix(transaction.data);
-
-        // Required Fields
-        const requiredFields = transaction.hasOwnProperty('requiredFields') ? transaction.requiredFields : {};
-
-        // Contract ABI
-        const abi = transaction.hasOwnProperty('abi') ? transaction.abi : null;
-        if(!abi && transaction.hasOwnProperty('data'))
-            throw Error.signatureError('no_abi', 'You must provide a JSON ABI along with your transaction so that users can read the contract');
-
-        const payload = Object.assign(transaction, { blockchain:Blockchains.ETH, network:ethNetwork, requiredFields });
-        const {signatures, returnedFields} = await SocketService.sendApiRequest({
-            type:'requestSignature',
-            payload
-        });
-
-        if(transaction.hasOwnProperty('fieldsCallback'))
-            transaction.fieldsCallback(returnedFields);
-
-        return signatures[0];
-    }
-}
+// import ETH from './defaults/eth';
 
 /***
  * Setting up for plugin based generators,
@@ -486,7 +403,7 @@ class PluginRepositorySingleton {
 
     loadPlugins(){
         this.plugins.push(new EOS());
-        this.plugins.push(new ETH());
+        // this.plugins.push(new ETH());
     }
 
     signatureProviders(){
@@ -646,6 +563,22 @@ class Scatter {
                 whatfor,
                 isHash
             }
+        });
+    }
+
+    getPublicKey(blockchain){
+        throwNoAuth();
+        return SocketService.sendApiRequest({
+            type:'getPublicKey',
+            payload:{ blockchain }
+        });
+    }
+
+    linkAccount(publicKey, account, network){
+        throwNoAuth();
+        return SocketService.sendApiRequest({
+            type:'linkAccount',
+            payload:{ publicKey, account, network }
         });
     }
 

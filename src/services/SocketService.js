@@ -4,7 +4,7 @@ import getRandomValues from 'get-random-values';
 import Eos from 'eosjs';
 const {ecc} = Eos.modules;
 
-const host = 'http://127.0.0.1:50005';
+const host = '127.0.0.1:50005';
 
 let socket = null;
 let connected = false;
@@ -16,7 +16,7 @@ let openRequests = [];
 let allowReconnects = true;
 let reconnectionTimeout = null;
 
-const reconnectOnAbnormalDisconnection = async () => {
+const reconnectOnAbnormalDisconnection = () => {
     if(!allowReconnects) return;
 
 	clearTimeout(reconnectionTimeout);
@@ -63,10 +63,10 @@ export default class SocketService {
         this.timeout = timeout;
     }
 
-    static async link(){
+    static link(){
 
         return Promise.race([
-            new Promise((resolve, reject) => setTimeout(async () => {
+            new Promise((resolve, reject) => setTimeout(() => {
                 if(connected) return;
                 resolve(false);
 
@@ -77,68 +77,89 @@ export default class SocketService {
 
                 reconnectOnAbnormalDisconnection();
             }, this.timeout)),
-            new Promise(async (resolve, reject) => {
-                socket = io.connect(`${host}/scatter`, { secure:true, reconnection: false, rejectUnauthorized : false });
+            new Promise((resolve, reject) => {
+                console.log('connecting to', host);
+                // socket = io.connect(`${host}/scatter`, { secure:true, reconnection: false, rejectUnauthorized : false, transports: ['websocket', 'polling', 'flashsocket'] });
 
-                socket.on('connected', async () => {
+                socket = new WebSocket(`ws://${host}/socket.io/?EIO=3&transport=websocket`);
+
+                socket.onopen = x => {
+                    console.log('connected');
                     clearTimeout(reconnectionTimeout);
                     connected = true;
-                    await pair(true);
-                    resolve(true);
-                });
+                    pair(true).then(() => {
+                        resolve(true);
+                    })
+                    // socket.send('42/scatter,' + JSON.stringify(['connected']));
+                };
 
-                socket.on('paired', async result => {
-                    paired = result;
+                socket.onmessage = msg => {
+                    console.log('msg', msg);
+                    // socket.send('42' + JSON.stringify(['hello', 'there']));
+                }
 
-                    if(paired) {
-                        const savedKey = StorageService.getAppKey();
-                        const hashed = appkey.indexOf('appkey:') > -1 ? ecc.sha256(appkey) : appkey;
-
-                        if (!savedKey || savedKey !== hashed) {
-                            StorageService.setAppKey(hashed);
-                            appkey = StorageService.getAppKey();
-                        }
-                    }
-
-                    pairingPromise.resolve(result);
-                });
-
-                socket.on('rekey', async () => {
-                    appkey = 'appkey:'+random();
-                    socket.emit('rekeyed', {data:{ appkey, origin:getOrigin() }, plugin});
-                });
-
-                socket.on('event', event => {
-                    console.log('event', event);
-                });
-
-                socket.on('api', result => {
-                    const openRequest = openRequests.find(x => x.id === result.id);
-                    if(!openRequest) return;
-                    if(typeof result.result === 'object'
-                        && result.result !== null
-                        && result.result.hasOwnProperty('isError')) openRequest.reject(result.result);
-                    else openRequest.resolve(result.result);
-                });
-
-                socket.on('disconnect', async () => {
-                    console.log('Disconnected')
-                    connected = false;
-                    socket = null;
-
-                    // If bad disconnect, retry connection
-                    reconnectOnAbnormalDisconnection();
-                });
-
-                socket.on('connect_error', async () => {
-                    allowReconnects = false;
-                    resolve(false);
-                });
-
-                socket.on('rejected', async reason => {
-                    console.error('reason', reason);
-                    reject(reason);
-                });
+                //
+                // socket.on('connected', () => {
+                //     console.log('connected');
+                //     clearTimeout(reconnectionTimeout);
+                //     connected = true;
+                //     pair(true).then(() => {
+                //         resolve(true);
+                //     })
+                // });
+                //
+                // socket.on('paired', result => {
+                //     paired = result;
+                //
+                //     if(paired) {
+                //         const savedKey = StorageService.getAppKey();
+                //         const hashed = appkey.indexOf('appkey:') > -1 ? ecc.sha256(appkey) : appkey;
+                //
+                //         if (!savedKey || savedKey !== hashed) {
+                //             StorageService.setAppKey(hashed);
+                //             appkey = StorageService.getAppKey();
+                //         }
+                //     }
+                //
+                //     pairingPromise.resolve(result);
+                // });
+                //
+                // socket.on('rekey', () => {
+                //     appkey = 'appkey:'+random();
+                //     socket.emit('rekeyed', {data:{ appkey, origin:getOrigin() }, plugin});
+                // });
+                //
+                // socket.on('event', event => {
+                //     console.log('event', event);
+                // });
+                //
+                // socket.on('api', result => {
+                //     const openRequest = openRequests.find(x => x.id === result.id);
+                //     if(!openRequest) return;
+                //     if(typeof result.result === 'object'
+                //         && result.result !== null
+                //         && result.result.hasOwnProperty('isError')) openRequest.reject(result.result);
+                //     else openRequest.resolve(result.result);
+                // });
+                //
+                // socket.on('disconnect', () => {
+                //     console.log('Disconnected')
+                //     connected = false;
+                //     socket = null;
+                //
+                //     // If bad disconnect, retry connection
+                //     reconnectOnAbnormalDisconnection();
+                // });
+                //
+                // socket.on('connect_error', () => {
+                //     allowReconnects = false;
+                //     resolve(false);
+                // });
+                //
+                // socket.on('rejected', reason => {
+                //     console.error('reason', reason);
+                //     reject(reason);
+                // });
             })
         ])
     }
@@ -147,37 +168,38 @@ export default class SocketService {
         return connected;
     }
 
-    static async disconnect(){
+    static disconnect(){
         socket.disconnect();
         return true;
     }
 
-    static async sendApiRequest(request){
-        return new Promise(async (resolve, reject) => {
+    static sendApiRequest(request){
+        return new Promise((resolve, reject) => {
             if(request.type === 'identityFromPermissions' && !paired) return resolve(false);
 
-            await pair();
-            if(!paired) return reject({code:'not_paired', message:'The user did not allow this app to connect to their Scatter'});
+            pair().then(() => {
+                if(!paired) return reject({code:'not_paired', message:'The user did not allow this app to connect to their Scatter'});
 
-            // Request ID used for resolving promises
-            request.id = random();
+                // Request ID used for resolving promises
+                request.id = random();
 
-            // Set Application Key
-            request.appkey = appkey;
+                // Set Application Key
+                request.appkey = appkey;
 
-            // Nonce used to authenticate this request
-            request.nonce = StorageService.getNonce() || 0;
-            // Next nonce used to authenticate the next request
-            const nextNonce = random();
-            request.nextNonce = ecc.sha256(nextNonce);
-            StorageService.setNonce(nextNonce);
+                // Nonce used to authenticate this request
+                request.nonce = StorageService.getNonce() || 0;
+                // Next nonce used to authenticate the next request
+                const nextNonce = random();
+                request.nextNonce = ecc.sha256(nextNonce);
+                StorageService.setNonce(nextNonce);
 
-            if(request.hasOwnProperty('payload') && !request.payload.hasOwnProperty('origin'))
-                request.payload.origin = getOrigin();
+                if(request.hasOwnProperty('payload') && !request.payload.hasOwnProperty('origin'))
+                    request.payload.origin = getOrigin();
 
 
-            openRequests.push(Object.assign(request, {resolve, reject}));
-            socket.emit('api', {data:request, plugin});
+                openRequests.push(Object.assign(request, {resolve, reject}));
+                socket.emit('api', {data:request, plugin});
+            })
         });
     }
 

@@ -21,15 +21,20 @@
     });
 
     function test(){
-        var network = {blockchain:'eos', protocol:'http', host:'192.168.1.6', port:8888, chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f'};
+//        var network = {blockchain:'eos', protocol:'http', host:'192.168.1.6', port:8888, chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f'};
+//
+//        scatter.getPublicKey('eos').then(function(publicKey){
+//            scatter.linkAccount(publicKey, { name:'testaccount', authority:'active' }, network).then(function(link){
+//                console.log('link', link);
+//            });
+//            console.log('publicKey', publicKey);
+//        })
 
-        scatter.getPublicKey('eos').then(function(publicKey){
-            scatter.linkAccount(publicKey, { name:'testaccount', authority:'active' }, network).then(function(link){
-                console.log('link', link);
-            });
-            console.log('publicKey', publicKey);
-        })
-//        scatter.getIdentity();
+
+        scatter.forgetIdentity().then(function(){
+            scatter.getIdentity();
+        });
+
 
 
 
