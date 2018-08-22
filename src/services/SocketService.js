@@ -56,7 +56,6 @@ let pairingPromise = null;
 const pair = (passthrough = false) => {
     return new Promise((resolve, reject) => {
         pairingPromise = {resolve, reject};
-        // socket.emit('pair', {data:{ appkey, origin:getOrigin(), passthrough }, plugin});
         send('pair', {data:{ appkey, origin:getOrigin(), passthrough }, plugin})
     })
 };
@@ -83,8 +82,6 @@ export default class SocketService {
                 reconnectOnAbnormalDisconnection();
             }, this.timeout)),
             new Promise((resolve, reject) => {
-                // socket = io.connect(`${host}/scatter`, { secure:true, reconnection: false, rejectUnauthorized : false, transports: ['websocket', 'polling', 'flashsocket'] });
-
                 socket = new WebSocket(`ws://${host}/socket.io/?EIO=3&transport=websocket`);
 
                 socket.onclose = x => {
@@ -113,7 +110,6 @@ export default class SocketService {
 
                     // Real message
                     const [type, data] = JSON.parse(msg.data.replace('42/scatter,', ''));
-                    console.log('TYPE: ', type, ' | DATA: ', data);
 
                     switch(type){
                         case 'paired': return msg_paired(data);
@@ -145,7 +141,6 @@ export default class SocketService {
                 };
 
                 const msg_api = result => {
-                    console.log('api res', result);
                     const openRequest = openRequests.find(x => x.id === result.id);
                     if(!openRequest) return;
                     if(typeof result.result === 'object'
