@@ -1,5 +1,7 @@
 # Scatter JS
 
+[![npm version](https://badge.fury.io/js/scatter-js.svg)](https://badge.fury.io/js/scatter-js)
+
 This is an importable javascript library that allows web applications to directly interface with Scatter Desktop.
 
 ## Installation
