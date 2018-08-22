@@ -304,7 +304,7 @@ class EOS extends Plugin {
             if(!network.isValid()) throw Error.noNetwork();
             const httpEndpoint = `${network.protocol}://${network.hostport()}`;
 
-            const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : options.chainId;
+            const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : _options.chainId;
 
             // The proxy stands between the eosjs object and scatter.
             // This is used to add special functionality like adding `requiredFields` arrays to transactions
@@ -642,6 +642,22 @@ class Scatter {
                 whatfor,
                 isHash
             }
+        });
+    }
+
+    getPublicKey(blockchain){
+        throwNoAuth();
+        return SocketService.sendApiRequest({
+            type:'getPublicKey',
+            payload:{ blockchain }
+        });
+    }
+
+    linkAccount(publicKey, account, network){
+        throwNoAuth();
+        return SocketService.sendApiRequest({
+            type:'linkAccount',
+            payload:{ publicKey, account, network }
         });
     }
 
