@@ -1,4 +1,3 @@
-import io from 'socket.io-client';
 import StorageService from '../services/StorageService'
 import getRandomValues from 'get-random-values';
 import Eos from 'eosjs';
@@ -84,21 +83,27 @@ export default class SocketService {
                 reconnectOnAbnormalDisconnection();
             }, this.timeout)),
             new Promise((resolve, reject) => {
-                console.log('connecting to', host);
                 // socket = io.connect(`${host}/scatter`, { secure:true, reconnection: false, rejectUnauthorized : false, transports: ['websocket', 'polling', 'flashsocket'] });
 
                 socket = new WebSocket(`ws://${host}/socket.io/?EIO=3&transport=websocket`);
 
+                socket.onclose = x => {
+                    resolve(false);
+                };
+
+                socket.onerror = err => {
+                    console.error('err', err);
+                    resolve(false);
+                }
+
                 socket.onopen = x => {
-                    // socket.send('40/scatter');
                     send();
-                    console.log('connected');
                     clearTimeout(reconnectionTimeout);
                     connected = true;
                     pair(true).then(() => {
+                        console.log('then pair', connected);
                         resolve(true);
-                    })
-                    // socket.send('42/scatter,' + JSON.stringify(['connected']));
+                    });
                 };
 
                 socket.onmessage = msg => {
@@ -112,12 +117,13 @@ export default class SocketService {
 
                     switch(type){
                         case 'paired': return msg_paired(data);
-                        case 'rekey': return msg_paired();
+                        case 'rekey': return msg_rekey();
                         case 'api': return msg_api(data);
                     }
                 };
 
                 const msg_paired = result => {
+                    console.log('paired', result);
                     paired = result;
 
                     if(paired) {
