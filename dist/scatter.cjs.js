@@ -2,7 +2,6 @@
 
 function _interopDefault (ex) { return (ex && (typeof ex === 'object') && 'default' in ex) ? ex['default'] : ex; }
 
-var io = _interopDefault(require('socket.io-client'));
 var getRandomValues = _interopDefault(require('get-random-values'));
 var Eos = _interopDefault(require('eosjs'));
 require('isomorphic-fetch');
@@ -50,7 +49,7 @@ class StorageService {
 
 const {ecc} = Eos.modules;
 
-const host = 'ws://127.0.0.1:50005/socket.io/?EIO=3&transport=websocket';
+const host = '127.0.0.1:50005';
 
 let socket = null;
 let connected = false;
@@ -58,12 +57,9 @@ let paired = false;
 
 let plugin;
 let openRequests = [];
-
-let allowReconnects = true;
 let reconnectionTimeout = null;
 
 const reconnectOnAbnormalDisconnection = () => {
-    if(!allowReconnects) return;
 
 	clearTimeout(reconnectionTimeout);
 	reconnectionTimeout = setTimeout(() => {
@@ -94,11 +90,16 @@ const getOrigin = () => {
 let appkey = StorageService.getAppKey();
 if(!appkey) appkey = 'appkey:'+random();
 
+const send = (type = null, data = null) => {
+    if(type === null && data === null) socket.send('40/scatter');
+    else socket.send('42/scatter,' + JSON.stringify([type, data]));
+};
+
 let pairingPromise = null;
 const pair = (passthrough = false) => {
     return new Promise((resolve, reject) => {
         pairingPromise = {resolve, reject};
-        socket.emit('pair', {data:{ appkey, origin:getOrigin(), passthrough }, plugin});
+        send('pair', {data:{ appkey, origin:getOrigin(), passthrough }, plugin});
     })
 };
 
@@ -124,17 +125,44 @@ class SocketService {
                 reconnectOnAbnormalDisconnection();
             }, this.timeout)),
             new Promise((resolve, reject) => {
-                socket = io.connect(`${host}/scatter`, { secure:true, reconnection: false, rejectUnauthorized : false });
+                socket = new WebSocket(`ws://${host}/socket.io/?EIO=3&transport=websocket`);
 
-                socket.on('connected', () => {
+                socket.onclose = x => {
+                    resolve(false);
+                };
+
+                socket.onerror = err => {
+                    console.error('err', err);
+                    resolve(false);
+                };
+
+                socket.onopen = x => {
+                    send();
                     clearTimeout(reconnectionTimeout);
                     connected = true;
                     pair(true).then(() => {
+                        console.log('then pair', connected);
                         resolve(true);
                     });
-                });
+                };
 
-                socket.on('paired', result => {
+                socket.onmessage = msg => {
+                    // Handshaking/Upgrading
+                    if(msg.data.indexOf('42/scatter') === -1) return false;
+
+
+                    // Real message
+                    const [type, data] = JSON.parse(msg.data.replace('42/scatter,', ''));
+
+                    switch(type){
+                        case 'paired': return msg_paired(data);
+                        case 'rekey': return msg_rekey();
+                        case 'api': return msg_api(data);
+                    }
+                };
+
+                const msg_paired = result => {
+                    console.log('paired', result);
                     paired = result;
 
                     if(paired) {
@@ -148,44 +176,46 @@ class SocketService {
                     }
 
                     pairingPromise.resolve(result);
-                });
+                };
 
-                socket.on('rekey', () => {
+                const msg_rekey = () => {
                     appkey = 'appkey:'+random();
-                    socket.emit('rekeyed', {data:{ appkey, origin:getOrigin() }, plugin});
-                });
+                    send('rekeyed', {data:{ appkey, origin:getOrigin() }, plugin});
+                };
 
-                socket.on('event', event => {
-                    console.log('event', event);
-                });
-
-                socket.on('api', result => {
+                const msg_api = result => {
                     const openRequest = openRequests.find(x => x.id === result.id);
                     if(!openRequest) return;
                     if(typeof result.result === 'object'
                         && result.result !== null
                         && result.result.hasOwnProperty('isError')) openRequest.reject(result.result);
                     else openRequest.resolve(result.result);
-                });
+                };
 
-                socket.on('disconnect', () => {
-                    console.log('Disconnected');
-                    connected = false;
-                    socket = null;
 
-                    // If bad disconnect, retry connection
-                    reconnectOnAbnormalDisconnection();
-                });
-
-                socket.on('connect_error', () => {
-                    allowReconnects = false;
-                    resolve(false);
-                });
-
-                socket.on('rejected', reason => {
-                    console.error('reason', reason);
-                    reject(reason);
-                });
+                //
+                // socket.on('event', event => {
+                //     console.log('event', event);
+                // });
+                //
+                // socket.on('disconnect', () => {
+                //     console.log('Disconnected')
+                //     connected = false;
+                //     socket = null;
+                //
+                //     // If bad disconnect, retry connection
+                //     reconnectOnAbnormalDisconnection();
+                // });
+                //
+                // socket.on('connect_error', () => {
+                //     allowReconnects = false;
+                //     resolve(false);
+                // });
+                //
+                // socket.on('rejected', reason => {
+                //     console.error('reason', reason);
+                //     reject(reason);
+                // });
             })
         ])
     }
@@ -224,7 +254,7 @@ class SocketService {
 
 
                 openRequests.push(Object.assign(request, {resolve, reject}));
-                socket.emit('api', {data:request, plugin});
+                send('api', {data:request, plugin});
             });
         });
     }
@@ -305,7 +335,7 @@ class EOS extends Plugin {
             if(!network.isValid()) throw Error.noNetwork();
             const httpEndpoint = `${network.protocol}://${network.hostport()}`;
 
-            const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : options.chainId;
+            const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : _options.chainId;
 
             // The proxy stands between the eosjs object and scatter.
             // This is used to add special functionality like adding `requiredFields` arrays to transactions

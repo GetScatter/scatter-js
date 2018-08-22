@@ -1,4 +1,3 @@
-import io from 'socket.io-client';
 import StorageService from '../services/StorageService'
 import getRandomValues from 'get-random-values';
 import Eos from 'eosjs';
@@ -48,11 +47,16 @@ const getOrigin = () => {
 let appkey = StorageService.getAppKey();
 if(!appkey) appkey = 'appkey:'+random();
 
+const send = (type = null, data = null) => {
+    if(type === null && data === null) socket.send('40/scatter');
+    else socket.send('42/scatter,' + JSON.stringify([type, data]));
+}
+
 let pairingPromise = null;
 const pair = (passthrough = false) => {
     return new Promise((resolve, reject) => {
         pairingPromise = {resolve, reject};
-        socket.emit('pair', {data:{ appkey, origin:getOrigin(), passthrough }, plugin});
+        send('pair', {data:{ appkey, origin:getOrigin(), passthrough }, plugin})
     })
 };
 
@@ -78,68 +82,77 @@ export default class SocketService {
                 reconnectOnAbnormalDisconnection();
             }, this.timeout)),
             new Promise((resolve, reject) => {
-                console.log('connecting to', host);
-                // socket = io.connect(`${host}/scatter`, { secure:true, reconnection: false, rejectUnauthorized : false, transports: ['websocket', 'polling', 'flashsocket'] });
-
                 socket = new WebSocket(`ws://${host}/socket.io/?EIO=3&transport=websocket`);
 
+                socket.onclose = x => {
+                    resolve(false);
+                };
+
+                socket.onerror = err => {
+                    console.error('err', err);
+                    resolve(false);
+                }
+
                 socket.onopen = x => {
-                    console.log('connected');
+                    send();
                     clearTimeout(reconnectionTimeout);
                     connected = true;
                     pair(true).then(() => {
+                        console.log('then pair', connected);
                         resolve(true);
-                    })
-                    // socket.send('42/scatter,' + JSON.stringify(['connected']));
+                    });
                 };
 
                 socket.onmessage = msg => {
-                    console.log('msg', msg);
-                    // socket.send('42' + JSON.stringify(['hello', 'there']));
-                }
+                    // Handshaking/Upgrading
+                    if(msg.data.indexOf('42/scatter') === -1) return false;
 
-                //
-                // socket.on('connected', () => {
-                //     console.log('connected');
-                //     clearTimeout(reconnectionTimeout);
-                //     connected = true;
-                //     pair(true).then(() => {
-                //         resolve(true);
-                //     })
-                // });
-                //
-                // socket.on('paired', result => {
-                //     paired = result;
-                //
-                //     if(paired) {
-                //         const savedKey = StorageService.getAppKey();
-                //         const hashed = appkey.indexOf('appkey:') > -1 ? ecc.sha256(appkey) : appkey;
-                //
-                //         if (!savedKey || savedKey !== hashed) {
-                //             StorageService.setAppKey(hashed);
-                //             appkey = StorageService.getAppKey();
-                //         }
-                //     }
-                //
-                //     pairingPromise.resolve(result);
-                // });
-                //
-                // socket.on('rekey', () => {
-                //     appkey = 'appkey:'+random();
-                //     socket.emit('rekeyed', {data:{ appkey, origin:getOrigin() }, plugin});
-                // });
+
+                    // Real message
+                    const [type, data] = JSON.parse(msg.data.replace('42/scatter,', ''));
+
+                    switch(type){
+                        case 'paired': return msg_paired(data);
+                        case 'rekey': return msg_rekey();
+                        case 'api': return msg_api(data);
+                    }
+                };
+
+                const msg_paired = result => {
+                    console.log('paired', result);
+                    paired = result;
+
+                    if(paired) {
+                        const savedKey = StorageService.getAppKey();
+                        const hashed = appkey.indexOf('appkey:') > -1 ? ecc.sha256(appkey) : appkey;
+
+                        if (!savedKey || savedKey !== hashed) {
+                            StorageService.setAppKey(hashed);
+                            appkey = StorageService.getAppKey();
+                        }
+                    }
+
+                    pairingPromise.resolve(result);
+                };
+
+                const msg_rekey = () => {
+                    appkey = 'appkey:'+random();
+                    send('rekeyed', {data:{ appkey, origin:getOrigin() }, plugin});
+                };
+
+                const msg_api = result => {
+                    const openRequest = openRequests.find(x => x.id === result.id);
+                    if(!openRequest) return;
+                    if(typeof result.result === 'object'
+                        && result.result !== null
+                        && result.result.hasOwnProperty('isError')) openRequest.reject(result.result);
+                    else openRequest.resolve(result.result);
+                };
+
+
                 //
                 // socket.on('event', event => {
                 //     console.log('event', event);
-                // });
-                //
-                // socket.on('api', result => {
-                //     const openRequest = openRequests.find(x => x.id === result.id);
-                //     if(!openRequest) return;
-                //     if(typeof result.result === 'object'
-                //         && result.result !== null
-                //         && result.result.hasOwnProperty('isError')) openRequest.reject(result.result);
-                //     else openRequest.resolve(result.result);
                 // });
                 //
                 // socket.on('disconnect', () => {
@@ -198,7 +211,7 @@ export default class SocketService {
 
 
                 openRequests.push(Object.assign(request, {resolve, reject}));
-                socket.emit('api', {data:request, plugin});
+                send('api', {data:request, plugin})
             })
         });
     }
