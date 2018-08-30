@@ -4,7 +4,6 @@ import Plugin from './Plugins/Plugin';
 import * as PluginTypes from './Plugins/PluginTypes';
 import { Blockchains } from './models/Blockchains';
 import Network from './models/Network';
-import "isomorphic-fetch"
 
 let origin;
 
@@ -33,7 +32,7 @@ class Index {
 		PluginRepository.loadPlugin(plugin);
 
 		if(plugin.isSignatureProvider())
-			this[plugin.name] = PluginRepository.plugin(plugin.name).signatureProvider(noIdFunc);
+			this[plugin.name] = plugin.signatureProvider(noIdFunc);
 	}
 
     async isInstalled(){

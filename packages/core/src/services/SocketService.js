@@ -1,7 +1,6 @@
 import StorageService from './StorageService'
 import getRandomValues from 'get-random-values';
-import Eos from 'eosjs';
-const {ecc} = Eos.modules;
+import createHash from 'create-hash';
 
 const host = '127.0.0.1:50005';
 
@@ -14,6 +13,9 @@ let openRequests = [];
 
 let allowReconnects = true;
 let reconnectionTimeout = null;
+
+
+const sha256 = data => createHash('sha256').update(data).digest('hex');
 
 const reconnectOnAbnormalDisconnection = () => {
     if(!allowReconnects) return;
@@ -124,7 +126,7 @@ export default class SocketService {
 
                     if(paired) {
                         const savedKey = StorageService.getAppKey();
-                        const hashed = appkey.indexOf('appkey:') > -1 ? ecc.sha256(appkey) : appkey;
+                        const hashed = appkey.indexOf('appkey:') > -1 ? sha256(appkey) : appkey;
 
                         if (!savedKey || savedKey !== hashed) {
                             StorageService.setAppKey(hashed);
@@ -203,7 +205,7 @@ export default class SocketService {
                 request.nonce = StorageService.getNonce() || 0;
                 // Next nonce used to authenticate the next request
                 const nextNonce = random();
-                request.nextNonce = ecc.sha256(nextNonce);
+                request.nextNonce = sha256(nextNonce);
                 StorageService.setNonce(nextNonce);
 
                 if(request.hasOwnProperty('payload') && !request.payload.hasOwnProperty('origin'))

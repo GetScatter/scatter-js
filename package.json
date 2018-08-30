@@ -5,9 +5,11 @@
 	"scripts": {
 		"postinstall": "lerna bootstrap",
 		"build": "lerna exec -- babel --config ../../.babelrc --out-dir dist src",
-		"links": "lerna exec -- yarn link"
+		"links": "lerna exec -- yarn link",
+		"testfile": "mocha --require babel-core/register --exit --timeout 1000000",
+		"test": "npm run testfile \"test/**/*.spec.js\" --timeout 1000000"
 	},
-	"author": "",
+	"author": "GetScatter",
 	"license": "ISC",
 	"devDependencies": {
 		"babel-cli": "^6.26.0",

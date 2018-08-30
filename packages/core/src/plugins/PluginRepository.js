@@ -12,7 +12,7 @@ class PluginRepositorySingleton {
     }
 
     loadPlugin(plugin){
-		if(this.plugin(plugin.name))
+		if(!this.plugin(plugin.name))
 			this.plugins.push(plugin);
 	}
 

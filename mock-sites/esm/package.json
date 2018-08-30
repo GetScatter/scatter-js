@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "webpack --watch && http-server",
+    "start": "concurrently \"webpack --watch\" \"http-server\"",
     "webpack": "webpack"
   },
   "author": "",
@@ -17,6 +17,8 @@
     "webpack-cli": "^3.1.0"
   },
   "dependencies": {
-    "eosjs": "^16.0.6"
+    "concurrently": "^4.0.1",
+    "eosjs": "^16.0.6",
+    "scatterjs-core": "../../packages/core/dist/index.js"
   }
 }

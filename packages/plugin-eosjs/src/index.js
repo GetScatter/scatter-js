@@ -4,14 +4,15 @@ import {
 	Blockchains,
 	Network,
 	SocketService
-} from 'scatterjs-core';
+// } from 'scatterjs-core';
+} from '../../core/dist/index';
 
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 
 class EOS extends Plugin {
 
     constructor(){
-        super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT)
+        super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT);
     }
 
 
