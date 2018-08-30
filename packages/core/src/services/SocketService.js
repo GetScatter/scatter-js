@@ -1,4 +1,4 @@
-import StorageService from '../services/StorageService'
+import StorageService from './StorageService'
 import getRandomValues from 'get-random-values';
 import Eos from 'eosjs';
 const {ecc} = Eos.modules;

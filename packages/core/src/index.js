@@ -1,5 +1,9 @@
+import PluginRepository from './plugins/PluginRepository';
 import SocketService from './services/SocketService';
-import PluginRepository from './plugins/PluginRepository'
+import Plugin from './Plugins/Plugin';
+import * as PluginTypes from './Plugins/PluginTypes';
+import { Blockchains } from './models/Blockchains';
+import Network from './models/Network';
 import "isomorphic-fetch"
 
 let origin;
@@ -9,24 +13,28 @@ const throwNoAuth = () => {
         throw new Error('Connect and Authenticate first - scatter.connect( pluginName )');
 };
 
-const checkForPlugin = (resolve, tries = 0) => {
+const checkForExtension = (resolve, tries = 0) => {
     if(tries > 20) return;
     if(holder.scatter.isExtension) return resolve(true);
-    setTimeout(() => checkForPlugin(resolve, tries + 1), 100);
+    setTimeout(() => checkForExtension(resolve, tries + 1), 100);
 };
 
-class Scatter {
+class Index {
 
     constructor(){
-        const noIdFunc = () => { if(!this.identity) throw new Error('No Identity') };
-
-        PluginRepository.signatureProviders().map(sigProvider => {
-            this[sigProvider.name] = sigProvider.signatureProvider(noIdFunc);
-        });
-
         this.isExtension = false;
         this.identity = null;
     }
+
+	loadPlugin(plugin){
+		const noIdFunc = () => { if(!this.identity) throw new Error('No Identity') };
+    	if(!plugin.isValid()) throw new Error(`${plugin.name} doesn't seem to be a valid ScatterJS plugin.`);
+
+		PluginRepository.loadPlugin(plugin);
+
+		if(plugin.isSignatureProvider())
+			this[plugin.name] = PluginRepository.plugin(plugin.name).signatureProvider(noIdFunc);
+	}
 
     async isInstalled(){
         return new Promise(resolve => {
@@ -35,17 +43,12 @@ class Scatter {
             }, 3000);
 
             Promise.race([
-                checkForPlugin(resolve),
+                checkForExtension(resolve),
                 SocketService.ping().then(found => {
                     console.log('found', found);
                     if(found) resolve(true);
                 })
             ])
-
-
-
-            // Tries to set up Desktop Connection
-
         })
     }
 
@@ -62,7 +65,7 @@ class Scatter {
             }, options.initTimeout);
 
             // Defaults to scatter extension if exists
-            checkForPlugin(resolve);
+            checkForExtension(resolve);
 
             // Tries to set up Desktop Connection
             SocketService.init(pluginName, options.linkTimeout);
@@ -198,10 +201,16 @@ class Holder {
     constructor(_scatter){
         this.scatter = _scatter;
     }
+
+	plugins(...plugins) {
+		if (!this.scatter.isExtension) {
+			plugins.map(plugin => this.scatter.loadPlugin(plugin));
+		}
+	}
 }
 
 
-let holder = new Holder(new Scatter());
+let holder = new Holder(new Index());
 if(typeof window !== 'undefined') {
 
     // Catching extension instead of Desktop
@@ -220,8 +229,13 @@ if(typeof window !== 'undefined') {
         window.scatter = holder.scatter;
 }
 
+holder.Plugin = Plugin;
+holder.PluginTypes = PluginTypes;
+holder.Blockchains = Blockchains;
+holder.Network = Network;
+holder.SocketService = SocketService;
 
-
+module.exports = holder;
 export default holder;
 
 

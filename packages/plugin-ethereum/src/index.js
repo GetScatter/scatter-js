@@ -1,8 +1,10 @@
-import Plugin from '../Plugin';
-import * as PluginTypes from '../PluginTypes';
-import {Blockchains} from '../../models/Blockchains'
-import Network from '../../models/Network'
-import SocketService from '../../services/SocketService';
+import {
+	Plugin,
+	PluginTypes,
+	Blockchains,
+	Network,
+	SocketService
+} from 'scatterjs-core';
 
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
@@ -14,7 +16,7 @@ import ethUtil from 'ethereumjs-util';
 
 let ethNetwork;
 
-export default class ETH extends Plugin {
+class ETH extends Plugin {
 
     constructor(){
         super(Blockchains.ETH, PluginTypes.BLOCKCHAIN_SUPPORT)
@@ -93,3 +95,5 @@ class ScatterEthereumWallet {
         return signatures[0];
     }
 }
+
+module.exports = ETH;

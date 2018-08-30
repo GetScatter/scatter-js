@@ -1,8 +1,19 @@
 {
-  "presets": [["env", {
-    targets: { "node": true }
-  }], "stage-3"],
-  "plugins": [
-    "transform-runtime"
-  ]
+	"presets": [
+		[
+			"env",
+			{
+				"targets": {
+					"browsers": [
+						"> 5%"
+					],
+					"node": "6.10"
+				}
+			}
+		],
+		"stage-0"
+	],
+	"plugins": [
+		"transform-runtime"
+	]
 }

@@ -1,12 +1,14 @@
-import Plugin from '../Plugin';
-import * as PluginTypes from '../PluginTypes';
-import {Blockchains} from '../../models/Blockchains'
-import Network from '../../models/Network'
-import SocketService from '../../services/SocketService';
+import {
+	Plugin,
+	PluginTypes,
+	Blockchains,
+	Network,
+	SocketService
+} from 'scatterjs-core';
 
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 
-export default class EOS extends Plugin {
+class EOS extends Plugin {
 
     constructor(){
         super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT)
@@ -105,3 +107,5 @@ export default class EOS extends Plugin {
         }
     }
 }
+
+module.exports = EOS;

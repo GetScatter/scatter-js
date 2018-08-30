@@ -1,0 +1,11 @@
+{
+	"name": "scatterjs-core",
+	"version": "1.0.0",
+	"main": "dist/index.js",
+	"license": "MIT",
+	"dependencies": {
+		"es6-promise": "^4.2.4",
+		"get-random-values": "^1.2.0",
+		"isomorphic-fetch": "^2.2.1"
+	}
+}
