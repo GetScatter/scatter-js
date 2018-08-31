@@ -19,6 +19,7 @@
   "dependencies": {
     "concurrently": "^4.0.1",
     "eosjs": "^16.0.6",
-    "scatterjs-core": "../../packages/core/dist/index.js"
+    "scatterjs-core": "file:../../packages/core/",
+    "scatterjs-plugin-eosjs": "file:../../packages/plugin-eosjs"
   }
 }

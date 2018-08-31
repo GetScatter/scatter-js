@@ -4,8 +4,7 @@ import {
 	Blockchains,
 	Network,
 	SocketService
-// } from 'scatterjs-core';
-} from '../../core/dist/index';
+} from 'scatterjs-core';
 
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 

@@ -1,6 +1,6 @@
 import Eos from 'eosjs'
-import ScatterJS from '../../packages/core/dist/index';
-import ScatterEosjs from '../../packages/plugin-eosjs/dist/index'
+import ScatterJS from 'scatterjs-core';
+import ScatterEOS from 'scatterjs-plugin-eosjs'
 
 const network = {
 	blockchain:'eos',
@@ -11,7 +11,7 @@ const network = {
 };
 
 
-ScatterJS.plugins( new ScatterEosjs() );
+ScatterJS.plugins( new ScatterEOS() );
 let scatter = null;
 
 ScatterJS.scatter.connect('LernaTest').then(connected => {

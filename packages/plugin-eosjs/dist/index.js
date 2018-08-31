@@ -12,16 +12,16 @@ var _asyncToGenerator2 = require('babel-runtime/helpers/asyncToGenerator');
 
 var _asyncToGenerator3 = _interopRequireDefault(_asyncToGenerator2);
 
-var _index = require('../../core/dist/index');
+var _scatterjsCore = require('scatterjs-core');
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 
-class EOS extends _index.Plugin {
+class EOS extends _scatterjsCore.Plugin {
 
     constructor() {
-        super(_index.Blockchains.EOS, _index.PluginTypes.BLOCKCHAIN_SUPPORT);
+        super(_scatterjsCore.Blockchains.EOS, _scatterjsCore.PluginTypes.BLOCKCHAIN_SUPPORT);
     }
 
     signatureProvider(...args) {
@@ -31,7 +31,7 @@ class EOS extends _index.Plugin {
         // Protocol will be deprecated.
         return (network, _eos, _options = {}) => {
 
-            network = _index.Network.fromJson(network);
+            network = _scatterjsCore.Network.fromJson(network);
             if (!network.isValid()) throw Error.noNetwork();
             const httpEndpoint = `${network.protocol}://${network.hostport()}`;
 
@@ -56,8 +56,8 @@ class EOS extends _index.Plugin {
                                 const requiredFields = args.find(function (arg) {
                                     return arg.hasOwnProperty('requiredFields');
                                 }) || { requiredFields: {} };
-                                const payload = (0, _assign2.default)(signargs, { blockchain: _index.Blockchains.EOS, network, requiredFields: requiredFields.requiredFields });
-                                const result = yield _index.SocketService.sendApiRequest({
+                                const payload = (0, _assign2.default)(signargs, { blockchain: _scatterjsCore.Blockchains.EOS, network, requiredFields: requiredFields.requiredFields });
+                                const result = yield _scatterjsCore.SocketService.sendApiRequest({
                                     type: 'requestSignature',
                                     payload
                                 });
