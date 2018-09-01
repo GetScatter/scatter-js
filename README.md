@@ -26,9 +26,6 @@ can't be used.
 ```
 // Using eosjs
 npm i -S scatterjs-plugin-eosjs
-
-// Using eosjs2
-npm i -S scatterjs-plugin-eosjs2
 ```
 
 #### Ethereum
