@@ -1,16 +1,16 @@
 # Scatter JS
 
-scatter-js ( deprecated )
-[![npm version](https://badge.fury.io/js/scatter-js.svg)](https://badge.fury.io/js/scatter-js)
 
-scatterjs-core
-[![npm version](https://badge.fury.io/js/scatterjs-core.svg)](https://badge.fury.io/js/scatterjs-core)
+[![npm version](https://badge.fury.io/js/scatter-js.svg)](https://badge.fury.io/js/scatter-js) scatter-js ( deprecated )
 
-scatterjs-plugin-eosjs
-[![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs)
 
-scatterjs-plugin-web3
-[![npm version](https://badge.fury.io/js/scatterjs-plugin-web3.svg)](https://badge.fury.io/js/scatterjs-plugin-web3)
+[![npm version](https://badge.fury.io/js/scatterjs-core.svg)](https://badge.fury.io/js/scatterjs-core) scatterjs-core
+
+
+[![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs) scatterjs-plugin-eosjs
+
+
+[![npm version](https://badge.fury.io/js/scatterjs-plugin-web3.svg)](https://badge.fury.io/js/scatterjs-plugin-web3) scatterjs-plugin-web3
 
 
 ## Installation
