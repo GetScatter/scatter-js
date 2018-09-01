@@ -1,7 +1,7 @@
 # Scatter JS
 
 [![npm version](https://badge.fury.io/js/scatter-js.svg)](https://badge.fury.io/js/scatter-js)
-[![npm version](https://badge.fury.io/js/scatterjs-core.svg)](https://badge.fury.io/js/scatterjs-core)
+[![npm version1](https://badge.fury.io/js/scatterjs-core.svg)](https://badge.fury.io/js/scatterjs-core)
 [![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs)
 [![npm version](https://badge.fury.io/js/scatterjs-plugin-web3.svg)](https://badge.fury.io/js/scatterjs-plugin-web3)
 
