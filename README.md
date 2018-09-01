@@ -5,40 +5,76 @@
 
 ## Installation
 
+To use ScatterJS you must have _at least_ the core.
+You can also use Scatter without any blockchain support
+by simply importing only the core without any blockchain specific
+plugins.
+
+This is great for sites that want to authenticate with users in a
+decentralized way, but don't need any blockchain functionality.
+
 ```js
-// ES Module style
-import ScatterJS from 'scatter-js/dist/scatter.esm';
-
-// CommonJS style
-import ScatterJS from 'scatter-js/dist/scatter.cjs';
- 
-//or
- 
-const ScatterJS = require('scatter-js/dist/scatter.<SUFFIX>');
+npm i -S scatterjs-core
 ```
 
-You can also just drop the `scatter.min.js` bundle from the `dist/` directory here right into 
-your html file and use it as a fully packed browser-ready package.
+### Plugins
+To keep this library small and focused only on the blockchains you want to use
+you can import each blockchain separately. The blockchains you don't import
+can't be used.
 
-```html
-<script src="path/to/scatter.min.js"></script>
+#### EOSIO
+```
+// Using eosjs
+npm i -S scatterjs-plugin-eosjs
+
+// Using eosjs2
+npm i -S scatterjs-plugin-eosjs
 ```
 
-#### CDN: 
+#### Ethereum
+```
+npm i -S scatterjs-plugin-web3
+```
 
-Coming soon.
+-------
+
+The same works with `yarn` as well if you prefer to use that.
+```
+yarn link scatterjs-core
+yarn link scatterjs-plugin-eosjs
+```
+
+
+## Importing ScatterJS into your project.
+Now that you have scatterjs-core and a plugin of your choosing you
+can go ahead and import it into your project.
+
+You should be doing this early in your application, somewhere like
+your main.js or app.js, and not inside sub-pages.
+
+Let's take `eosjs` as an example.
+
+```js
+import ScatterJS from 'scatterjs-core';
+import ScatterEOS from 'scatterjs-plugin-eosjs'
+import Eos from 'eosjs'
+
+ScatterJS.plugins( new ScatterEOS() );
+```
+
 
 ## ScatterJS Usage
 
-This library catches both Scatter Desktop and Scatter Classic ( old extension ) depending on the
-existence of either.
+This library catches Scatter Desktop, Scatter Mobile and Scatter Classic ( extension ).
+You only need to write code once, and you will instantly support any Scatter the user has.
+
 
 #### Making a connection
 
 ```js
 ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
     if(!connected) {
-        // User does not have Scatter Desktop or Classic installed. 
+        // User does not have Scatter installed/unlocked.
         return false;
     }
     
@@ -57,82 +93,11 @@ ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
 }
 ```
 
- 
-### Don't forget to null out the window.scatter reference!
+# What now?
+Head over to the [Scatter Developer Documentation](https://get-scatter.com/docs/dev/getting-started) to learn about
+all the amazing things you can do with Scatter.
 
-scatter-js binds to the `window` reference if it notices that an application has a `window` on global scope.
-This is useful for `<script src="...">` imports for sites without nodejs/npm, but is also semi-dangerous.
-
-If you don't null out the window reference then extensions will be able to catch it on the window's scope 
-and pretend to send requests from your authorized application.
-
-The best practice is to offload the scatter reference to your own global/state variable and nullify 
-the window ref.
-
-```js
-setStateVariable(window.scatter);
- 
-window.scatter = null;
-```
-
-
-### Offloading the scatter object to state from nodejs/es/cjs
-
-A lot of projects already integrated with Scatter expect `scatter` to be it's own object. 
-You can easily mimic that by offloading the `ScatterJS.scatter` object to your previously saved state variables.
-
-_( The reason this ScatterJS wrapper/holder exists is because if the extension is found it needs to overwrite the `.scatter` object 
- without losing the reference passed down the tree to your app. )_
-
-```js
-const scatter = ScatterJS.scatter;
- 
-// or state savers ( store ) such as redux or vuex 
-setStateVariable(ScatterJS.scatter);
-```
-
-
-## Scatter ( eosjs / web3 ) Usage
-
-See the [Developer Documentation](https://get-scatter.com/docs/dev/getting-started) to find out how to 
-interact with Scatter and various blockchains.
-
-Scatter sits on top of [eosjs](https://github.com/EOSIO/eosjs) or [web3](https://github.com/ethereum/web3.js/), 
-so learn to use those depending on which blockchain you are interfacing with. 
-
-
-## Switching from Extension only to Extension+Desktop support.
-
-**Replace**
-```js
-document.addEventListener('scatterLoaded', () => {
-    this.scatter = window.scatter;
-    window.scatter = null;
-});
-```
-
-**With ( for nodejs )**
-```js
-import ScatterJS from 'scatter-js/dist/scatter.esm';
-
-ScatterJS.scatter.connect('YOUR_APP_NAME').then(connected => {
-    if(connected){
-        this.scatter = ScatterJS.scatter;
-        window.scatter = null;
-    }
-});
-```
-
-**Or ( for html/js )**
-```js
-<script src="path/to/scatter.min.js"></script>
-
-scatter.connect('YOUR_APP_NAME').then(connected => {
-    if(connected){
-        this.scatter = scatter;
-        window.scatter = null;
-    }
-});
-```
-
-
+There's also a lot more information about proper setup in the
+[Setting up for Web Applications](https://get-scatter.com/docs/dev/setting-up-for-web-apps)
+section which will help you get the most out of ScatterJS, and make sure
+you aren't exposing your users to malicious non-Scatter plugins.
