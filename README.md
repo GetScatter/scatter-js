@@ -24,7 +24,6 @@ can't be used.
 
 #### EOSIO
 ```
-// Using eosjs
 npm i -S scatterjs-plugin-eosjs
 ```
 
