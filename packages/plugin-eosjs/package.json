@@ -4,6 +4,6 @@
 	"main": "dist/index.js",
 	"license": "MIT",
 	"dependencies": {
-		"eosjs":"^16.0.6"
+		"eosjs": "^16.0.6"
 	}
 }
