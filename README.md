@@ -1,7 +1,12 @@
 # Scatter JS
 
 
-[![npm version](https://badge.fury.io/js/scatter-js.svg)](https://badge.fury.io/js/scatter-js) scatter-js ( deprecated )
+[![npm version](https://badge.fury.io/js/scatter-js.svg)](https://badge.fury.io/js/scatter-js) scatter-js
+
+## Right now you should still be using `scatter-js` and not this `scatterjs-core` library as it is still in alpha. [Click Here](https://github.com/GetScatter/scatter-js/tree/2.5.1) to go to the latest version of `scatter-js` which is being used in production applications and is stable. 
+
+
+
 
 
 [![npm version](https://badge.fury.io/js/scatterjs-core.svg)](https://badge.fury.io/js/scatterjs-core) scatterjs-core
