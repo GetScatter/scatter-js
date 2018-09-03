@@ -24,11 +24,11 @@ var _SocketService = require('./services/SocketService');
 
 var _SocketService2 = _interopRequireDefault(_SocketService);
 
-var _Plugin = require('./Plugins/Plugin');
+var _Plugin = require('./plugins/Plugin');
 
 var _Plugin2 = _interopRequireDefault(_Plugin);
 
-var _PluginTypes = require('./Plugins/PluginTypes');
+var _PluginTypes = require('./plugins/PluginTypes');
 
 var PluginTypes = _interopRequireWildcard(_PluginTypes);
 

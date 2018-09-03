@@ -1,7 +1,7 @@
 import PluginRepository from './plugins/PluginRepository';
 import SocketService from './services/SocketService';
-import Plugin from './Plugins/Plugin';
-import * as PluginTypes from './Plugins/PluginTypes';
+import Plugin from './plugins/Plugin';
+import * as PluginTypes from './plugins/PluginTypes';
 import { Blockchains } from './models/Blockchains';
 import Network from './models/Network';
 
