@@ -86,21 +86,14 @@ export default class SocketService {
             new Promise((resolve, reject) => {
                 socket = new WebSocket(`ws://${host}/socket.io/?EIO=3&transport=websocket`);
 
-                socket.onclose = x => {
-                    resolve(false);
-                };
-
-                socket.onerror = err => {
-                    console.error('err', err);
-                    resolve(false);
-                }
+                socket.onclose = x => resolve(false);
+                socket.onerror = err => resolve(false);
 
                 socket.onopen = x => {
                     send();
                     clearTimeout(reconnectionTimeout);
                     connected = true;
                     pair(true).then(() => {
-                        console.log('then pair', connected);
                         resolve(true);
                     });
                 };
@@ -121,7 +114,6 @@ export default class SocketService {
                 };
 
                 const msg_paired = result => {
-                    console.log('paired', result);
                     paired = result;
 
                     if(paired) {
@@ -151,29 +143,8 @@ export default class SocketService {
                     else openRequest.resolve(result.result);
                 };
 
-
-                //
                 // socket.on('event', event => {
                 //     console.log('event', event);
-                // });
-                //
-                // socket.on('disconnect', () => {
-                //     console.log('Disconnected')
-                //     connected = false;
-                //     socket = null;
-                //
-                //     // If bad disconnect, retry connection
-                //     reconnectOnAbnormalDisconnection();
-                // });
-                //
-                // socket.on('connect_error', () => {
-                //     allowReconnects = false;
-                //     resolve(false);
-                // });
-                //
-                // socket.on('rejected', reason => {
-                //     console.error('reason', reason);
-                //     reject(reason);
                 // });
             })
         ])
@@ -184,7 +155,7 @@ export default class SocketService {
     }
 
     static disconnect(){
-        socket.disconnect();
+        if(socket) socket.disconnect();
         return true;
     }
 
