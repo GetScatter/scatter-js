@@ -7,13 +7,15 @@
 		"build": "lerna exec -- babel --config ../../.babelrc --out-dir dist src",
 		"links": "lerna exec -- yarn link",
 		"testfile": "mocha --require babel-core/register --exit --timeout 1000000",
-		"test": "npm run testfile \"test/**/*.spec.js\" --timeout 1000000"
+		"test": "npm run testfile \"test/**/*.spec.js\" --timeout 1000000",
+		"test-eosjs": "concurrently \"lerna exec -- babel --watch --config ../../.babelrc --out-dir dist src\" \"cd mock-sites/eosjs-esm && npm run start\""
 	},
 	"author": "GetScatter",
 	"license": "ISC",
 	"devDependencies": {
 		"babel-cli": "^6.26.0",
 		"babel-core": "^6.26.3",
+		"babel-minify": "^0.4.3",
 		"babel-plugin-transform-async-to-generator": "^6.24.1",
 		"babel-plugin-transform-es2015-modules-commonjs": "^6.26.2",
 		"babel-plugin-transform-runtime": "^6.23.0",
@@ -22,6 +24,7 @@
 		"babel-preset-stage-0": "^6.24.1",
 		"babel-watch": "^2.0.7",
 		"chai": "^4.1.2",
+		"concurrently": "^4.0.1",
 		"lerna": "^3.2.1",
 		"mocha": "^5.2.0",
 		"yarn": "^1.9.4"

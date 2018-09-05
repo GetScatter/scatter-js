@@ -11,7 +11,7 @@
 				}
 			}
 		],
-		"stage-0"
+		"minify"
 	],
 	"plugins": [
 		"transform-runtime"

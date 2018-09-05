@@ -173,6 +173,14 @@ class Index {
         });
     }
 
+    requestTransfer(network, to, amount, options = {}){
+        const payload = {network, to, amount, options};
+        return SocketService.sendApiRequest({
+            type:'requestTransfer',
+            payload
+        });
+    }
+
     requestSignature(payload){
         throwNoAuth();
         return SocketService.sendApiRequest({
@@ -198,6 +206,7 @@ class Index {
 
 class Holder {
     constructor(_scatter){
+        console.log(_scatter);
         this.scatter = _scatter;
     }
 

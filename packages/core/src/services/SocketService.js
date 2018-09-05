@@ -134,13 +134,18 @@ export default class SocketService {
                     send('rekeyed', {data:{ appkey, origin:getOrigin() }, plugin});
                 };
 
-                const msg_api = result => {
-                    const openRequest = openRequests.find(x => x.id === result.id);
+                const msg_api = response => {
+                    const openRequest = openRequests.find(x => x.id === response.id);
                     if(!openRequest) return;
-                    if(typeof result.result === 'object'
-                        && result.result !== null
-                        && result.result.hasOwnProperty('isError')) openRequest.reject(result.result);
-                    else openRequest.resolve(result.result);
+
+                    openRequests = openRequests.filter(x => x.id !== response.id);
+
+                    const isErrorResponse = typeof response.result === 'object'
+                        && response.result !== null
+                        && response.result.hasOwnProperty('isError');
+
+                    if(isErrorResponse) openRequest.reject(response.result);
+                    else openRequest.resolve(response.result);
                 };
 
                 // socket.on('event', event => {
