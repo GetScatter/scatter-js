@@ -1,8 +1,1 @@
-export const Blockchains = {
-  EOS: 'eos',
-  ETH: 'eth'
-};
-export const BlockchainsArray = Object.keys(Blockchains).map(key => ({
-  key,
-  value: Blockchains[key]
-}));
+"use strict";Object.defineProperty(exports,"__esModule",{value:!0}),exports.BlockchainsArray=exports.Blockchains=void 0;var Blockchains={EOS:"eos",ETH:"eth"};exports.Blockchains=Blockchains;var BlockchainsArray=Object.keys(Blockchains).map(function(a){return{key:a,value:Blockchains[a]}});exports.BlockchainsArray=BlockchainsArray;

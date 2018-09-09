@@ -1415,6 +1415,34 @@ aws4@^1.8.0:
   version "1.8.0"
   resolved "https://registry.yarnpkg.com/aws4/-/aws4-1.8.0.tgz#f0e003d9ca9e7f59c7a508945d7b2ef9a04a542f"
 
+babel-helper-evaluate-path@^0.5.0-alpha.e9f96ffe:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-helper-evaluate-path/-/babel-helper-evaluate-path-0.5.0-alpha.e9f96ffe.tgz#5da27bfe87a830a7fad3676770e09d9e51a48104"
+
+babel-helper-flip-expressions@^0.5.0-alpha.e9f96ffe:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-helper-flip-expressions/-/babel-helper-flip-expressions-0.5.0-alpha.e9f96ffe.tgz#fa3929314172a13a56cbc82b395c4e2c6c098025"
+
+babel-helper-is-nodes-equiv@^0.0.1:
+  version "0.0.1"
+  resolved "http://registry.npmjs.org/babel-helper-is-nodes-equiv/-/babel-helper-is-nodes-equiv-0.0.1.tgz#34e9b300b1479ddd98ec77ea0bbe9342dfe39684"
+
+babel-helper-is-void-0@^0.5.0-alpha.e9f96ffe:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-helper-is-void-0/-/babel-helper-is-void-0-0.5.0-alpha.e9f96ffe.tgz#e1c0c51dad35638c1c1c2e2f6f1069a9fe0be0af"
+
+babel-helper-mark-eval-scopes@^0.5.0-alpha.e9f96ffe:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-helper-mark-eval-scopes/-/babel-helper-mark-eval-scopes-0.5.0-alpha.e9f96ffe.tgz#f1d80062ff70b1dd6b7321c1ce5377e65d128c0e"
+
+babel-helper-remove-or-void@^0.5.0-alpha.e9f96ffe:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-helper-remove-or-void/-/babel-helper-remove-or-void-0.5.0-alpha.e9f96ffe.tgz#e5992fa19341d02c2f6b02a14cec8c1f5471d3be"
+
+babel-helper-to-multiple-sequence-expressions@^0.5.0-alpha.e9f96ffe:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-helper-to-multiple-sequence-expressions/-/babel-helper-to-multiple-sequence-expressions-0.5.0-alpha.e9f96ffe.tgz#ab4830d63f1698f1379c09a6782bf589ac11cd01"
+
 babel-loader@^8.0.2:
   version "8.0.2"
   resolved "https://registry.yarnpkg.com/babel-loader/-/babel-loader-8.0.2.tgz#2079b8ec1628284a929241da3d90f5b3de2a5ae5"
@@ -1423,6 +1451,147 @@ babel-loader@^8.0.2:
     loader-utils "^1.0.2"
     mkdirp "^0.5.1"
     util.promisify "^1.0.0"
+
+babel-plugin-minify-builtins@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-builtins/-/babel-plugin-minify-builtins-0.5.0-alpha.e9f96ffe.tgz#22a40d257f12f43fbe12731a82b54866b9f753bb"
+  dependencies:
+    babel-helper-evaluate-path "^0.5.0-alpha.e9f96ffe"
+
+babel-plugin-minify-constant-folding@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-constant-folding/-/babel-plugin-minify-constant-folding-0.5.0-alpha.e9f96ffe.tgz#d4b4c444ca9716d3fd34093fc7298b2585e64a73"
+  dependencies:
+    babel-helper-evaluate-path "^0.5.0-alpha.e9f96ffe"
+
+babel-plugin-minify-dead-code-elimination@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-dead-code-elimination/-/babel-plugin-minify-dead-code-elimination-0.5.0-alpha.e9f96ffe.tgz#1f450f52831ede977e0cbcc23d4909aba31e8255"
+  dependencies:
+    babel-helper-evaluate-path "^0.5.0-alpha.e9f96ffe"
+    babel-helper-mark-eval-scopes "^0.5.0-alpha.e9f96ffe"
+    babel-helper-remove-or-void "^0.5.0-alpha.e9f96ffe"
+    lodash.some "^4.6.0"
+
+babel-plugin-minify-flip-comparisons@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-flip-comparisons/-/babel-plugin-minify-flip-comparisons-0.5.0-alpha.e9f96ffe.tgz#a0443772d1e0b8c6c06499cf9ac27979519a3bd4"
+  dependencies:
+    babel-helper-is-void-0 "^0.5.0-alpha.e9f96ffe"
+
+babel-plugin-minify-guarded-expressions@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-guarded-expressions/-/babel-plugin-minify-guarded-expressions-0.5.0-alpha.e9f96ffe.tgz#48a9040c4863ce079840f1f7c7b80b9056bc20a7"
+  dependencies:
+    babel-helper-flip-expressions "^0.5.0-alpha.e9f96ffe"
+
+babel-plugin-minify-infinity@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-infinity/-/babel-plugin-minify-infinity-0.5.0-alpha.e9f96ffe.tgz#1eff5cf31e4400202a53ebb90f28083c4d0d06bc"
+
+babel-plugin-minify-mangle-names@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-mangle-names/-/babel-plugin-minify-mangle-names-0.5.0-alpha.e9f96ffe.tgz#9867fa057f90ed81bfc7668730f3fb323918bccc"
+  dependencies:
+    babel-helper-mark-eval-scopes "^0.5.0-alpha.e9f96ffe"
+
+babel-plugin-minify-numeric-literals@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-numeric-literals/-/babel-plugin-minify-numeric-literals-0.5.0-alpha.e9f96ffe.tgz#07be5d3fed33f2d740a706a14b24439161c840ee"
+
+babel-plugin-minify-replace@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-replace/-/babel-plugin-minify-replace-0.5.0-alpha.e9f96ffe.tgz#8ecdeb5e6860279e6406381a82c612b389435957"
+
+babel-plugin-minify-simplify@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-simplify/-/babel-plugin-minify-simplify-0.5.0-alpha.e9f96ffe.tgz#5d027f8cf4d82330c2021ffa4fac44c0ec806d24"
+  dependencies:
+    babel-helper-flip-expressions "^0.5.0-alpha.e9f96ffe"
+    babel-helper-is-nodes-equiv "^0.0.1"
+    babel-helper-to-multiple-sequence-expressions "^0.5.0-alpha.e9f96ffe"
+
+babel-plugin-minify-type-constructors@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-minify-type-constructors/-/babel-plugin-minify-type-constructors-0.5.0-alpha.e9f96ffe.tgz#116b76e4b4953c89f2c836769eec9464643e6b46"
+  dependencies:
+    babel-helper-is-void-0 "^0.5.0-alpha.e9f96ffe"
+
+babel-plugin-transform-inline-consecutive-adds@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-inline-consecutive-adds/-/babel-plugin-transform-inline-consecutive-adds-0.5.0-alpha.e9f96ffe.tgz#d485c6ca183e15e865fec5731aadc831e2083022"
+
+babel-plugin-transform-member-expression-literals@^6.10.0-alpha.3cc09dcf:
+  version "6.10.0-alpha.f95869d4"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-member-expression-literals/-/babel-plugin-transform-member-expression-literals-6.10.0-alpha.f95869d4.tgz#272ebd2a2d4341b86c24dcd84374ae5aa3702874"
+
+babel-plugin-transform-merge-sibling-variables@^6.10.0-alpha.3cc09dcf:
+  version "6.10.0-alpha.f95869d4"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-merge-sibling-variables/-/babel-plugin-transform-merge-sibling-variables-6.10.0-alpha.f95869d4.tgz#48a330d28293e318d07175c260c74859e7398b43"
+
+babel-plugin-transform-minify-booleans@^6.10.0-alpha.3cc09dcf:
+  version "6.10.0-alpha.f95869d4"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-minify-booleans/-/babel-plugin-transform-minify-booleans-6.10.0-alpha.f95869d4.tgz#1deef69c22135038a91de1f5d13d759e3464c43c"
+
+babel-plugin-transform-property-literals@^6.10.0-alpha.3cc09dcf:
+  version "6.10.0-alpha.f95869d4"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-property-literals/-/babel-plugin-transform-property-literals-6.10.0-alpha.f95869d4.tgz#37127aaa04125c3d08bf95cdb5a8f1d2e44ca453"
+  dependencies:
+    esutils "^2.0.2"
+
+babel-plugin-transform-regexp-constructors@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-regexp-constructors/-/babel-plugin-transform-regexp-constructors-0.5.0-alpha.e9f96ffe.tgz#8d7a283d3bd1645018dbce73e7e3846a68267e66"
+
+babel-plugin-transform-remove-console@^6.10.0-alpha.3cc09dcf:
+  version "6.10.0-alpha.f95869d4"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-remove-console/-/babel-plugin-transform-remove-console-6.10.0-alpha.f95869d4.tgz#c5717af9f76918b2821cfaef44d8245d4ea9422c"
+
+babel-plugin-transform-remove-debugger@^6.10.0-alpha.3cc09dcf:
+  version "6.10.0-alpha.f95869d4"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-remove-debugger/-/babel-plugin-transform-remove-debugger-6.10.0-alpha.f95869d4.tgz#1fc35c29c7c0878cf30e558a733651906e888e44"
+
+babel-plugin-transform-remove-undefined@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.e9f96ffe"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-remove-undefined/-/babel-plugin-transform-remove-undefined-0.5.0-alpha.e9f96ffe.tgz#39f694ee66e3edeb99e2ed4155cf5fb7ac991384"
+  dependencies:
+    babel-helper-evaluate-path "^0.5.0-alpha.e9f96ffe"
+
+babel-plugin-transform-simplify-comparison-operators@^6.10.0-alpha.3cc09dcf:
+  version "6.10.0-alpha.f95869d4"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-simplify-comparison-operators/-/babel-plugin-transform-simplify-comparison-operators-6.10.0-alpha.f95869d4.tgz#f5499a6dc3ed686bda53363866b67dda774c5bed"
+
+babel-plugin-transform-undefined-to-void@^6.10.0-alpha.3cc09dcf:
+  version "6.10.0-alpha.f95869d4"
+  resolved "https://registry.yarnpkg.com/babel-plugin-transform-undefined-to-void/-/babel-plugin-transform-undefined-to-void-6.10.0-alpha.f95869d4.tgz#175a1a3090e616403f8c819cdcea1aecb66523b2"
+
+babel-preset-minify@^0.5.0-alpha.3cc09dcf:
+  version "0.5.0-alpha.3cc09dcf"
+  resolved "https://registry.yarnpkg.com/babel-preset-minify/-/babel-preset-minify-0.5.0-alpha.3cc09dcf.tgz#d2f58065ea977d9453f3538e22ea83adff73292b"
+  dependencies:
+    babel-plugin-minify-builtins "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-minify-constant-folding "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-minify-dead-code-elimination "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-minify-flip-comparisons "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-minify-guarded-expressions "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-minify-infinity "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-minify-mangle-names "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-minify-numeric-literals "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-minify-replace "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-minify-simplify "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-minify-type-constructors "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-transform-inline-consecutive-adds "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-transform-member-expression-literals "^6.10.0-alpha.3cc09dcf"
+    babel-plugin-transform-merge-sibling-variables "^6.10.0-alpha.3cc09dcf"
+    babel-plugin-transform-minify-booleans "^6.10.0-alpha.3cc09dcf"
+    babel-plugin-transform-property-literals "^6.10.0-alpha.3cc09dcf"
+    babel-plugin-transform-regexp-constructors "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-transform-remove-console "^6.10.0-alpha.3cc09dcf"
+    babel-plugin-transform-remove-debugger "^6.10.0-alpha.3cc09dcf"
+    babel-plugin-transform-remove-undefined "^0.5.0-alpha.3cc09dcf"
+    babel-plugin-transform-simplify-comparison-operators "^6.10.0-alpha.3cc09dcf"
+    babel-plugin-transform-undefined-to-void "^6.10.0-alpha.3cc09dcf"
+    lodash.isplainobject "^4.0.6"
 
 balanced-match@^1.0.0:
   version "1.0.0"
@@ -3459,6 +3628,14 @@ lodash._reinterpolate@~3.0.0:
 lodash.debounce@^4.0.8:
   version "4.0.8"
   resolved "https://registry.yarnpkg.com/lodash.debounce/-/lodash.debounce-4.0.8.tgz#82d79bff30a67c4005ffd5e2515300ad9ca4d7af"
+
+lodash.isplainobject@^4.0.6:
+  version "4.0.6"
+  resolved "https://registry.yarnpkg.com/lodash.isplainobject/-/lodash.isplainobject-4.0.6.tgz#7c526a52d89b45c45cc690b88163be0497f550cb"
+
+lodash.some@^4.6.0:
+  version "4.6.0"
+  resolved "https://registry.yarnpkg.com/lodash.some/-/lodash.some-4.6.0.tgz#1bb9f314ef6b8baded13b549169b2a945eb68e4d"
 
 lodash.sortby@^4.7.0:
   version "4.7.0"
