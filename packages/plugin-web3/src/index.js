@@ -16,35 +16,7 @@ import ethUtil from 'ethereumjs-util';
 
 let ethNetwork;
 
-class ETH extends Plugin {
 
-    constructor(){
-        super(Blockchains.ETH, PluginTypes.BLOCKCHAIN_SUPPORT)
-    }
-
-    signatureProvider(...args){
-
-        return (_network, _web3) => {
-            ethNetwork = Network.fromJson(_network);
-            if(!ethNetwork.isValid()) throw Error.noNetwork();
-
-            const rpcUrl = `${ethNetwork.protocol}://${ethNetwork.hostport()}`;
-
-            const engine = new ProviderEngine();
-            const web3 = new _web3(engine);
-
-            const walletSubprovider = new HookedWalletSubprovider(new ScatterEthereumWallet());
-            engine.addProvider(walletSubprovider);
-
-            if(ethNetwork.protocol.indexOf('http') > -1) engine.addProvider(new RpcSubprovider({rpcUrl}));
-            else engine.addProvider(new WebsocketSubprovider({rpcUrl}));
-
-            engine.start();
-
-            return web3;
-        }
-    }
-}
 
 
 
@@ -96,4 +68,36 @@ class ScatterEthereumWallet {
     }
 }
 
-export default ETH;
+export default class ScatterETH extends Plugin {
+
+    constructor(){
+        super(Blockchains.ETH, PluginTypes.BLOCKCHAIN_SUPPORT)
+    }
+
+    signatureProvider(...args){
+
+        return (_network, _web3) => {
+            ethNetwork = Network.fromJson(_network);
+            if(!ethNetwork.isValid()) throw Error.noNetwork();
+
+            const rpcUrl = `${ethNetwork.protocol}://${ethNetwork.hostport()}`;
+
+            const engine = new ProviderEngine();
+            const web3 = new _web3(engine);
+
+            const walletSubprovider = new HookedWalletSubprovider(new ScatterEthereumWallet());
+            engine.addProvider(walletSubprovider);
+
+            if(ethNetwork.protocol.indexOf('http') > -1) engine.addProvider(new RpcSubprovider({rpcUrl}));
+            else engine.addProvider(new WebsocketSubprovider({rpcUrl}));
+
+            engine.start();
+
+            return web3;
+        }
+    }
+}
+
+if(typeof window !== 'undefined') {
+    window.ScatterETH = ScatterETH;
+}

@@ -1,11 +1,12 @@
 {
 	"name": "scatterjs",
-	"version": "1.0.0",
+	"version": "1.1.0",
 	"description": "",
 	"scripts": {
 		"postinstall": "lerna bootstrap",
 		"build": "lerna exec -- babel --config ../../.babelrc --out-dir dist src",
 		"links": "lerna exec -- yarn link",
+		"publish":"lerna publish",
 		"testfile": "mocha --require babel-core/register --exit --timeout 1000000",
 		"test": "npm run testfile \"test/**/*.spec.js\" --timeout 1000000",
 		"test-eosjs": "concurrently \"lerna exec -- babel --watch --config ../../.babelrc --out-dir dist src\" \"cd mock-sites/eosjs-esm && npm run start\"",
