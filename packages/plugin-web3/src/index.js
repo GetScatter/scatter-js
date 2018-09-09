@@ -96,4 +96,4 @@ class ScatterEthereumWallet {
     }
 }
 
-module.exports = ETH;
+export default ETH;

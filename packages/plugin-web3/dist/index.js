@@ -1,1 +1,80 @@
-'use strict';var _assign=require('babel-runtime/core-js/object/assign'),_assign2=_interopRequireDefault(_assign),_asyncToGenerator2=require('babel-runtime/helpers/asyncToGenerator'),_asyncToGenerator3=_interopRequireDefault(_asyncToGenerator2),_scatterjsCore=require('scatterjs-core'),_web3ProviderEngine=require('web3-provider-engine'),_web3ProviderEngine2=_interopRequireDefault(_web3ProviderEngine),_rpc=require('web3-provider-engine/subproviders/rpc'),_rpc2=_interopRequireDefault(_rpc),_websocket=require('web3-provider-engine/subproviders/websocket'),_websocket2=_interopRequireDefault(_websocket),_hookedWallet=require('web3-provider-engine/subproviders/hooked-wallet'),_hookedWallet2=_interopRequireDefault(_hookedWallet),_ethereumjsUtil=require('ethereumjs-util'),_ethereumjsUtil2=_interopRequireDefault(_ethereumjsUtil);function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}let ethNetwork;class ETH extends _scatterjsCore.Plugin{constructor(){super(_scatterjsCore.Blockchains.ETH,_scatterjsCore.PluginTypes.BLOCKCHAIN_SUPPORT)}signatureProvider(...a){return(a,b)=>{if(ethNetwork=_scatterjsCore.Network.fromJson(a),!ethNetwork.isValid())throw Error.noNetwork();const c=`${ethNetwork.protocol}://${ethNetwork.hostport()}`,d=new _web3ProviderEngine2.default,e=new b(d),f=new _hookedWallet2.default(new ScatterEthereumWallet());return d.addProvider(f),-1<ethNetwork.protocol.indexOf('http')?d.addProvider(new _rpc2.default({rpcUrl:c})):d.addProvider(new _websocket2.default({rpcUrl:c})),d.start(),e}}}class ScatterEthereumWallet{constructor(){this.getAccounts=this.getAccounts.bind(this),this.signTransaction=this.signTransaction.bind(this)}getAccounts(a){return(0,_asyncToGenerator3.default)(function*(){const b=yield _scatterjsCore.SocketService.sendApiRequest({type:'identityFromPermissions',payload:{}}),c=b?b.accounts.filter(function(a){return a.blockchain===_scatterjsCore.Blockchains.ETH}).map(function(a){return a.address}):[];return a(null,c),c})()}signTransaction(a){return(0,_asyncToGenerator3.default)(function*(){if(!ethNetwork)throw Error.noNetwork();void 0!==a.gas&&(a.gasLimit=a.gas),a.value=a.value||'0x00',a.hasOwnProperty('data')&&(a.data=_ethereumjsUtil2.default.addHexPrefix(a.data));const b=a.hasOwnProperty('requiredFields')?a.requiredFields:{},c=a.hasOwnProperty('abi')?a.abi:null;if(!c&&a.hasOwnProperty('data'))throw Error.signatureError('no_abi','You must provide a JSON ABI along with your transaction so that users can read the contract');const d=(0,_assign2.default)(a,{blockchain:_scatterjsCore.Blockchains.ETH,network:ethNetwork,requiredFields:b}),{signatures:e,returnedFields:f}=yield _scatterjsCore.SocketService.sendApiRequest({type:'requestSignature',payload:d});return a.hasOwnProperty('fieldsCallback')&&a.fieldsCallback(f),e[0]})()}}module.exports=ETH;
+import { Plugin, PluginTypes, Blockchains, Network, SocketService } from 'scatterjs-core';
+import ProviderEngine from 'web3-provider-engine';
+import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
+import WebsocketSubprovider from 'web3-provider-engine/subproviders/websocket';
+import HookedWalletSubprovider from "web3-provider-engine/subproviders/hooked-wallet";
+import ethUtil from 'ethereumjs-util';
+let ethNetwork;
+
+class ETH extends Plugin {
+  constructor() {
+    super(Blockchains.ETH, PluginTypes.BLOCKCHAIN_SUPPORT);
+  }
+
+  signatureProvider(...args) {
+    return (_network, _web3) => {
+      ethNetwork = Network.fromJson(_network);
+      if (!ethNetwork.isValid()) throw Error.noNetwork();
+      const rpcUrl = `${ethNetwork.protocol}://${ethNetwork.hostport()}`;
+      const engine = new ProviderEngine();
+      const web3 = new _web3(engine);
+      const walletSubprovider = new HookedWalletSubprovider(new ScatterEthereumWallet());
+      engine.addProvider(walletSubprovider);
+      if (ethNetwork.protocol.indexOf('http') > -1) engine.addProvider(new RpcSubprovider({
+        rpcUrl
+      }));else engine.addProvider(new WebsocketSubprovider({
+        rpcUrl
+      }));
+      engine.start();
+      return web3;
+    };
+  }
+
+}
+
+class ScatterEthereumWallet {
+  constructor() {
+    this.getAccounts = this.getAccounts.bind(this);
+    this.signTransaction = this.signTransaction.bind(this);
+  }
+
+  async getAccounts(callback) {
+    const result = await SocketService.sendApiRequest({
+      type: 'identityFromPermissions',
+      payload: {}
+    });
+    const accounts = !result ? [] : result.accounts.filter(account => account.blockchain === Blockchains.ETH).map(account => account.address);
+    callback(null, accounts);
+    return accounts;
+  }
+
+  async signTransaction(transaction) {
+    if (!ethNetwork) throw Error.noNetwork(); // Basic settings
+
+    if (transaction.gas !== undefined) transaction.gasLimit = transaction.gas;
+    transaction.value = transaction.value || '0x00';
+    if (transaction.hasOwnProperty('data')) transaction.data = ethUtil.addHexPrefix(transaction.data); // Required Fields
+
+    const requiredFields = transaction.hasOwnProperty('requiredFields') ? transaction.requiredFields : {}; // Contract ABI
+
+    const abi = transaction.hasOwnProperty('abi') ? transaction.abi : null;
+    if (!abi && transaction.hasOwnProperty('data')) throw Error.signatureError('no_abi', 'You must provide a JSON ABI along with your transaction so that users can read the contract');
+    const payload = Object.assign(transaction, {
+      blockchain: Blockchains.ETH,
+      network: ethNetwork,
+      requiredFields
+    });
+    const {
+      signatures,
+      returnedFields
+    } = await SocketService.sendApiRequest({
+      type: 'requestSignature',
+      payload
+    });
+    if (transaction.hasOwnProperty('fieldsCallback')) transaction.fieldsCallback(returnedFields);
+    return signatures[0];
+  }
+
+}
+
+export default ETH;

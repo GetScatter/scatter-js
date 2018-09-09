@@ -1,1 +1,4 @@
-'use strict';Object.defineProperty(exports,'__esModule',{value:!0});const MALICIOUS=exports.MALICIOUS='malicious',LOCKED=exports.LOCKED='locked',PROMPT_CLOSED=exports.PROMPT_CLOSED='prompt_closed',UPGRADE_REQUIRED=exports.UPGRADE_REQUIRED='upgrade_required';
+export const MALICIOUS = 'malicious';
+export const LOCKED = 'locked';
+export const PROMPT_CLOSED = 'prompt_closed';
+export const UPGRADE_REQUIRED = 'upgrade_required';

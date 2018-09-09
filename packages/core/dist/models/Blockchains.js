@@ -1,1 +1,8 @@
-'use strict';Object.defineProperty(exports,'__esModule',{value:!0}),exports.BlockchainsArray=exports.Blockchains=void 0;var _keys=require('babel-runtime/core-js/object/keys'),_keys2=_interopRequireDefault(_keys);function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}const Blockchains=exports.Blockchains={EOS:'eos',ETH:'eth'},BlockchainsArray=exports.BlockchainsArray=(0,_keys2.default)(Blockchains).map(a=>({key:a,value:Blockchains[a]}));
+export const Blockchains = {
+  EOS: 'eos',
+  ETH: 'eth'
+};
+export const BlockchainsArray = Object.keys(Blockchains).map(key => ({
+  key,
+  value: Blockchains[key]
+}));

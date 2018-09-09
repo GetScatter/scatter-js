@@ -1,1 +1,24 @@
-'use strict';Object.defineProperty(exports,'__esModule',{value:!0});var _keys=require('babel-runtime/core-js/object/keys'),_keys2=_interopRequireDefault(_keys),_assign=require('babel-runtime/core-js/object/assign'),_assign2=_interopRequireDefault(_assign),_PluginTypes=require('./PluginTypes'),PluginTypes=_interopRequireWildcard(_PluginTypes);function _interopRequireWildcard(a){if(a&&a.__esModule)return a;var b={};if(null!=a)for(var c in a)Object.prototype.hasOwnProperty.call(a,c)&&(b[c]=a[c]);return b.default=a,b}function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}class Plugin{constructor(a='',b=''){this.name=a,this.type=b}static placeholder(){return new Plugin}static fromJson(a){return(0,_assign2.default)(Plugin.placeholder(),a)}isSignatureProvider(){return this.type===PluginTypes.BLOCKCHAIN_SUPPORT}isValid(){return(0,_keys2.default)(PluginTypes).map(a=>PluginTypes[a]).includes(this.type)}}exports.default=Plugin;
+import * as PluginTypes from "./PluginTypes";
+export default class Plugin {
+  constructor(_name = '', _type = '') {
+    this.name = _name;
+    this.type = _type;
+  }
+
+  static placeholder() {
+    return new Plugin();
+  }
+
+  static fromJson(json) {
+    return Object.assign(Plugin.placeholder(), json);
+  }
+
+  isSignatureProvider() {
+    return this.type === PluginTypes.BLOCKCHAIN_SUPPORT;
+  }
+
+  isValid() {
+    return Object.keys(PluginTypes).map(x => PluginTypes[x]).includes(this.type);
+  }
+
+}

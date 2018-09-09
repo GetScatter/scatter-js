@@ -8,7 +8,7 @@ import {
 
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 
-class EOS extends Plugin {
+export default class ScatterEOS extends Plugin {
 
     constructor(){
         super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT);
@@ -108,4 +108,6 @@ class EOS extends Plugin {
     }
 }
 
-module.exports = EOS;
+if(typeof window !== 'undefined') {
+	window.ScatterEOS = ScatterEOS;
+}

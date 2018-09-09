@@ -1,1 +1,243 @@
-'use strict';Object.defineProperty(exports,'__esModule',{value:!0});var _assign=require('babel-runtime/core-js/object/assign'),_assign2=_interopRequireDefault(_assign),_promise=require('babel-runtime/core-js/promise'),_promise2=_interopRequireDefault(_promise),_asyncToGenerator2=require('babel-runtime/helpers/asyncToGenerator'),_asyncToGenerator3=_interopRequireDefault(_asyncToGenerator2),_PluginRepository=require('./plugins/PluginRepository'),_PluginRepository2=_interopRequireDefault(_PluginRepository),_SocketService=require('./services/SocketService'),_SocketService2=_interopRequireDefault(_SocketService),_Plugin=require('./plugins/Plugin'),_Plugin2=_interopRequireDefault(_Plugin),_PluginTypes=require('./plugins/PluginTypes'),PluginTypes=_interopRequireWildcard(_PluginTypes),_Blockchains=require('./models/Blockchains'),_Network=require('./models/Network'),_Network2=_interopRequireDefault(_Network);function _interopRequireWildcard(a){if(a&&a.__esModule)return a;var b={};if(null!=a)for(var c in a)Object.prototype.hasOwnProperty.call(a,c)&&(b[c]=a[c]);return b.default=a,b}function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}let origin;const throwNoAuth=()=>{if(!holder.scatter.isExtension&&!_SocketService2.default.isConnected())throw new Error('Connect and Authenticate first - scatter.connect( pluginName )')},checkForExtension=(a,b=0)=>20<b?void 0:holder.scatter.isExtension?a(!0):void setTimeout(()=>checkForExtension(a,b+1),100);class Index{constructor(){this.isExtension=!1,this.identity=null}loadPlugin(a){if(!a.isValid())throw new Error(`${a.name} doesn't seem to be a valid ScatterJS plugin.`);_PluginRepository2.default.loadPlugin(a),a.isSignatureProvider()&&(this[a.name]=a.signatureProvider(()=>{if(!this.identity)throw new Error('No Identity')}))}isInstalled(){return(0,_asyncToGenerator3.default)(function*(){return new _promise2.default(function(a){setTimeout(function(){a(!1)},3e3),_promise2.default.race([checkForExtension(a),_SocketService2.default.ping().then(function(b){console.log('found',b),b&&a(!0)})])})})()}connect(a,b){var c=this;return(0,_asyncToGenerator3.default)(function*(){return new _promise2.default(function(d){if(!a||!a.length)throw new Error('You must specify a name for this connection');b=(0,_assign2.default)({initTimeout:1e4,linkTimeout:3e4},b),setTimeout(function(){d(!1)},b.initTimeout),checkForExtension(d),_SocketService2.default.init(a,b.linkTimeout),_SocketService2.default.link().then((()=>{var a=(0,_asyncToGenerator3.default)(function*(a){return!!a&&(c.identity=yield c.getIdentityFromPermissions(),d(!0))});return function(){return a.apply(this,arguments)}})())})})()}disconnect(){return _SocketService2.default.disconnect()}isConnected(){return _SocketService2.default.isConnected()}getVersion(){return _SocketService2.default.sendApiRequest({type:'getVersion',payload:{}})}getIdentity(a){return throwNoAuth(),_SocketService2.default.sendApiRequest({type:'getOrRequestIdentity',payload:{fields:a}}).then(a=>(a&&(this.identity=a),a))}getIdentityFromPermissions(){return throwNoAuth(),_SocketService2.default.sendApiRequest({type:'identityFromPermissions',payload:{}}).then(a=>(a&&(this.identity=a),a))}forgetIdentity(){return throwNoAuth(),_SocketService2.default.sendApiRequest({type:'forgetIdentity',payload:{}}).then(a=>(this.identity=null,a))}authenticate(){return throwNoAuth(),_SocketService2.default.sendApiRequest({type:'authenticate',payload:{}})}getArbitrarySignature(a,b,c='',d=!1){return throwNoAuth(),_SocketService2.default.sendApiRequest({type:'requestArbitrarySignature',payload:{publicKey:a,data:b,whatfor:c,isHash:d}})}getPublicKey(a){return throwNoAuth(),_SocketService2.default.sendApiRequest({type:'getPublicKey',payload:{blockchain:a}})}linkAccount(a,b,c){return throwNoAuth(),_SocketService2.default.sendApiRequest({type:'linkAccount',payload:{publicKey:a,account:b,network:c}})}suggestNetwork(a){return throwNoAuth(),_SocketService2.default.sendApiRequest({type:'requestAddNetwork',payload:{network:a}})}requestTransfer(a,b,c,d={}){return _SocketService2.default.sendApiRequest({type:'requestTransfer',payload:{network:a,to:b,amount:c,options:d}})}requestSignature(a){return throwNoAuth(),_SocketService2.default.sendApiRequest({type:'requestSignature',payload:a})}createTransaction(a,b,c,d){return throwNoAuth(),_SocketService2.default.sendApiRequest({type:'createTransaction',payload:{blockchain:a,actions:b,account:c,network:d}})}}class Holder{constructor(a){console.log(a),this.scatter=a}plugins(...a){this.scatter.isExtension||a.map(a=>this.scatter.loadPlugin(a))}}let holder=new Holder(new Index());if('undefined'!=typeof window){if('undefined'!=typeof document){const a=()=>{holder.scatter=window.scatter,holder.scatter.isExtension=!0,holder.scatter.connect=()=>new _promise2.default(a=>a(!0))};'undefined'==typeof window.scatter?document.addEventListener('scatterLoaded',()=>a()):a()}holder.scatter.isExtension||(window.scatter=holder.scatter)}holder.Plugin=_Plugin2.default,holder.PluginTypes=PluginTypes,holder.Blockchains=_Blockchains.Blockchains,holder.Network=_Network2.default,holder.SocketService=_SocketService2.default,module.exports=holder,exports.default=holder;
+import PluginRepository from './plugins/PluginRepository';
+import SocketService from './services/SocketService';
+import Plugin from './plugins/Plugin';
+import * as PluginTypes from './plugins/PluginTypes';
+import { Blockchains } from './models/Blockchains';
+import Network from './models/Network';
+let origin;
+
+const throwNoAuth = () => {
+  if (!holder.scatter.isExtension && !SocketService.isConnected()) throw new Error('Connect and Authenticate first - scatter.connect( pluginName )');
+};
+
+const checkForExtension = (resolve, tries = 0) => {
+  if (tries > 20) return;
+  if (holder.scatter.isExtension) return resolve(true);
+  setTimeout(() => checkForExtension(resolve, tries + 1), 100);
+};
+
+class Index {
+  constructor() {
+    this.isExtension = false;
+    this.identity = null;
+  }
+
+  loadPlugin(plugin) {
+    const noIdFunc = () => {
+      if (!this.identity) throw new Error('No Identity');
+    };
+
+    if (!plugin.isValid()) throw new Error(`${plugin.name} doesn't seem to be a valid ScatterJS plugin.`);
+    PluginRepository.loadPlugin(plugin);
+    if (plugin.isSignatureProvider()) this[plugin.name] = plugin.signatureProvider(noIdFunc);
+  }
+
+  async isInstalled() {
+    return new Promise(resolve => {
+      setTimeout(() => {
+        resolve(false);
+      }, 3000);
+      Promise.race([checkForExtension(resolve), SocketService.ping().then(found => {
+        console.log('found', found);
+        if (found) resolve(true);
+      })]);
+    });
+  }
+
+  async connect(pluginName, options) {
+    return new Promise(resolve => {
+      if (!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection"); // Setting options defaults
+
+      options = Object.assign({
+        initTimeout: 10000,
+        linkTimeout: 30000
+      }, options); // Auto failer
+
+      setTimeout(() => {
+        resolve(false);
+      }, options.initTimeout); // Defaults to scatter extension if exists
+
+      checkForExtension(resolve); // Tries to set up Desktop Connection
+
+      SocketService.init(pluginName, options.linkTimeout);
+      SocketService.link().then(async authenticated => {
+        if (!authenticated) return false;
+        this.identity = await this.getIdentityFromPermissions();
+        return resolve(true);
+      });
+    });
+  }
+
+  disconnect() {
+    return SocketService.disconnect();
+  }
+
+  isConnected() {
+    return SocketService.isConnected();
+  }
+
+  getVersion() {
+    return SocketService.sendApiRequest({
+      type: 'getVersion',
+      payload: {}
+    });
+  }
+
+  getIdentity(requiredFields) {
+    throwNoAuth();
+    return SocketService.sendApiRequest({
+      type: 'getOrRequestIdentity',
+      payload: {
+        fields: requiredFields
+      }
+    }).then(id => {
+      if (id) this.identity = id;
+      return id;
+    });
+  }
+
+  getIdentityFromPermissions() {
+    throwNoAuth();
+    return SocketService.sendApiRequest({
+      type: 'identityFromPermissions',
+      payload: {}
+    }).then(id => {
+      if (id) this.identity = id;
+      return id;
+    });
+  }
+
+  forgetIdentity() {
+    throwNoAuth();
+    return SocketService.sendApiRequest({
+      type: 'forgetIdentity',
+      payload: {}
+    }).then(res => {
+      this.identity = null;
+      return res;
+    });
+  }
+
+  authenticate() {
+    throwNoAuth();
+    return SocketService.sendApiRequest({
+      type: 'authenticate',
+      payload: {}
+    });
+  }
+
+  getArbitrarySignature(publicKey, data, whatfor = '', isHash = false) {
+    throwNoAuth();
+    return SocketService.sendApiRequest({
+      type: 'requestArbitrarySignature',
+      payload: {
+        publicKey,
+        data,
+        whatfor,
+        isHash
+      }
+    });
+  }
+
+  getPublicKey(blockchain) {
+    throwNoAuth();
+    return SocketService.sendApiRequest({
+      type: 'getPublicKey',
+      payload: {
+        blockchain
+      }
+    });
+  }
+
+  linkAccount(publicKey, account, network) {
+    throwNoAuth();
+    return SocketService.sendApiRequest({
+      type: 'linkAccount',
+      payload: {
+        publicKey,
+        account,
+        network
+      }
+    });
+  }
+
+  suggestNetwork(network) {
+    throwNoAuth();
+    return SocketService.sendApiRequest({
+      type: 'requestAddNetwork',
+      payload: {
+        network
+      }
+    });
+  }
+
+  requestTransfer(network, to, amount, options = {}) {
+    const payload = {
+      network,
+      to,
+      amount,
+      options
+    };
+    return SocketService.sendApiRequest({
+      type: 'requestTransfer',
+      payload
+    });
+  }
+
+  requestSignature(payload) {
+    throwNoAuth();
+    return SocketService.sendApiRequest({
+      type: 'requestSignature',
+      payload
+    });
+  }
+
+  createTransaction(blockchain, actions, account, network) {
+    throwNoAuth();
+    return SocketService.sendApiRequest({
+      type: 'createTransaction',
+      payload: {
+        blockchain,
+        actions,
+        account,
+        network
+      }
+    });
+  }
+
+}
+
+class Holder {
+  constructor(_scatter) {
+    console.log(_scatter);
+    this.scatter = _scatter;
+  }
+
+  plugins(...plugins) {
+    if (!this.scatter.isExtension) {
+      plugins.map(plugin => this.scatter.loadPlugin(plugin));
+    }
+  }
+
+}
+
+let holder = new Holder(new Index());
+
+if (typeof window !== 'undefined') {
+  // Catching extension instead of Desktop
+  if (typeof document !== 'undefined') {
+    const bindScatterClassic = () => {
+      holder.scatter = window.scatter;
+      holder.scatter.isExtension = true;
+
+      holder.scatter.connect = () => new Promise(resolve => resolve(true));
+    };
+
+    if (typeof window.scatter !== 'undefined') bindScatterClassic();else document.addEventListener('scatterLoaded', () => bindScatterClassic());
+  }
+
+  window.ScatterJS = holder;
+}
+
+export { Plugin, PluginTypes, Blockchains, Network, SocketService };
+export default holder;

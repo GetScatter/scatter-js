@@ -1,1 +1,109 @@
-'use strict';var _promise=require('babel-runtime/core-js/promise'),_promise2=_interopRequireDefault(_promise),_assign=require('babel-runtime/core-js/object/assign'),_assign2=_interopRequireDefault(_assign),_asyncToGenerator2=require('babel-runtime/helpers/asyncToGenerator'),_asyncToGenerator3=_interopRequireDefault(_asyncToGenerator2),_scatterjsCore=require('scatterjs-core');function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}const proxy=(a,b)=>new Proxy(a,b);class EOS extends _scatterjsCore.Plugin{constructor(){super(_scatterjsCore.Blockchains.EOS,_scatterjsCore.PluginTypes.BLOCKCHAIN_SUPPORT)}signatureProvider(...a){const b=a[0];return(a,c,d={})=>{if(a=_scatterjsCore.Network.fromJson(a),!a.isValid())throw Error.noNetwork();const e=`${a.protocol}://${a.hostport()}`,f=a.hasOwnProperty('chainId')&&a.chainId.length?a.chainId:d.chainId;return proxy(c({httpEndpoint:e,chainId:f}),{get(g,h){let i=null;return(...g)=>{if(g.find(a=>a.hasOwnProperty('keyProvider')))throw Error.usedKeyProvider();const j=(()=>{var c=(0,_asyncToGenerator3.default)(function*(c){b();const d=g.find(function(a){return a.hasOwnProperty('requiredFields')})||{requiredFields:{}},e=(0,_assign2.default)(c,{blockchain:_scatterjsCore.Blockchains.EOS,network:a,requiredFields:d.requiredFields}),f=yield _scatterjsCore.SocketService.sendApiRequest({type:'requestSignature',payload:e});if(!f)return null;if(f.hasOwnProperty('signatures')){i=f.returnedFields;let a=g.find(function(a){return a.hasOwnProperty('signProvider')});return a&&f.signatures.push(a.signProvider(c.buf,c.sign)),f.signatures}return f});return function(){return c.apply(this,arguments)}})();return new _promise2.default((a,b)=>{c((0,_assign2.default)(d,{httpEndpoint:e,signProvider:j,chainId:f}))[h](...g).then(b=>{if(!b.hasOwnProperty('fc'))return b=(0,_assign2.default)(b,{returnedFields:i}),void a(b);const c=proxy(b,{get(a,b){return'then'===b?a[b]:(...c)=>new _promise2.default((()=>{var d=(0,_asyncToGenerator3.default)(function*(d,e){a[b](...c).then(function(a){d((0,_assign2.default)(a,{returnedFields:i}))}).catch(e)});return function(){return d.apply(this,arguments)}})())}});a(c)}).catch(a=>b(a))})}}})}}}module.exports=EOS;
+import { Plugin, PluginTypes, Blockchains, Network, SocketService } from 'scatterjs-core';
+
+const proxy = (dummy, handler) => new Proxy(dummy, handler);
+
+export default class ScatterEOS extends Plugin {
+  constructor() {
+    super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT);
+  }
+
+  signatureProvider(...args) {
+    const throwIfNoIdentity = args[0]; // Protocol will be deprecated.
+
+    return (network, _eos, _options = {}) => {
+      network = Network.fromJson(network);
+      if (!network.isValid()) throw Error.noNetwork();
+      const httpEndpoint = `${network.protocol}://${network.hostport()}`;
+      const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : _options.chainId; // The proxy stands between the eosjs object and scatter.
+      // This is used to add special functionality like adding `requiredFields` arrays to transactions
+
+      return proxy(_eos({
+        httpEndpoint,
+        chainId
+      }), {
+        get(eosInstance, method) {
+          let returnedFields = null;
+          return (...args) => {
+            if (args.find(arg => arg.hasOwnProperty('keyProvider'))) throw Error.usedKeyProvider(); // The signature provider which gets elevated into the user's Scatter
+
+            const signProvider = async signargs => {
+              throwIfNoIdentity();
+              const requiredFields = args.find(arg => arg.hasOwnProperty('requiredFields')) || {
+                requiredFields: {}
+              };
+              const payload = Object.assign(signargs, {
+                blockchain: Blockchains.EOS,
+                network,
+                requiredFields: requiredFields.requiredFields
+              });
+              const result = await SocketService.sendApiRequest({
+                type: 'requestSignature',
+                payload
+              }); // No signature
+
+              if (!result) return null;
+
+              if (result.hasOwnProperty('signatures')) {
+                // Holding onto the returned fields for the final result
+                returnedFields = result.returnedFields; // Grabbing buf signatures from local multi sig sign provider
+
+                let multiSigKeyProvider = args.find(arg => arg.hasOwnProperty('signProvider'));
+
+                if (multiSigKeyProvider) {
+                  result.signatures.push(multiSigKeyProvider.signProvider(signargs.buf, signargs.sign));
+                } // Returning only the signatures to eosjs
+
+
+                return result.signatures;
+              }
+
+              return result;
+            }; // TODO: We need to check about the implications of multiple eosjs instances
+
+
+            return new Promise((resolve, reject) => {
+              _eos(Object.assign(_options, {
+                httpEndpoint,
+                signProvider,
+                chainId
+              }))[method](...args).then(result => {
+                // Standard method ( ie. not contract )
+                if (!result.hasOwnProperty('fc')) {
+                  result = Object.assign(result, {
+                    returnedFields
+                  });
+                  resolve(result);
+                  return;
+                } // Catching chained promise methods ( contract .then action )
+
+
+                const contractProxy = proxy(result, {
+                  get(instance, method) {
+                    if (method === 'then') return instance[method];
+                    return (...args) => {
+                      return new Promise(async (res, rej) => {
+                        instance[method](...args).then(actionResult => {
+                          res(Object.assign(actionResult, {
+                            returnedFields
+                          }));
+                        }).catch(rej);
+                      });
+                    };
+                  }
+
+                });
+                resolve(contractProxy);
+              }).catch(error => reject(error));
+            });
+          };
+        }
+
+      }); // Proxy
+    };
+  }
+
+}
+
+if (typeof window !== 'undefined') {
+  window.ScatterEOS = ScatterEOS;
+}

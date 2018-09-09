@@ -5,7 +5,8 @@
     <title>Web Tester</title>
 
     <script src="https://cdn.jsdelivr.net/npm/eosjs@16.0.0/lib/eos.min.js"></script>
-    <script src="dist/scatter.min.js"></script>
+    <script src="../../bundles/scatterjs-core.min.js"></script>
+    <script src="../../bundles/scatterjs-plugin-eosjs.min.js"></script>
 </head>
 <body>
 
@@ -13,48 +14,17 @@
 
 <script>
 
+	// console.log(window.scatter, window.ScatterJS, window.ScatterEOS)
 
-    scatter.connect("TestPage").then(function(connected){
-        console.log('connected', connected)
-    }).catch(function(x){
-        console.log('x', x);
-    });
+	// ScatterJS.plugins( new ScatterEOS() );
+
 
     function test(){
-        var network = {blockchain:'eos', protocol:'http', host:'testnode.blindblocart.io', port:8888, chainId:'9e46127b78e0a7f6906f549bba3d23b264c70ee6ec781aed9d4f1b72732f34fc'};
-//        var network = {blockchain:'eos', protocol:'http', host:'192.168.1.6', port:8888, chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f'};
-//
-//        scatter.getPublicKey('eos').then(function(publicKey){
-//            scatter.linkAccount(publicKey, { name:'testaccount', authority:'active' }, network).then(function(link){
-//                console.log('link', link);
-//            });
-//            console.log('publicKey', publicKey);
-//        })
-
-
-//        scatter.forgetIdentity().then(function(){
-//            scatter.getIdentity();
-//        });
-
-
-
-
-        var eos = scatter.eos(network, Eos);
-
-        console.log('id before', scatter.identity)
-        scatter.forgetIdentity().then(function(){
-            scatter.getIdentity({accounts:[network]}).then(function(id){
-                const account = id.accounts.find(function(x){ return x.blockchain === 'eos' });
-                console.log('acc', account);
-                eos.transfer(account.name, 'eosio', '1.0000 TLOS', '').then(function(res){
-                    console.log('res', res);
-                }).catch(function(err){
-                    console.log('err', err);
-                })
-            })
-        })
-
-    }
+    	scatter.connect('VanillaLerna').then(function(connected){
+    		console.log('connected', connected);
+    		scatter.getIdentity();
+		})
+	}
 
 </script>
 </body>

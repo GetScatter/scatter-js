@@ -233,17 +233,10 @@ if(typeof window !== 'undefined') {
         else document.addEventListener('scatterLoaded', () => bindScatterClassic());
     }
 
-    if(!holder.scatter.isExtension)
-        window.scatter = holder.scatter;
+    window.ScatterJS = holder;
 }
 
-holder.Plugin = Plugin;
-holder.PluginTypes = PluginTypes;
-holder.Blockchains = Blockchains;
-holder.Network = Network;
-holder.SocketService = SocketService;
-
-module.exports = holder;
+export {Plugin, PluginTypes, Blockchains, Network, SocketService};
 export default holder;
 
 

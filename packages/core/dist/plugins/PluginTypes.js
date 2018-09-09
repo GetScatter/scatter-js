@@ -1,1 +1,1 @@
-'use strict';Object.defineProperty(exports,'__esModule',{value:!0});const BLOCKCHAIN_SUPPORT=exports.BLOCKCHAIN_SUPPORT='blockchain_support';
+export const BLOCKCHAIN_SUPPORT = 'blockchain_support';

@@ -1,1 +1,41 @@
-'use strict';Object.defineProperty(exports,'__esModule',{value:!0});let storage={};const getWindow=()=>'undefined'==typeof window?{localStorage:{setItem:(a,b)=>storage[a]=b,getItem:a=>storage[a]||null,removeItem:a=>delete storage[a]}}:window;class StorageService{constructor(){}static setAppKey(a){getWindow().localStorage.setItem('appkey',a)}static getAppKey(){return getWindow().localStorage.getItem('appkey')}static removeAppKey(){return getWindow().localStorage.removeItem('appkey')}static setNonce(a){getWindow().localStorage.setItem('nonce',a)}static getNonce(){return getWindow().localStorage.getItem('nonce')}static removeNonce(){return getWindow().localStorage.removeItem('nonce')}}exports.default=StorageService;
+let storage = {};
+
+const getWindow = () => {
+  if (typeof window !== 'undefined') return window;
+  return {
+    localStorage: {
+      setItem: (key, val) => storage[key] = val,
+      getItem: key => storage[key] || null,
+      removeItem: key => delete storage[key]
+    }
+  };
+};
+
+export default class StorageService {
+  constructor() {}
+
+  static setAppKey(appkey) {
+    getWindow().localStorage.setItem('appkey', appkey);
+  }
+
+  static getAppKey() {
+    return getWindow().localStorage.getItem('appkey');
+  }
+
+  static removeAppKey() {
+    return getWindow().localStorage.removeItem('appkey');
+  }
+
+  static setNonce(nonce) {
+    getWindow().localStorage.setItem('nonce', nonce);
+  }
+
+  static getNonce() {
+    return getWindow().localStorage.getItem('nonce');
+  }
+
+  static removeNonce() {
+    return getWindow().localStorage.removeItem('nonce');
+  }
+
+}

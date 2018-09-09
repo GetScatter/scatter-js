@@ -1,1 +1,53 @@
-'use strict';Object.defineProperty(exports,'__esModule',{value:!0});var _stringify=require('babel-runtime/core-js/json/stringify'),_stringify2=_interopRequireDefault(_stringify),_assign=require('babel-runtime/core-js/object/assign'),_assign2=_interopRequireDefault(_assign),_Blockchains=require('./Blockchains');function _interopRequireDefault(a){return a&&a.__esModule?a:{default:a}}class Network{constructor(a='',b='https',c='',d=0,e=_Blockchains.Blockchains.EOS,f=''){this.name=a,this.protocol=b,this.host=c,this.port=d,this.blockchain=e,this.chainId=f.toString()}static placeholder(){return new Network}static fromJson(a){const b=(0,_assign2.default)(Network.placeholder(),a);return b.chainId=b.chainId?b.chainId.toString():'',b}static fromUnique(a){const b=a.split(':')[0];if(-1<a.indexOf(':chain:'))return new Network('','','','',b,a.replace(`${b}:chain:`,''));const c=a.replace(`${b}:`,'').split(':');return new Network('','',c[0],parseInt(c[1]||80),b)}unique(){return(`${this.blockchain}:`+(this.chainId.length?`chain:${this.chainId}`:`${this.host}:${this.port}`)).toLowerCase()}hostport(){return`${this.host}${this.port?':':''}${this.port}`}fullhost(){return`${this.protocol}://${this.host}${this.port?':':''}${this.port}`}clone(){return Network.fromJson(JSON.parse((0,_stringify2.default)(this)))}isEmpty(){return!this.host.length}isValid(){return this.protocol.length&&this.host.length&&this.port||this.chainId.length}}exports.default=Network;
+import { Blockchains } from './Blockchains';
+export default class Network {
+  constructor(_name = '', _protocol = 'https', _host = '', _port = 0, blockchain = Blockchains.EOS, chainId = '') {
+    this.name = _name;
+    this.protocol = _protocol;
+    this.host = _host;
+    this.port = _port;
+    this.blockchain = blockchain;
+    this.chainId = chainId.toString();
+  }
+
+  static placeholder() {
+    return new Network();
+  }
+
+  static fromJson(json) {
+    const p = Object.assign(Network.placeholder(), json);
+    p.chainId = p.chainId ? p.chainId.toString() : '';
+    return p;
+  }
+
+  static fromUnique(netString) {
+    const blockchain = netString.split(':')[0];
+    if (netString.indexOf(':chain:') > -1) return new Network('', '', '', '', blockchain, netString.replace(`${blockchain}:chain:`, ''));
+    const splits = netString.replace(`${blockchain}:`, '').split(':');
+    return new Network('', '', splits[0], parseInt(splits[1] || 80), blockchain);
+  }
+
+  unique() {
+    return (`${this.blockchain}:` + (this.chainId.length ? `chain:${this.chainId}` : `${this.host}:${this.port}`)).toLowerCase();
+  }
+
+  hostport() {
+    return `${this.host}${this.port ? ':' : ''}${this.port}`;
+  }
+
+  fullhost() {
+    return `${this.protocol}://${this.host}${this.port ? ':' : ''}${this.port}`;
+  }
+
+  clone() {
+    return Network.fromJson(JSON.parse(JSON.stringify(this)));
+  }
+
+  isEmpty() {
+    return !this.host.length;
+  }
+
+  isValid() {
+    return this.protocol.length && this.host.length && this.port || this.chainId.length;
+  }
+
+}
