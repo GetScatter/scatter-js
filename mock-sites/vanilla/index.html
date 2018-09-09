@@ -10,21 +10,52 @@
 </head>
 <body>
 
-<button onclick="test()">Test</button>
+<button onclick="login()">Get Identity</button>
+<button onclick="logout()">Forget Identity</button>
+<button onclick="transfer()">Transfer</button>
 
 <script>
 
-	// console.log(window.scatter, window.ScatterJS, window.ScatterEOS)
+    console.log(ScatterJS);
 
-	// ScatterJS.plugins( new ScatterEOS() );
+	 ScatterJS.plugins( new ScatterEOS() );
 
+    const network = {
+        blockchain:'eos',
+        chainId:'038f4b0fc8ff18a4f0842a8f0564611f6e96e8535901dd45e43ac8691a1c4dca',
+        host:'dev.cryptolions.io',
+        port:18888,
+        protocol:'http'
+    };
 
-    function test(){
-    	scatter.connect('VanillaLerna').then(function(connected){
-    		console.log('connected', connected);
-    		scatter.getIdentity();
-		})
-	}
+    let scatter = null;
+
+    ScatterJS.scatter.connect('LernaVanillaTest').then(connected => {
+        if(!connected) return false;
+        scatter = ScatterJS.scatter;
+        console.log('sc', scatter);
+    });
+
+    window.login = () => {
+        scatter.getIdentity({accounts:[network]}).then(id => {
+            console.log('id', id);
+        })
+    };
+
+    window.logout = () => {
+        scatter.forgetIdentity();
+    };
+
+    window.transfer = () => {
+        const eos = scatter.eos(network, Eos);
+        const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+        const opts = { authorization:[`${account.name}@${account.authority}`] };
+        eos.transfer(account.name, 'test', '1.0000 EOS', '', opts).then(trx => {
+            console.log('trx', trx);
+        }).catch(err => {
+            console.error(err);
+        })
+    };
 
 </script>
 </body>

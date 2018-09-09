@@ -236,6 +236,11 @@ if(typeof window !== 'undefined') {
     window.ScatterJS = holder;
 }
 
+holder.Plugin = Plugin;
+holder.PluginTypes = PluginTypes;
+holder.Blockchains = Blockchains;
+holder.Network = Network;
+holder.SocketService = SocketService;
 export {Plugin, PluginTypes, Blockchains, Network, SocketService};
 export default holder;
 
