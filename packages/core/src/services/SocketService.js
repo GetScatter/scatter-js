@@ -159,6 +159,10 @@ export default class SocketService {
         return connected;
     }
 
+    static isPaired(){
+        return paired;
+    }
+
     static disconnect(){
         if(socket) socket.disconnect();
         return true;

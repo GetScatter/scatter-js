@@ -84,6 +84,10 @@ class Index {
         return SocketService.isConnected();
     }
 
+    isPaired(){
+        return SocketService.isPaired();
+    }
+
     getVersion(){
         return SocketService.sendApiRequest({
             type:'getVersion',
