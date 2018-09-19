@@ -51,8 +51,8 @@ window.transfer = () => {
 
 window.dynamicDonate = () => {
 	scatter.requestTransfer(network, 'safetransfer', 0, {contract:'eosio.token', symbol:'EOS', memo:'ramdeathtest', decimals:4}).then(function(result){
-		console.log('result', result);
-	})
+        console.log('result', result);
+    })
 };
 
 window.fixedDonate = () => {

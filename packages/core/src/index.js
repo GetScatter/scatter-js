@@ -163,6 +163,16 @@ class Index {
         });
     }
 
+    hasAccountFor(network){
+        throwNoAuth();
+        return SocketService.sendApiRequest({
+            type:'hasAccountFor',
+            payload:{
+                network
+            }
+        });
+    }
+
     suggestNetwork(network){
         throwNoAuth();
         return SocketService.sendApiRequest({

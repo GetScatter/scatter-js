@@ -55,6 +55,34 @@
         }).catch(err => {
             console.error(err);
         })
+
+//        const creator = account.name;
+//        const newname = 'eostestacc';
+//        var pubkey = 'EOS6K9fT11UETwnLLLRG5Up9iYmimug41pkGtzRebKtrXKyiE7WnZ';
+//        eos.transaction(tr => {
+//            tr.newaccount({
+//                creator: creator,
+//                name: newname,
+//                owner: pubkey,
+//                active: pubkey
+//            })
+//
+//            tr.buyrambytes({
+//                payer: creator,
+//                receiver: newname,
+//                bytes: 8192
+//            })
+//
+//            tr.delegatebw({
+//                from: creator,
+//                receiver: newname,
+//                stake_net_quantity: '10.0000 EOS',
+//                stake_cpu_quantity: '10.0000 EOS',
+//                transfer: 0
+//            })
+//        }, {requiredFields:{}}).then(function(done){
+//            console.log('done', done);
+//        })
     };
 
 </script>
