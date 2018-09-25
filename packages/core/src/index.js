@@ -130,11 +130,11 @@ class Index {
         });
     }
 
-    authenticate(){
+    authenticate(nonce){
         throwNoAuth();
         return SocketService.sendApiRequest({
             type:'authenticate',
-            payload:{}
+            payload:{ nonce }
         });
     }
 
@@ -159,11 +159,11 @@ class Index {
         });
     }
 
-    linkAccount(publicKey, account, network){
+    linkAccount(publicKey, network){
         throwNoAuth();
         return SocketService.sendApiRequest({
             type:'linkAccount',
-            payload:{ publicKey, account, network }
+            payload:{ publicKey, network }
         });
     }
 
