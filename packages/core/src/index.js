@@ -31,8 +31,10 @@ class Index {
 
 		PluginRepository.loadPlugin(plugin);
 
-		if(plugin.isSignatureProvider())
-			this[plugin.name] = plugin.signatureProvider(noIdFunc);
+		if(plugin.isSignatureProvider()){
+            this[plugin.name] = plugin.signatureProvider(noIdFunc);
+            this[plugin.name+'Hook'] = plugin.hookProvider;
+        }
 	}
 
     async isInstalled(){
