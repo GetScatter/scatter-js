@@ -7,6 +7,7 @@ import {
 } from 'scatterjs-core';
 
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
+let cache = {};
 
 export default class ScatterEOS extends Plugin {
 
@@ -14,13 +15,15 @@ export default class ScatterEOS extends Plugin {
         super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT);
     }
 
-    hookProvider(network, requiredFields = {}){
+    hookProvider(network){
         return signargs => {
-            const payload = Object.assign(signargs, { blockchain:Blockchains.EOS, network, requiredFields });
-            SocketService.sendApiRequest({
-                type:'requestSignature',
-                payload
-            });
+            return new Promise(resolve => {
+                const payload = Object.assign(signargs, { blockchain:Blockchains.EOS, network, requiredFields:{} });
+                SocketService.sendApiRequest({
+                    type:'requestSignature',
+                    payload
+                }).then(x => resolve(x.signatures))
+            })
         }
     }
 
@@ -79,9 +82,23 @@ export default class ScatterEOS extends Plugin {
                             return result;
                         };
 
-                        // TODO: We need to check about the implications of multiple eosjs instances
                         return new Promise((resolve, reject) => {
-                            _eos(Object.assign(_options, {httpEndpoint, signProvider, chainId}))[method](...args)
+
+                            // Moving to a caching system to avoid
+                            // rebuilding internal eosjs caches
+                            const getOrCache = () => {
+                                const unique = JSON.stringify(Object.assign(_options, {httpEndpoint, chainId}));
+                                if(!cache.hasOwnProperty(unique)) cache[unique] = _eos(Object.assign(_options, {
+                                    httpEndpoint,
+                                    signProvider,
+                                    chainId
+                                }));
+                                return cache[unique];
+                            };
+
+                            let eos = getOrCache();
+
+                            getOrCache()[method](...args)
                                 .then(result => {
 
                                     // Standard method ( ie. not contract )
