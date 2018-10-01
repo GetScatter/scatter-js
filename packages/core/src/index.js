@@ -46,7 +46,6 @@ class Index {
             Promise.race([
                 checkForExtension(resolve),
                 SocketService.ping().then(found => {
-                    console.log('found', found);
                     if(found) resolve(true);
                 })
             ])
@@ -222,7 +221,6 @@ class Index {
 
 class Holder {
     constructor(_scatter){
-        console.log(_scatter);
         this.scatter = _scatter;
     }
 
