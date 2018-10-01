@@ -8,7 +8,8 @@ const getPackagePath = x => `./packages/${x}/src/index.js`;
 const packageFiles = [
 	'core',
 	'plugin-eosjs',
-	'plugin-web3'
+	'plugin-web3',
+	'plugin-tron',
 ];
 
 const entry = packageFiles.reduce((o, file) => Object.assign(o, {[`${file}.min.js`]: getPackagePath(file)}), {});

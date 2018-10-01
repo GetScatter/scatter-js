@@ -21,12 +21,20 @@
 
 	 ScatterJS.plugins( new ScatterEOS() );
 
+//    const network = {
+//        blockchain:'eos',
+//        chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f',
+//        host:'192.168.1.6',
+//        port:8888,
+//        protocol:'http'
+//    };
+
     const network = {
         blockchain:'eos',
-        chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f',
-        host:'192.168.1.6',
-        port:8888,
-        protocol:'http'
+        chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+        host:'nodes.get-scatter.com',
+        port:443,
+        protocol:'https'
     };
 
     let scatter = null;
@@ -46,16 +54,18 @@
         scatter.forgetIdentity();
     };
 
-    window.transfer = () => {
+    window.transfer = async () => {
         const eos = scatter.eos(network, Eos);
+        const test = await eos.getKeyAccounts('EOS7PNWhQDMx1SSPp2T7ZGRaVAGbhs6UJk8DniUzfNJGv5rjgCcvZ');
+        console.log('test', test);
         console.log('eos', eos);
-        const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
-        const opts = { authorization:[`${account.name}@${account.authority}`] };
-        eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
-            console.log('trx', trx);
-        }).catch(err => {
-            console.error(err);
-        })
+//        const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+//        const opts = { authorization:[`${account.name}@${account.authority}`] };
+//        eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
+//            console.log('trx', trx);
+//        }).catch(err => {
+//            console.error(err);
+//        })
     };
 
     window.hookTransfer = () => {

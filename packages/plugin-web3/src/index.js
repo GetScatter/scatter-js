@@ -74,8 +74,8 @@ export default class ScatterETH extends Plugin {
         super(Blockchains.ETH, PluginTypes.BLOCKCHAIN_SUPPORT)
     }
 
-    hookProvider(network){
-        throw new Error('Ethereum hook provider not enabled yet.');
+    hookProvider(network, requiredFields = {}){
+        throw new Error('Ethereum hook prp')
     }
 
     signatureProvider(...args){

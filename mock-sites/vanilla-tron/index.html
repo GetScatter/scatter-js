@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Tester</title>
+
+    <script src="https://rawgit.com/tronprotocol/tron-web/master/dist/TronWeb.js"></script>
+    <script src="../../bundles/scatterjs-core.min.js"></script>
+    <script src="../../bundles/scatterjs-plugin-tron.min.js"></script>
+</head>
+<body>
+
+<button onclick="login()">Get Identity</button>
+<button onclick="logout()">Forget Identity</button>
+<button onclick="transfer()">Transfer</button>
+
+<script>
+
+
+    let tron, scatter;
+    const network = {
+        blockchain:'trx',
+        chainId:'1',
+        host:'api.trongrid.io',
+        port:8090,
+        protocol:'https'
+    };
+
+    const HttpProvider = TronWeb.providers.HttpProvider;
+    const fullNode = new HttpProvider('https://api.trongrid.io:8090'); // Full node http endpoint
+    const solidityNode = new HttpProvider('https://api.trongrid.io:8091'); // Solidity node http endpoint
+    const eventServer = 'https://api.trongrid.io/'; // Contract events http endpoint
+    const tronWeb = new TronWeb(fullNode, fullNode, eventServer);
+    tronWeb.setDefaultBlock('latest');
+
+    ScatterJS.plugins( new ScatterTron() );
+
+    ScatterJS.scatter.connect('ScatterTronTest').then(connected => {
+        if(!connected) return false;
+        scatter = ScatterJS.scatter;
+        tron = scatter.trx(network, tronWeb);
+        if(scatter.identity){
+            tron.setAddress(scatter.identity.accounts[0].address);
+        }
+    });
+
+    window.login = async () => {
+        await scatter.suggestNetwork(network);
+        await scatter.getIdentity({accounts:[network]});
+        console.log('account', scatter.identity.accounts);
+        tron.setAddress(scatter.identity.accounts[0].address);
+    };
+
+    window.logout = () => {
+        scatter.forgetIdentity();
+    };
+
+    window.transfer = async () => {
+        const send = await tron.transactionBuilder.sendTrx('TYkfNHvpfwU7iX2hUpXQ7pjRY7Lg6SEZ96', 1);
+        const sent = await tron.trx.sign(send);
+        console.log('sent', sent);
+    };
+
+    window.hookTransfer = () => {
+        const eos = Eos({httpEndpoint:`${network.protocol}://${network.host}:${network.port}`, signProvider:scatter.eosHook(network)});
+        const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+        const opts = { authorization:[`${account.name}@${account.authority}`] };
+        eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
+            console.log('trx', trx);
+        }).catch(err => {
+            console.error(err);
+        })
+    };
+
+</script>
+</body>
+</html>
