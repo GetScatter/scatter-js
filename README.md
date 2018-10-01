@@ -104,7 +104,7 @@ ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
 ```
 
 # What now?
-Head over to the [Scatter Developer Documentation](https://get-scatter.com/docs/dev/getting-started) to learn about
+Head over to the [Scatter Developer Documentation](https://get-scatter.com/docs/getting-started) to learn about
 all the amazing things you can do with Scatter.
 
 There's also a lot more information about proper setup in the
