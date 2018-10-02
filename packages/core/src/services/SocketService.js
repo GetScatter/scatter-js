@@ -145,7 +145,7 @@ export default class SocketService {
                 const trySocket = (ssl = true, resolver = null) => {
                     let promise;
                     if(!resolver) promise = new Promise(r => resolver = r);
-                    const hostname = ssl ? 'scatter.eosbet.io:50006' : '127.0.0.1:50005';
+                    const hostname = ssl ? 'local.get-scatter.com:50006' : '127.0.0.1:50005';
                     const protocol = ssl ? 'wss://' : 'ws://';
                     const host = `${protocol}${hostname}${suffix}`;
                     const s = new WebSocket(host);
