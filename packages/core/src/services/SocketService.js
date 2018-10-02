@@ -2,7 +2,8 @@ import StorageService from './StorageService'
 import getRandomValues from 'get-random-values';
 import createHash from 'create-hash';
 
-const host = '127.0.0.1:50005';
+const suffix = '/socket.io/?EIO=3&transport=websocket';
+
 
 let socket = null;
 let connected = false;
@@ -83,74 +84,98 @@ export default class SocketService {
 
                 reconnectOnAbnormalDisconnection();
             }, this.timeout)),
-            new Promise((resolve, reject) => {
-                socket = new WebSocket(`ws://${host}/socket.io/?EIO=3&transport=websocket`);
+            new Promise(async (resolve, reject) => {
 
-                socket.onclose = x => resolve(false);
-                socket.onerror = err => resolve(false);
-
-                socket.onopen = x => {
-                    send();
-                    clearTimeout(reconnectionTimeout);
-                    connected = true;
-                    pair(true).then(() => {
-                        resolve(true);
-                    });
-                };
-
-                socket.onmessage = msg => {
-                    // Handshaking/Upgrading
-                    if(msg.data.indexOf('42/scatter') === -1) return false;
+                const setupSocket = () => {
+                    socket.onmessage = msg => {
+                        // Handshaking/Upgrading
+                        if(msg.data.indexOf('42/scatter') === -1) return false;
 
 
-                    // Real message
-                    const [type, data] = JSON.parse(msg.data.replace('42/scatter,', ''));
+                        // Real message
+                        const [type, data] = JSON.parse(msg.data.replace('42/scatter,', ''));
 
-                    switch(type){
-                        case 'paired': return msg_paired(data);
-                        case 'rekey': return msg_rekey();
-                        case 'api': return msg_api(data);
-                    }
-                };
-
-                const msg_paired = result => {
-                    paired = result;
-
-                    if(paired) {
-                        const savedKey = StorageService.getAppKey();
-                        const hashed = appkey.indexOf('appkey:') > -1 ? sha256(appkey) : appkey;
-
-                        if (!savedKey || savedKey !== hashed) {
-                            StorageService.setAppKey(hashed);
-                            appkey = StorageService.getAppKey();
+                        switch(type){
+                            case 'paired': return msg_paired(data);
+                            case 'rekey': return msg_rekey();
+                            case 'api': return msg_api(data);
                         }
-                    }
+                    };
 
-                    pairingPromise.resolve(result);
+                    const msg_paired = result => {
+                        paired = result;
+
+                        if(paired) {
+                            const savedKey = StorageService.getAppKey();
+                            const hashed = appkey.indexOf('appkey:') > -1 ? sha256(appkey) : appkey;
+
+                            if (!savedKey || savedKey !== hashed) {
+                                StorageService.setAppKey(hashed);
+                                appkey = StorageService.getAppKey();
+                            }
+                        }
+
+                        pairingPromise.resolve(result);
+                    };
+
+                    const msg_rekey = () => {
+                        appkey = 'appkey:'+random();
+                        send('rekeyed', {data:{ appkey, origin:getOrigin() }, plugin});
+                    };
+
+                    const msg_api = response => {
+                        const openRequest = openRequests.find(x => x.id === response.id);
+                        if(!openRequest) return;
+
+                        openRequests = openRequests.filter(x => x.id !== response.id);
+
+                        const isErrorResponse = typeof response.result === 'object'
+                            && response.result !== null
+                            && response.result.hasOwnProperty('isError');
+
+                        if(isErrorResponse) openRequest.reject(response.result);
+                        else openRequest.resolve(response.result);
+                    };
+
+                    // socket.on('event', event => {
+                    //     console.log('event', event);
+                    // });
                 };
 
-                const msg_rekey = () => {
-                    appkey = 'appkey:'+random();
-                    send('rekeyed', {data:{ appkey, origin:getOrigin() }, plugin});
+                const trySocket = (ssl = true, resolver = null) => {
+                    let promise;
+                    if(!resolver) promise = new Promise(r => resolver = r);
+                    const hostname = ssl ? 'scatter.eosbet.io:50006' : '127.0.0.1:50005';
+                    const protocol = ssl ? 'wss://' : 'ws://';
+                    const host = `${protocol}${hostname}${suffix}`;
+                    const s = new WebSocket(host);
+
+                    s.onerror = err => {
+                        if(!ssl) {
+                            resolve(false);
+                            resolver(false);
+                        }
+                        else trySocket(false, resolver);
+                    };
+
+                    s.onopen = () => {
+                        socket = s;
+
+                        send();
+                        clearTimeout(reconnectionTimeout);
+                        connected = true;
+                        pair(true).then(() => {
+                            resolve(true);
+                            resolver(true);
+                        });
+
+                        setupSocket();
+                    };
+
+                    return promise;
                 };
+                await trySocket();
 
-                const msg_api = response => {
-                    const openRequest = openRequests.find(x => x.id === response.id);
-                    if(!openRequest) return;
-
-                    openRequests = openRequests.filter(x => x.id !== response.id);
-
-                    const isErrorResponse = typeof response.result === 'object'
-                        && response.result !== null
-                        && response.result.hasOwnProperty('isError');
-
-                    if(isErrorResponse) openRequest.reject(response.result);
-                    else openRequest.resolve(response.result);
-                };
-
-                // socket.on('event', event => {
-                //     console.log('event', event);
-                // });
             })
         ])
     }
