@@ -67,7 +67,7 @@ Let's take `eosjs` as an example.
 
 ```js
 import ScatterJS from 'scatterjs-core';
-import ScatterEOS from 'scatterjs-plugin-eosjs'
+import ScatterEOS from 'scatterjs-plugin-eosjs';
 
 ScatterJS.plugins( new ScatterEOS() );
 ```
