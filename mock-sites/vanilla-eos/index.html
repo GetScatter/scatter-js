@@ -56,16 +56,16 @@
 
     window.transfer = async () => {
         const eos = scatter.eos(network, Eos);
-        const test = await eos.getKeyAccounts('EOS7PNWhQDMx1SSPp2T7ZGRaVAGbhs6UJk8DniUzfNJGv5rjgCcvZ');
-        console.log('test', test);
-        console.log('eos', eos);
-//        const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
-//        const opts = { authorization:[`${account.name}@${account.authority}`] };
-//        eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
-//            console.log('trx', trx);
-//        }).catch(err => {
-//            console.error(err);
-//        })
+//        const test = await eos.getKeyAccounts('EOS7PNWhQDMx1SSPp2T7ZGRaVAGbhs6UJk8DniUzfNJGv5rjgCcvZ');
+//        console.log('test', test);
+//        console.log('eos', eos);
+        const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+        const opts = { authorization:[`${account.name}@${account.authority}`], requiredFields:{personal:['email'], location:['address']} };
+        eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
+            console.log('trx', trx);
+        }).catch(err => {
+            console.error(err);
+        })
     };
 
     window.hookTransfer = () => {
