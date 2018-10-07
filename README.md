@@ -3,9 +3,7 @@
 
 [![npm version](https://badge.fury.io/js/scatter-js.svg)](https://badge.fury.io/js/scatter-js) scatter-js
 
-## Right now you should still be using `scatter-js` and not this `scatterjs-core` library as it is still in alpha. [Click Here](https://github.com/GetScatter/scatter-js/tree/2.5.1) to go to the latest version of `scatter-js` which is being used in production applications and is stable. 
-
-
+## [Click Here for old scatter-js version](https://github.com/GetScatter/scatter-js/tree/2.5.1).
 
 
 
@@ -15,7 +13,13 @@
 [![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs) scatterjs-plugin-eosjs
 
 
+[![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs2) scatterjs-plugin-eosjs2
+
+
 [![npm version](https://badge.fury.io/js/scatterjs-plugin-web3.svg)](https://badge.fury.io/js/scatterjs-plugin-web3) scatterjs-plugin-web3
+
+
+[![npm version](https://badge.fury.io/js/scatterjs-plugin-web3.svg)](https://badge.fury.io/js/scatterjs-plugin-tron) scatterjs-plugin-tron
 
 
 ## Installation
@@ -40,11 +44,18 @@ can't be used.
 #### EOSIO
 ```
 npm i -S scatterjs-plugin-eosjs
+// OR
+npm i -S scatterjs-plugin-eosjs2
 ```
 
 #### Ethereum
 ```
 npm i -S scatterjs-plugin-web3
+```
+
+#### Tron
+```
+npm i -S scatterjs-plugin-tron
 ```
 
 -------
@@ -82,7 +93,10 @@ You only need to write code once, and you will instantly support any Scatter the
 #### Making a connection
 
 ```js
-ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
+// Optional!
+const connectionOptions = {initTimeout:10000}
+
+ScatterJS.scatter.connect("Put_Your_App_Name_Here", connectionOptions).then(connected => {
     if(!connected) {
         // User does not have Scatter installed/unlocked.
         return false;
@@ -94,14 +108,18 @@ ScatterJS.scatter.connect("Put_Your_App_Name_Here").then(connected => {
 ```
 
 
-### Connection Options
+#### Using a signature provider ( plugin )
+You can instantiate most plugins in two ways.
 
 ```js
-{
-    // You may specify a maximum timeout for checking if a user has Scatter installed
-    initTimeout:10000,
-}
+// Using a proxy wrapper
+const eos = scatter.eos(network, Eos, eosjsOptions);
+
+// Or using a hook provider.
+const eos = Eos({httpEndpoint:'', signatureProvider:scatter.eosHook(network)});
 ```
+
+
 
 # What now?
 Head over to the [Scatter Developer Documentation](https://get-scatter.com/docs/getting-started) to learn about
