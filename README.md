@@ -36,6 +36,10 @@ decentralized way, but don't need any blockchain functionality.
 npm i -S scatterjs-core
 ```
 
+### NodeJS and babel/webpack.
+If you're having trouble packaging or compiling your project you probably need to add a babel transpiler.
+- `npm i -D @babel/runtime` <-- run this command and it should compile.
+
 ### Plugins
 To keep this library small and focused only on the blockchains you want to use
 you can import each blockchain separately. The blockchains you don't import
