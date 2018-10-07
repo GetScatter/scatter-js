@@ -113,10 +113,10 @@ You can instantiate most plugins in two ways.
 
 ```js
 // Using a proxy wrapper
-const eos = scatter.eos(network, Eos, eosjsOptions);
+const eos = ScatterJS.scatter.eos(network, Eos, eosjsOptions);
 
 // Or using a hook provider.
-const eos = Eos({httpEndpoint:'', signatureProvider:scatter.eosHook(network)});
+const eos = Eos({httpEndpoint:'', signatureProvider:ScatterJS.scatter.eosHook(network)});
 ```
 
 
