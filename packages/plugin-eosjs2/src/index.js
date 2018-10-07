@@ -18,6 +18,8 @@ export default class ScatterEOS extends Plugin {
     }
 
     hookProvider(network, fieldsFetcher = null){
+        network = Network.fromJson(network);
+
         return {
             requiredFields:{},
             getAvailableKeys:async () => {
@@ -34,7 +36,7 @@ export default class ScatterEOS extends Plugin {
                 const requiredFields = fieldsFetcher ? fieldsFetcher() : {};
                 signargs.serializedTransaction = Buffer.from(signargs.serializedTransaction).toString('hex');
 
-                return new Promise(resolve => {
+                return new Promise(async resolve => {
                     const payload = { transaction:signargs, blockchain:Blockchains.EOS, network, requiredFields };
                     SocketService.sendApiRequest({
                         type:'requestSignature',
