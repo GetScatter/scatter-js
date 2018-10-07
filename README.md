@@ -1,12 +1,6 @@
 # Scatter JS
 
 
-[![npm version](https://badge.fury.io/js/scatter-js.svg)](https://badge.fury.io/js/scatter-js) scatter-js
-
-## [Click Here for old scatter-js version](https://github.com/GetScatter/scatter-js/tree/2.5.1).
-
-
-
 [![npm version](https://badge.fury.io/js/scatterjs-core.svg)](https://badge.fury.io/js/scatterjs-core) scatterjs-core
 
 
@@ -134,3 +128,13 @@ There's also a lot more information about proper setup in the
 [Setting up for Web Applications](https://get-scatter.com/docs/dev/setting-up-for-web-apps)
 section which will help you get the most out of ScatterJS, and make sure
 you aren't exposing your users to malicious non-Scatter plugins.
+
+
+
+---------------------
+
+# Looking for the old `scatter-js` package?
+
+[![npm version](https://badge.fury.io/js/scatter-js.svg)](https://badge.fury.io/js/scatter-js) scatter-js
+
+## [Click Here](https://github.com/GetScatter/scatter-js/tree/2.5.1). to go to `scatter-js@2.5.1`
