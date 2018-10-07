@@ -135,6 +135,4 @@ you aren't exposing your users to malicious non-Scatter plugins.
 
 # Looking for the old `scatter-js` package?
 
-[![npm version](https://badge.fury.io/js/scatter-js.svg)](https://badge.fury.io/js/scatter-js) scatter-js
-
-## [Click Here](https://github.com/GetScatter/scatter-js/tree/2.5.1). to go to `scatter-js@2.5.1`
+### [Click Here](https://github.com/GetScatter/scatter-js/tree/2.5.1) to go to `scatter-js@2.5.1`
