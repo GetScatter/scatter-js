@@ -60,13 +60,7 @@ npm i -S scatterjs-plugin-web3
 npm i -S scatterjs-plugin-tron
 ```
 
------------
-
-The same works with `yarn` as well if you prefer to use that.
-```
-yarn link scatterjs-core
-yarn link scatterjs-plugin-eosjs
-```
+-------------
 
 
 
