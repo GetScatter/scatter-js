@@ -66,11 +66,13 @@
 
     window.transfer = async () => {
         const api = scatter.eos(network, eosjs.Api, {rpc});
+        console.log(await api.getAccount('safetransfer'))
         tryTransfer(api);
     };
 
     window.hookTransfer = async () => {
         const api = getApi(scatter.eosHook(network));
+		const from = scatter.identity.accounts[0];
         tryTransfer(api);
     };
 
@@ -95,9 +97,7 @@
             }, {
                 blocksBehind: 3,
                 expireSeconds: 30,
-            }, {requiredFields:{
-                personal:['email']
-            }});
+            });
             console.log('result', result);
         } catch (e) {
             console.error(e);
