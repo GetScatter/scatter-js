@@ -9,8 +9,6 @@ import {
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 let cache = {};
 
-import eosjs from 'eosjs';
-
 export default class ScatterEOS extends Plugin {
 
     constructor(){
