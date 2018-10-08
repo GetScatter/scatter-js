@@ -18,7 +18,6 @@ export default class ScatterEOS extends Plugin {
     hookProvider(network){
         return signargs => {
             return new Promise(resolve => {
-                console.log('signargs', JSON.stringify(signargs))
                 const payload = Object.assign(signargs, { blockchain:Blockchains.EOS, network, requiredFields:{} });
                 SocketService.sendApiRequest({
                     type:'requestSignature',
@@ -54,7 +53,6 @@ export default class ScatterEOS extends Plugin {
 
                         // The signature provider which gets elevated into the user's Scatter
                         const signProvider = async signargs => {
-                            console.log('signargs', JSON.stringify(signargs))
                             throwIfNoIdentity();
 
                             const requiredFields = args.find(arg => arg.hasOwnProperty('requiredFields')) || {requiredFields:{}};
