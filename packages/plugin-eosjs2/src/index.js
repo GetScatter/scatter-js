@@ -67,7 +67,7 @@ export default class ScatterEOS extends Plugin {
                     let returnedFields = null;
 
                     return (...args) => {
-                    	if(!eosInstance.hasOwnProperty(method) || typeof eosInstance[method] === 'undefined'){
+                    	if(typeof eosInstance[method] === 'undefined'){
                     		throw new Error(`${method} does not exist on the eosjs.Api() object.`)
 						}
 

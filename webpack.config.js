@@ -6,11 +6,11 @@ const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
 const getPackagePath = x => `./packages/${x}/src/index.js`;
 
 const packageFiles = [
-	'core',
-	'plugin-eosjs',
+	// 'core',
+	// 'plugin-eosjs',
 	'plugin-eosjs2',
-	'plugin-web3',
-	'plugin-tron',
+	// 'plugin-web3',
+	// 'plugin-tron',
 ];
 
 const entry = packageFiles.reduce((o, file) => Object.assign(o, {[`${file}.min.js`]: getPackagePath(file)}), {});
