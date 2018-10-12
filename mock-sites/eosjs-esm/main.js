@@ -79,3 +79,6 @@ window.fixedDonate = () => {
 		console.log('result', result);
 	})
 };
+
+
+

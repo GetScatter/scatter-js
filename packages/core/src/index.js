@@ -37,21 +37,6 @@ class Index {
         }
 	}
 
-    async isInstalled(){
-        return new Promise(resolve => {
-            setTimeout(() => {
-                resolve(false);
-            }, 3000);
-
-            Promise.race([
-                checkForExtension(resolve),
-                SocketService.ping().then(found => {
-                    if(found) resolve(true);
-                })
-            ])
-        })
-    }
-
     async connect(pluginName, options){
         return new Promise(resolve => {
             if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");

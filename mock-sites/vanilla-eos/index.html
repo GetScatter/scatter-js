@@ -15,7 +15,34 @@
 <button onclick="transfer()">Transfer</button>
 <button onclick="hookTransfer()">Hook Transfer</button>
 
+<a href="scatter://transfer?payload=safetransfer/eos/aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906/ramdeathtest">
+    <button>Donate with Scatter</button>
+</a>
+
 <script>
+
+//    location = 'scatter://transfer?payload=safetransfer/1.0000/eos/aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906/ramdeathtest';
+
+    const net = { "blockchain":"eos", "chainId":"aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906", "host":"nodes.get-scatter.com", "port":8888, "protocol":"https" };
+    const payload = {
+        origin:'tester',
+        network:net,
+        to:'ramdeathtest',
+        amount:'1.0000',
+        options:{contract:'eosio.token', symbol:'EOS', memo:'ramdeathtest', decimals:4}
+    };
+
+    const params = {
+        id:'random-uid',
+        type:'requestTransfer',
+        plugin:'tester',
+        payload:payload
+    }
+
+    const url = `scatter://requestTransfer/?payload=${encodeURI(JSON.stringify(params))}`;
+
+    // scatter://transfer?payload=safetransfer/eos/aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906/ramdeathtest
+    // scatter://requestTransfer/?payload=%7B%22id%22:%22random-uid%22,%22type%22:%22requestTransfer%22,%22plugin%22:%22tester%22,%22payload%22:%7B%22origin%22:%22tester%22,%22network%22:%7B%22blockchain%22:%22eos%22,%22chainId%22:%22aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906%22,%22host%22:%22nodes.get-scatter.com%22,%22port%22:8888,%22protocol%22:%22https%22%7D,%22to%22:%22ramdeathtest%22,%22amount%22:%221.0000%22,%22options%22:%7B%22contract%22:%22eosio.token%22,%22symbol%22:%22EOS%22,%22memo%22:%22ramdeathtest%22,%22decimals%22:4%7D%7D%7D
 
     console.log(ScatterJS);
 
