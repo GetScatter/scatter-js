@@ -34,12 +34,13 @@ export default class ScatterEOS extends Plugin {
                 const requiredFields = fieldsFetcher ? fieldsFetcher() : {};
                 signargs.serializedTransaction = Buffer.from(signargs.serializedTransaction).toString('hex');
 
-                return new Promise(async resolve => {
+                return new Promise(async (resolve, reject) => {
                     const payload = { transaction:signargs, blockchain:Blockchains.EOS, network, requiredFields };
                     SocketService.sendApiRequest({
                         type:'requestSignature',
                         payload
                     }).then(x => resolve(x.signatures))
+                      .catch(x => reject(x))
                 })
             }
         }
@@ -63,8 +64,6 @@ export default class ScatterEOS extends Plugin {
             // This is used to add special functionality like adding `requiredFields` arrays to transactions
             return proxy(new _api(Object.assign(_options, {signatureProvider})), {
                 get(eosInstance, method) {
-
-                    let returnedFields = null;
 
                     return (...args) => {
                     	if(typeof eosInstance[method] === 'undefined'){

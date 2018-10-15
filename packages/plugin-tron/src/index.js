@@ -27,25 +27,81 @@ export default class ScatterTron extends Plugin {
 
             network = Network.fromJson(network);
             if(!network.isValid()) throw Error.noNetwork();
-            const httpEndpoint = `${network.protocol}://${network.hostport()}`;
 
-            const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : _options.chainId;
+            const getSigner = (abi = null) => {
+                return signargs => {
+                    return new Promise(resolve => {
+                        const transaction = {
+                            transaction:signargs,
+                            participants:[_tron.defaultAddress.base58],
+                        };
+                        const payload = { transaction, blockchain:Blockchains.TRX, network, requiredFields:{}, abi };
+                        SocketService.sendApiRequest({
+                            type:'requestSignature',
+                            payload
+                        }).then(x => resolve(x.signatures))
+                    })
+                };
+            }
 
-            _tron.trx.sign = signargs => {
-                return new Promise(resolve => {
-                    const transaction = {
-                        transaction:signargs,
-                        participants:[_tron.defaultAddress.base58],
+            _tron.trx.sign = getSigner();
+
+            return proxy(_tron, {
+                get(instance, method) {
+                    console.log('method', method);
+
+                    if(typeof instance[method] === 'function') return (...args) => {
+                        console.log('args', args);
+
+                        if(method === 'contract') {
+                            return proxy(instance[method](...args), {
+                                get(a,b){
+                                    console.log('a', a,b)
+                                    instance.trx.sign = getSigner({abi: args[0], address: args[1], method:b});
+                                    return a[b];
+                                }
+                            });
+                        }
+
+                        return instance[method](...args)
+
                     };
-                    const payload = { transaction, blockchain:Blockchains.TRX, network, requiredFields:{} };
-                    SocketService.sendApiRequest({
-                        type:'requestSignature',
-                        payload
-                    }).then(x => resolve(x.signatures))
-                })
-            };
+                    else return instance[method];
 
-            return _tron;
+                }
+            });
+            //
+            // return proxy(_tron, {
+            //     get(instance, method) {
+            //         console.log('method', method);
+            //         if(typeof instance[method] === 'function') return (...args) => {
+            //             console.log('args', args);
+            //
+            //             // const rqf = args.find(arg => arg.hasOwnProperty('requiredFields'));
+            //
+            //             return instance[method](...args)
+            //
+            //         };
+            //         else return instance[method];
+            //
+            //     }
+            // });
+
+            // _tron.trx.sign = signargs => {
+            //     return new Promise(resolve => {
+            //         const transaction = {
+            //             transaction:signargs,
+            //             participants:[_tron.defaultAddress.base58],
+            //         };
+            //         const payload = { transaction, blockchain:Blockchains.TRX, network, requiredFields:{} };
+            //         SocketService.sendApiRequest({
+            //             type:'requestSignature',
+            //             payload
+            //         }).then(x => resolve(x.signatures))
+            //     })
+            // };
+            //
+            // return _tron;
 
         }
     }

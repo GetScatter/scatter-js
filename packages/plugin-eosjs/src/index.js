@@ -17,12 +17,13 @@ export default class ScatterEOS extends Plugin {
 
     hookProvider(network){
         return signargs => {
-            return new Promise(resolve => {
+            return new Promise((resolve, reject) => {
                 const payload = Object.assign(signargs, { blockchain:Blockchains.EOS, network, requiredFields:{} });
                 SocketService.sendApiRequest({
                     type:'requestSignature',
                     payload
                 }).then(x => resolve(x.signatures))
+                  .catch(x => reject(x));
             })
         }
     }

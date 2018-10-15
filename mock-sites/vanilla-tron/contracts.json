@@ -1,89 +1,72 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Web Tester</title>
-
-    <script src="https://rawgit.com/tronprotocol/tron-web/master/dist/TronWeb.js"></script>
-    <script src="../../bundles/scatterjs-core.min.js"></script>
-    <script src="../../bundles/scatterjs-plugin-tron.min.js"></script>
-</head>
-<body>
-
-<button onclick="login()">Get Identity</button>
-<button onclick="logout()">Forget Identity</button>
-<button onclick="transfer()">Transfer</button>
-<button onclick="testContract()">Test Contract</button>
-
-<script>
-
-
-    let tron, scatter, contract;
-    const network = ScatterJS.Network.fromJson({
-        blockchain:'trx',
-        chainId:'1',
-        host:'api.trongrid.io',
-        port:443,
-        protocol:'https'
-    });
-
-    const HttpProvider = TronWeb.providers.HttpProvider;
-    const provider = new HttpProvider(network.fullhost());
-    const tronWeb = new TronWeb(provider, provider, network.fullhost());
-    tronWeb.setDefaultBlock('latest');
-
-    ScatterJS.plugins( new ScatterTron() );
-
-    ScatterJS.scatter.connect('ScatterTronTest').then(connected => {
-        if(!connected) return false;
-        scatter = ScatterJS.scatter;
-        tron = scatter.trx(network, tronWeb);
-        if(scatter.identity){
-            tron.setAddress(scatter.identity.accounts[0].address);
-        }
-        contract = tron.contract(contractData.abi, contractData.address);
-    });
-
-    window.login = async () => {
-        await scatter.suggestNetwork(network);
-        await scatter.getIdentity({accounts:[network]});
-        console.log('account', scatter.identity.accounts);
-        tron.setAddress(scatter.identity.accounts[0].address);
-    };
-
-    window.logout = () => {
-        scatter.forgetIdentity();
-    };
-
-    window.transfer = async () => {
-        const send = await tron.transactionBuilder.sendTrx('TYkfNHvpfwU7iX2hUpXQ7pjRY7Lg6SEZ96', 1);
-        const sent = await tron.trx.sign(send);
-        console.log('sent', sent);
-    };
-
-    window.hookTransfer = () => {
-        const eos = Eos({httpEndpoint:`${network.protocol}://${network.host}:${network.port}`, signProvider:scatter.eosHook(network)});
-        const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
-        const opts = { authorization:[`${account.name}@${account.authority}`] };
-        eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
-            console.log('trx', trx);
-        }).catch(err => {
-            console.error(err);
-        })
-    };
-
-    window.testContract = async () => {
-        const sent = await contract.postMessage('hello').send({
-            shouldPollResponse: true,
-            callValue: 0
-        });
-//        const sent = await tron.trx.sign(send);
-        console.log('sent', sent);
-    };
-
-
-
-    const contractData = {
+{
+    "Migrations.sol:Migrations": {
+        "address": "414587f71ee0a12665ae6e883c1e4c20be38fc3b83",
+        "abi": [
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "new_address",
+                        "type": "address"
+                    }
+                ],
+                "name": "upgrade",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "last_completed_migration",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "uint256"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": true,
+                "inputs": [],
+                "name": "owner",
+                "outputs": [
+                    {
+                        "name": "",
+                        "type": "address"
+                    }
+                ],
+                "payable": false,
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "constant": false,
+                "inputs": [
+                    {
+                        "name": "completed",
+                        "type": "uint256"
+                    }
+                ],
+                "name": "setCompleted",
+                "outputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "payable": false,
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            }
+        ]
+    },
+    "TRXMessages.sol:TRXMessages": {
         "address": "41a4997124a328a4615eab437cede31da47a31b375",
         "abi": [
             {
@@ -331,7 +314,4 @@
             }
         ]
     }
-
-</script>
-</body>
-</html>
+}
