@@ -89,6 +89,13 @@ export default class ScatterEOS extends Plugin {
                             // rebuilding internal eosjs caches
                             const getOrCache = () => {
                                 const unique = JSON.stringify(Object.assign(_options, {httpEndpoint, chainId}));
+
+                                if(_options.hasOwnProperty('breakCache')){
+                                    if(cache.hasOwnProperty(unique)){
+                                        delete cache[unique];
+                                    }
+                                }
+
                                 if(!cache.hasOwnProperty(unique)) cache[unique] = _eos(Object.assign(_options, {
                                     httpEndpoint,
                                     signProvider,
