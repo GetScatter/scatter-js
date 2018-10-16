@@ -34,6 +34,7 @@ export default class ScatterEOS extends Plugin {
 
         // Protocol will be deprecated.
         return (network, _eos, _options = {}) => {
+            let brokeCache = false;
 
             network = Network.fromJson(network);
             if(!network.isValid()) throw Error.noNetwork();
@@ -90,7 +91,8 @@ export default class ScatterEOS extends Plugin {
                             const getOrCache = () => {
                                 const unique = JSON.stringify(Object.assign(_options, {httpEndpoint, chainId}));
 
-                                if(_options.hasOwnProperty('breakCache')){
+                                if(_options.hasOwnProperty('breakCache') && !brokeCache){
+                                    brokeCache = true;
                                     if(cache.hasOwnProperty(unique)){
                                         delete cache[unique];
                                     }
