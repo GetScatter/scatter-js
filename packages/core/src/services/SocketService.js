@@ -31,6 +31,8 @@ const getOrigin = () => {
             origin = location.hostname;
         else origin = plugin;
     else origin = plugin;
+
+    if(origin.startWith('www.')) origin = origin.replace('www.','');
     return origin;
 }
 
