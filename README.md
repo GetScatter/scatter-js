@@ -134,7 +134,7 @@ Head over to the [Scatter Developer Documentation](https://get-scatter.com/docs/
 all the amazing things you can do with Scatter.
 
 There's also a lot more information about proper setup in the
-[Setting up for Web Applications](https://get-scatter.com/docs/dev/setting-up-for-web-apps)
+[Setting up for Web Applications](https://get-scatter.com/docs/setting-up-for-web-apps)
 section which will help you get the most out of ScatterJS, and make sure
 you aren't exposing your users to malicious non-Scatter plugins.
 
