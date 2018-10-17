@@ -18,15 +18,6 @@ let reconnectionTimeout = null;
 
 const sha256 = data => createHash('sha256').update(data).digest('hex');
 
-const reconnectOnAbnormalDisconnection = () => {
-    if(!allowReconnects) return;
-
-	clearTimeout(reconnectionTimeout);
-	reconnectionTimeout = setTimeout(() => {
-		SocketService.link();
-	}, 1000);
-};
-
 const random = () => {
     const array = new Uint8Array(24);
     getRandomValues(array);
@@ -81,8 +72,6 @@ export default class SocketService {
                     socket.disconnect();
                     socket = null;
                 }
-
-                reconnectOnAbnormalDisconnection();
             }, this.timeout)),
             new Promise(async (resolve, reject) => {
 
