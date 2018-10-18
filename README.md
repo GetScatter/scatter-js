@@ -7,13 +7,13 @@
 [![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs) scatterjs-plugin-eosjs
 
 
-[![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs2) scatterjs-plugin-eosjs2
+[![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs2.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs2) scatterjs-plugin-eosjs2
 
 
 [![npm version](https://badge.fury.io/js/scatterjs-plugin-web3.svg)](https://badge.fury.io/js/scatterjs-plugin-web3) scatterjs-plugin-web3
 
 
-[![npm version](https://badge.fury.io/js/scatterjs-plugin-web3.svg)](https://badge.fury.io/js/scatterjs-plugin-tron) scatterjs-plugin-tron
+[![npm version](https://badge.fury.io/js/scatterjs-plugin-tron.svg)](https://badge.fury.io/js/scatterjs-plugin-tron) scatterjs-plugin-tron
 
 ## CDN
 ```
@@ -134,7 +134,7 @@ Head over to the [Scatter Developer Documentation](https://get-scatter.com/docs/
 all the amazing things you can do with Scatter.
 
 There's also a lot more information about proper setup in the
-[Setting up for Web Applications](https://get-scatter.com/docs/dev/setting-up-for-web-apps)
+[Setting up for Web Applications](https://get-scatter.com/docs/setting-up-for-web-apps)
 section which will help you get the most out of ScatterJS, and make sure
 you aren't exposing your users to malicious non-Scatter plugins.
 
