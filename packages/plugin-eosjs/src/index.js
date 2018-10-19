@@ -7,7 +7,6 @@ import {
 } from 'scatterjs-core';
 
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
-let cache = {};
 
 export default class ScatterEOS extends Plugin {
 
@@ -34,7 +33,6 @@ export default class ScatterEOS extends Plugin {
 
         // Protocol will be deprecated.
         return (network, _eos, _options = {}) => {
-            let brokeCache = false;
 
             network = Network.fromJson(network);
             if(!network.isValid()) throw Error.noNetwork();
@@ -86,29 +84,13 @@ export default class ScatterEOS extends Plugin {
 
                         return new Promise((resolve, reject) => {
 
-                            // Moving to a caching system to avoid
-                            // rebuilding internal eosjs caches
-                            const getOrCache = () => {
-                                const unique = JSON.stringify(Object.assign(_options, {httpEndpoint, chainId}));
+                            const eos = _eos(Object.assign(_options, {
+                                httpEndpoint,
+                                signProvider,
+                                chainId
+                            }));
 
-                                if(_options.hasOwnProperty('breakCache') && !brokeCache){
-                                    brokeCache = true;
-                                    if(cache.hasOwnProperty(unique)){
-                                        delete cache[unique];
-                                    }
-                                }
-
-                                if(!cache.hasOwnProperty(unique)) cache[unique] = _eos(Object.assign(_options, {
-                                    httpEndpoint,
-                                    signProvider,
-                                    chainId
-                                }));
-                                return cache[unique];
-                            };
-
-                            let eos = getOrCache();
-
-                            getOrCache()[method](...args)
+                            eos[method](...args)
                                 .then(result => {
 
                                     // Standard method ( ie. not contract )
