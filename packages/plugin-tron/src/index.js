@@ -6,8 +6,6 @@ import {
 	SocketService
 } from 'scatterjs-core';
 
-
-
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 
 export default class ScatterTron extends Plugin {
@@ -51,12 +49,9 @@ export default class ScatterTron extends Plugin {
                     console.log('method', method);
 
                     if(typeof instance[method] === 'function') return (...args) => {
-                        console.log('args', args);
-
                         if(method === 'contract') {
                             return proxy(instance[method](...args), {
                                 get(a,b){
-                                    console.log('a', a,b)
                                     instance.trx.sign = getSigner({abi: args[0], address: args[1], method:b});
                                     return a[b];
                                 }
@@ -70,39 +65,6 @@ export default class ScatterTron extends Plugin {
 
                 }
             });
-            //
-            // return proxy(_tron, {
-            //     get(instance, method) {
-            //         console.log('method', method);
-            //         if(typeof instance[method] === 'function') return (...args) => {
-            //             console.log('args', args);
-            //
-            //             // const rqf = args.find(arg => arg.hasOwnProperty('requiredFields'));
-            //
-            //             return instance[method](...args)
-            //
-            //         };
-            //         else return instance[method];
-            //
-            //     }
-            // });
-
-            // _tron.trx.sign = signargs => {
-            //     return new Promise(resolve => {
-            //         const transaction = {
-            //             transaction:signargs,
-            //             participants:[_tron.defaultAddress.base58],
-            //         };
-            //         const payload = { transaction, blockchain:Blockchains.TRX, network, requiredFields:{} };
-            //         SocketService.sendApiRequest({
-            //             type:'requestSignature',
-            //             payload
-            //         }).then(x => resolve(x.signatures))
-            //     })
-            // };
-            //
-            // return _tron;
-
         }
     }
 }
