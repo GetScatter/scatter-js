@@ -51,21 +51,24 @@ export default class ScatterTron extends Plugin {
             _tron.trx.sign = getSigner();
 
 
+            const setAddress = () => {
+                const id = identityFetcher();
+                const address = id && id.accounts.find(x => x.blockchain === Blockchains.TRX)
+                    ? id.accounts.find(x => x.blockchain === Blockchains.TRX).address
+                    : null;
+
+                if(address) _tron.setAddress(address);
+            };
+
             return proxy(_tron, {
                 get(instance, method) {
-
-
-                    const id = identityFetcher();
-                    const address = id && id.accounts.find(x => x.blockchain === Blockchains.TRX)
-                        ? id.accounts.find(x => x.blockchain === Blockchains.TRX).address
-                        : null;
-
-                    if(address) _tron.setAddress(address);
+                    setAddress()
 
                     if(typeof instance[method] === 'function') return (...args) => {
                         if(method === 'contract') {
                             return proxy(instance[method](...args), {
                                 get(a,b){
+                                    setAddress();
                                     instance.trx.sign = getSigner({abi: args[0], address: args[1], method:b});
                                     return a[b];
                                 }
