@@ -34,7 +34,7 @@ export default class ScatterTron extends Plugin {
                 return signargs => {
                     throwIfNoIdentity();
 
-                    return new Promise(resolve => {
+                    return new Promise((resolve, reject) => {
                         const transaction = {
                             transaction:signargs,
                             participants:[_tron.defaultAddress.base58],
@@ -44,6 +44,7 @@ export default class ScatterTron extends Plugin {
                             type:'requestSignature',
                             payload
                         }).then(x => resolve(x.signatures))
+                          .catch(x => reject(x));
                     })
                 };
             }
