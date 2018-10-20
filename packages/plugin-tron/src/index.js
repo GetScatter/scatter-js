@@ -20,14 +20,20 @@ export default class ScatterTron extends Plugin {
 
     signatureProvider(...args){
         const throwIfNoIdentity = args[0];
+        const identityFetcher = args[1];
 
-        return (network, _tron, _options = {}) => {
+
+
+        return (network, _tron) => {
 
             network = Network.fromJson(network);
             if(!network.isValid()) throw Error.noNetwork();
 
             const getSigner = (abi = null) => {
+
                 return signargs => {
+                    throwIfNoIdentity();
+
                     return new Promise(resolve => {
                         const transaction = {
                             transaction:signargs,
@@ -44,9 +50,17 @@ export default class ScatterTron extends Plugin {
 
             _tron.trx.sign = getSigner();
 
+
             return proxy(_tron, {
                 get(instance, method) {
-                    console.log('method', method);
+
+
+                    const id = identityFetcher();
+                    const address = id && id.accounts.find(x => x.blockchain === Blockchains.TRX)
+                        ? id.accounts.find(x => x.blockchain === Blockchains.TRX).address
+                        : null;
+
+                    _tron.setAddress(address);
 
                     if(typeof instance[method] === 'function') return (...args) => {
                         if(method === 'contract') {

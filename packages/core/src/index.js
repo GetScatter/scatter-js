@@ -18,6 +18,7 @@ const checkForExtension = (resolve, tries = 0) => {
     setTimeout(() => checkForExtension(resolve, tries + 1), 100);
 };
 
+
 class Index {
 
     constructor(){
@@ -32,7 +33,7 @@ class Index {
 		PluginRepository.loadPlugin(plugin);
 
 		if(plugin.isSignatureProvider()){
-            this[plugin.name] = plugin.signatureProvider(noIdFunc);
+            this[plugin.name] = plugin.signatureProvider(noIdFunc, () => this.identity);
             this[plugin.name+'Hook'] = plugin.hookProvider;
         }
 	}

@@ -38,9 +38,6 @@
         if(!connected) return false;
         scatter = ScatterJS.scatter;
         tron = scatter.trx(network, tronWeb);
-        if(scatter.identity){
-            tron.setAddress(scatter.identity.accounts[0].address);
-        }
         contract = tron.contract(contractData.abi, contractData.address);
     });
 
@@ -48,7 +45,6 @@
         await scatter.suggestNetwork(network);
         await scatter.getIdentity({accounts:[network]});
         console.log('account', scatter.identity.accounts);
-        tron.setAddress(scatter.identity.accounts[0].address);
     };
 
     window.logout = () => {
