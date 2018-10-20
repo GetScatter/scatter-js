@@ -60,7 +60,7 @@ export default class ScatterTron extends Plugin {
                         ? id.accounts.find(x => x.blockchain === Blockchains.TRX).address
                         : null;
 
-                    _tron.setAddress(address);
+                    if(address) _tron.setAddress(address);
 
                     if(typeof instance[method] === 'function') return (...args) => {
                         if(method === 'contract') {
