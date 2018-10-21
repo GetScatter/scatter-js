@@ -14,9 +14,10 @@
 <button onclick="logout()">Forget Identity</button>
 <button onclick="transfer()">Transfer</button>
 <button onclick="hookTransfer()">Hook Transfer</button>
+<button onclick="donate()">Donate</button>
 
-<a href="scatter://transfer?payload=safetransfer/1.0000/eos/aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906/ramdeathtest">
-    <button>Donate with Scatter</button>
+<a href="scatter://transfer?payload=safetransfer/0/eos/aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906/ramdeathtest">
+    <button>Donate with Deep Link</button>
 </a>
 
 <script>
@@ -79,6 +80,11 @@
         }).catch(err => {
             console.error(err);
         })
+    };
+
+    window.donate = () => {
+        const tokenDetails = {contract:'eosio.token', symbol:'EOS', memo:'', decimals:4};
+        scatter.requestTransfer(network, 'eosio', 0, tokenDetails);
     };
 
 </script>

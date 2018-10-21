@@ -43,13 +43,12 @@ export default class ScatterTron extends Plugin {
                         SocketService.sendApiRequest({
                             type:'requestSignature',
                             payload
-                        }).then(x => resolve(x.signatures))
+                        }).then(x => resolve(x.signatures[0]))
                           .catch(x => reject(x));
                     })
                 };
-            }
+            };
 
-            _tron.trx.sign = getSigner();
 
 
             const setAddress = () => {
@@ -63,7 +62,8 @@ export default class ScatterTron extends Plugin {
 
             return proxy(_tron, {
                 get(instance, method) {
-                    setAddress()
+                    setAddress();
+                    _tron.trx.sign = getSigner();
 
                     if(typeof instance[method] === 'function') return (...args) => {
                         if(method === 'contract') {

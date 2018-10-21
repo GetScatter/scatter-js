@@ -5,6 +5,7 @@
     <title>Web Tester</title>
 
     <script src="https://rawgit.com/tronprotocol/tron-web/master/dist/TronWeb.js"></script>
+    <!--<script src="./tronweb.js"></script>-->
     <script src="../../bundles/scatterjs-core.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-tron.min.js"></script>
 </head>
@@ -72,8 +73,7 @@
         const sent = await contract.postMessage('hello').send({
             shouldPollResponse: true,
             callValue: 0
-        });
-//        const sent = await tron.trx.sign(send);
+        }).catch(x => x);
         console.log('sent', sent);
     };
 
