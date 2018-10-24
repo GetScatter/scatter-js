@@ -1,6 +1,7 @@
 import StorageService from './StorageService'
 import getRandomValues from 'get-random-values';
 import createHash from 'create-hash';
+import WebSocket from 'isomorphic-ws';
 
 const suffix = '/socket.io/?EIO=3&transport=websocket';
 
