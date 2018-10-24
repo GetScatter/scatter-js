@@ -40,68 +40,44 @@ export default class ScatterEOS extends Plugin {
 
             const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : _options.chainId;
 
-            // The proxy stands between the eosjs object and scatter.
-            // This is used to add special functionality like adding `requiredFields` arrays to transactions
-            return proxy(_eos({httpEndpoint, chainId}), {
-                get(eosInstance, method) {
+            let prov, proxyProvider = async (args) => prov(args);
+            return proxy(_eos({httpEndpoint, chainId, signProvider:proxyProvider}), {
+                get(instance, method) {
+
+                    if(typeof instance[method] !== 'function') return instance[method];
 
                     let returnedFields = null;
-
                     return (...args) => {
 
                         if(args.find(arg => arg.hasOwnProperty('keyProvider'))) throw Error.usedKeyProvider();
 
-                        // The signature provider which gets elevated into the user's Scatter
                         const signProvider = async signargs => {
                             throwIfNoIdentity();
 
                             const requiredFields = args.find(arg => arg.hasOwnProperty('requiredFields')) || {requiredFields:{}};
                             const payload = Object.assign(signargs, { blockchain:Blockchains.EOS, network, requiredFields:requiredFields.requiredFields });
-                            const result = await SocketService.sendApiRequest({
-                                type:'requestSignature',
-                                payload
-                            });
+                            const result = await SocketService.sendApiRequest({ type:'requestSignature', payload });
 
                             // No signature
                             if(!result) return null;
 
                             if(result.hasOwnProperty('signatures')){
-                                // Holding onto the returned fields for the final result
                                 returnedFields = result.returnedFields;
-
-                                // Grabbing buf signatures from local multi sig sign provider
                                 let multiSigKeyProvider = args.find(arg => arg.hasOwnProperty('signProvider'));
-                                if(multiSigKeyProvider){
-                                    result.signatures.push(multiSigKeyProvider.signProvider(signargs.buf, signargs.sign));
-                                }
-
-                                // Returning only the signatures to eosjs
+                                if(multiSigKeyProvider) result.signatures.push(multiSigKeyProvider.signProvider(signargs.buf, signargs.sign));
                                 return result.signatures;
                             }
 
                             return result;
                         };
 
+                        prov = signProvider;
+
                         return new Promise((resolve, reject) => {
 
-                            const eos = _eos(Object.assign(_options, {
-                                httpEndpoint,
-                                signProvider,
-                                chainId
-                            }));
-
-                            eos[method](...args)
+                            instance[method](...args)
                                 .then(result => {
-
-                                    // Standard method ( ie. not contract )
-                                    if(!result.hasOwnProperty('fc')){
-                                        result = Object.assign(result, {returnedFields});
-                                        resolve(result);
-                                        return;
-                                    }
-
-                                    // Catching chained promise methods ( contract .then action )
-                                    const contractProxy = proxy(result, {
+                                    resolve(proxy(result, {
                                         get(instance,method){
                                             if(method === 'then') return instance[method];
                                             return (...args) => {
@@ -113,12 +89,13 @@ export default class ScatterEOS extends Plugin {
 
                                             }
                                         }
-                                    });
+                                    }));
+                                }).catch(error => reject(error));
 
-                                    resolve(contractProxy);
-                                }).catch(error => reject(error))
                         })
                     }
+
+
                 }
             }); // Proxy
 

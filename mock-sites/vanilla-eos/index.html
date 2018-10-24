@@ -13,6 +13,9 @@
 <button onclick="login()">Get Identity</button>
 <button onclick="logout()">Forget Identity</button>
 <button onclick="transfer()">Transfer</button>
+<button onclick="contract()">Contract</button>
+<button onclick="multi()">Multi</button>
+<button onclick="fc()">Test FC</button>
 <button onclick="hookTransfer()">Hook Transfer</button>
 <button onclick="donate()">Donate</button>
 
@@ -40,17 +43,18 @@
 //        protocol:'https'
 //    };
 
-    let scatter = null;
+    let scatter, eos;
 
     ScatterJS.scatter.connect('LernaVanillaTest').then(connected => {
         if(!connected) return false;
         scatter = ScatterJS.scatter;
-        console.log('sc', scatter);
+        eos = scatter.eos(network, Eos);
     });
 
     window.login = async () => {
         await scatter.suggestNetwork(network);
         await scatter.getIdentity({accounts:[network]})
+        eos = scatter.eos(network, Eos);
     };
 
     window.logout = () => {
@@ -58,24 +62,20 @@
     };
 
     window.transfer = async () => {
-        const eos = scatter.eos(network, Eos);
-//        const test = await eos.getKeyAccounts('EOS7PNWhQDMx1SSPp2T7ZGRaVAGbhs6UJk8DniUzfNJGv5rjgCcvZ');
-//        console.log('test', test);
-//        console.log('eos', eos);
         const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
         const opts = { authorization:[`${account.name}@${account.authority}`] };
         eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
             console.log('trx', trx);
         }).catch(err => {
-            console.error(err);
+//            console.error(err);
         })
     };
 
     window.hookTransfer = () => {
-        const eos = Eos({httpEndpoint:`${network.protocol}://${network.host}:${network.port}`, signProvider:scatter.eosHook(network)});
+        const e = Eos({httpEndpoint:`${network.protocol}://${network.host}:${network.port}`, signProvider:scatter.eosHook(network), chainId:network.chainId});
         const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
         const opts = { authorization:[`${account.name}@${account.authority}`] };
-        eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
+        e.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
             console.log('trx', trx);
         }).catch(err => {
             console.error(err);
@@ -86,6 +86,35 @@
         const tokenDetails = {contract:'eosio.token', symbol:'EOS', memo:'', decimals:4};
         scatter.requestTransfer(network, 'eosio', 0, tokenDetails);
     };
+
+    window.contract = () => {
+        const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+        const opts = { authorization:[`${account.name}@${account.authority}`] };
+        eos.contract('eosio.token').then(contract => {
+            contract.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
+                console.log('trx', trx);
+            }).catch(err => {
+                console.error(err);
+            })
+        })
+    }
+
+    window.multi = () => {
+        const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+        const opts = { authorization:[`${account.name}@${account.authority}`] };
+        eos.transaction(['eosio.token', 'eosio'], contracts => {
+            contracts['eosio_token'].transfer(account.name, 'eosio', '1.0000 EOS', '', opts);
+            contracts['eosio'].delegatebw(account.name, account.name, '1.0000 EOS', '1.0000 EOS', 0, opts);
+        }).then(trx => {
+            console.log('trx', trx);
+        }).catch(err => {
+            console.error(err);
+        })
+    }
+
+    window.fc = () => {
+        console.log('fc', eos.fc.abiCache);
+    }
 
 </script>
 </body>
