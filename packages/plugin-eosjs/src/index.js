@@ -74,24 +74,25 @@ export default class ScatterEOS extends Plugin {
                         prov = signProvider;
 
                         return new Promise((resolve, reject) => {
+                            instance[method](...args).then(result => {
+                                if(!result.hasOwnProperty('fc')){
+                                    return resolve(Object.assign(result, {returnedFields}));
+                                }
 
-                            instance[method](...args)
-                                .then(result => {
-                                    resolve(proxy(result, {
-                                        get(instance,method){
-                                            if(method === 'then') return instance[method];
-                                            return (...args) => {
-                                                return new Promise(async (res, rej) => {
-                                                    instance[method](...args).then(actionResult => {
-                                                        res(Object.assign(actionResult, {returnedFields}));
-                                                    }).catch(rej);
-                                                })
-
-                                            }
+                                // This is a contract
+                                resolve(proxy(result, {
+                                    get(instance,method){
+                                        if(method === 'then') return instance[method];
+                                        return (...args) => {
+                                            return new Promise(async (res, rej) => {
+                                                instance[method](...args).then(actionResult => {
+                                                    res(Object.assign(actionResult, {returnedFields}));
+                                                }).catch(rej);
+                                            })
                                         }
-                                    }));
-                                }).catch(error => reject(error));
-
+                                    }
+                                }));
+                            })
                         })
                     }
 
