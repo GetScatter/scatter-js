@@ -49,14 +49,6 @@
         if(!connected) return false;
         scatter = ScatterJS.scatter;
         eos = scatter.eos(network, Eos);
-
-        eos.getCurrencyBalance('eosio.token', 'scatterfunds', 'EOS').then(res => {
-            console.log(res);
-        })
-
-        eos.getAccount('eosio.token').then(res => {
-            console.log(res);
-        })
     });
 
     window.login = async () => {
