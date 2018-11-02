@@ -63,7 +63,7 @@
 
     window.transfer = async () => {
         const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
-        const opts = { authorization:[`${account.name}@${account.authority}`], requiredFields:{personal:['email']} };
+        const opts = { authorization:[`${account.name}@${account.authority}`], requiredFields:{} };
         eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
             console.log('trx', trx);
         }).catch(err => {
@@ -90,7 +90,7 @@
     window.contract = () => {
         const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
         const opts = { authorization:[`${account.name}@${account.authority}`] };
-        eos.contract('eosio.token', {requiredFields:{personal:['email']}}).then(contract => {
+        eos.contract('eosio.token', {requiredFields:{}}).then(contract => {
             contract.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
                 console.log('trx', trx);
             }).catch(err => {
@@ -102,14 +102,32 @@
     window.multi = () => {
         const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
         const opts = { authorization:[`${account.name}@${account.authority}`] };
-        eos.transaction(['eosio.token', 'eosio'], contracts => {
-            contracts['eosio_token'].transfer(account.name, 'eosio', '1.0000 EOS', '', opts);
-            contracts['eosio'].delegatebw(account.name, account.name, '1.0000 EOS', '1.0000 EOS', 0, opts);
-        }).then(trx => {
-            console.log('trx', trx);
-        }).catch(err => {
-            console.error(err);
-        })
+
+	    eos
+		    .transaction(tr => {
+			    tr.newaccount({
+				    creator: account.name,
+				    name: 'eosio',
+				    owner: account.publicKey,
+				    active: account.publicKey
+			    });
+		    })
+		    .then(trx => {
+			    console.log(trx.transaction_id);
+		    })
+		    .catch(err => {
+			    console.log(err);
+		    });
+
+
+	    // eos.transaction(['eosio.token', 'eosio'], contracts => {
+        //     contracts['eosio_token'].transfer(account.name, 'eosio', '1.0000 EOS', '', opts);
+        //     contracts['eosio'].delegatebw(account.name, account.name, '1.0000 EOS', '1.0000 EOS', 0, opts);
+        // }).then(trx => {
+        //     console.log('trx', trx);
+        // }).catch(err => {
+        //     console.error(err);
+        // })
     }
 
     window.fc = () => {

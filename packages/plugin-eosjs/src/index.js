@@ -92,7 +92,7 @@ export default class ScatterEOS extends Plugin {
                                         }
                                     }
                                 }));
-                            })
+                            }).catch(reject);
                         })
                     }
 
