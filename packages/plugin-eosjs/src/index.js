@@ -49,27 +49,25 @@ export default class ScatterEOS extends Plugin {
 
                         if(args.find(arg => arg.hasOwnProperty('keyProvider'))) throw Error.usedKeyProvider();
 
-                        const signProvider = async signargs => {
-                            throwIfNoIdentity();
+                        prov = async signargs => {
+	                        throwIfNoIdentity();
 
-                            const requiredFields = args.find(arg => arg.hasOwnProperty('requiredFields')) || {requiredFields:{}};
-                            const payload = Object.assign(signargs, { blockchain:Blockchains.EOS, network, requiredFields:requiredFields.requiredFields });
-                            const result = await SocketService.sendApiRequest({ type:'requestSignature', payload });
+	                        const requiredFields = args.find(arg => arg.hasOwnProperty('requiredFields')) || {requiredFields:{}};
+	                        const payload = Object.assign(signargs, { blockchain:Blockchains.EOS, network, requiredFields:requiredFields.requiredFields });
+	                        const result = await SocketService.sendApiRequest({ type:'requestSignature', payload });
 
-                            // No signature
-                            if(!result) return null;
+	                        // No signature
+	                        if(!result) return null;
 
-                            if(result.hasOwnProperty('signatures')){
-                                returnedFields = result.returnedFields;
-                                let multiSigKeyProvider = args.find(arg => arg.hasOwnProperty('signProvider'));
-                                if(multiSigKeyProvider) result.signatures.push(multiSigKeyProvider.signProvider(signargs.buf, signargs.sign));
-                                return result.signatures;
-                            }
+	                        if(result.hasOwnProperty('signatures')){
+		                        returnedFields = result.returnedFields;
+		                        let multiSigKeyProvider = args.find(arg => arg.hasOwnProperty('signProvider'));
+		                        if(multiSigKeyProvider) result.signatures.push(multiSigKeyProvider.signProvider(signargs.buf, signargs.sign));
+		                        return result.signatures;
+	                        }
 
-                            return result;
-                        };
-
-                        prov = signProvider;
+	                        return result;
+                        };;
 
                         return new Promise((resolve, reject) => {
                             instance[method](...args).then(result => {
