@@ -35,12 +35,11 @@ export default class ScatterEOS extends Plugin {
 
             network = Network.fromJson(network);
             if(!network.isValid()) throw Error.noNetwork();
-            const httpEndpoint = `${network.protocol}://${network.hostport()}`;
 
             const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : _options.chainId;
 
             let prov, proxyProvider = async (args) => prov(args);
-            return proxy(_eos({httpEndpoint, chainId, signProvider:proxyProvider}), {
+            return proxy(_eos({httpEndpoint:network.fullhost(), chainId, signProvider:proxyProvider}), {
                 get(instance, method) {
 
                     if(typeof instance[method] !== 'function') return instance[method];
@@ -92,8 +91,6 @@ export default class ScatterEOS extends Plugin {
                             }).catch(reject);
                         })
                     }
-
-
                 }
             }); // Proxy
 

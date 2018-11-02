@@ -1,0 +1,6 @@
+36 error Error: Command failed: git tag scatterjs-plugin-eosjs@1.3.10 -m scatterjs-plugin-eosjs@1.3.10
+36 error fatal: tag 'scatterjs-plugin-eosjs@1.3.10' already exists
+36 error
+36 error     at makeError (C:\Work\Libraries\scatter-js\node_modules\execa\index.js:172:9)
+36 error     at Promise.all.then.arr (C:\Work\Libraries\scatter-js\node_modules\execa\index.js:277:16)
+36 error     at <anonymous>
