@@ -31,7 +31,6 @@ export default class ScatterEOS extends Plugin {
 
         const throwIfNoIdentity = args[0];
 
-        // Protocol will be deprecated.
         return (network, _eos, _options = {}) => {
 
             network = Network.fromJson(network);
@@ -75,9 +74,7 @@ export default class ScatterEOS extends Plugin {
 
                         return new Promise((resolve, reject) => {
                             instance[method](...args).then(result => {
-                                if(!result.hasOwnProperty('fc')){
-                                    return resolve(Object.assign(result, {returnedFields}));
-                                }
+                                if(!result.hasOwnProperty('fc')) return resolve(Object.assign(result, {returnedFields}));
 
                                 // This is a contract
                                 resolve(proxy(result, {
