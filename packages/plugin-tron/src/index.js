@@ -27,7 +27,6 @@ export default class ScatterTron extends Plugin {
         return (network, _tron) => {
 
             network = Network.fromJson(network);
-            if(!network.isValid()) throw Error.noNetwork();
 
             const getSigner = (abi = null) => {
 

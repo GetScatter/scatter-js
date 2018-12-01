@@ -54,7 +54,6 @@ export default class ScatterEOS extends Plugin {
         return (network, _api, _options = {}) => {
 
             network = Network.fromJson(network);
-            if(!network.isValid()) throw Error.noNetwork();
 
             let requiredFields = {};
             const fieldsFetcher = () => requiredFields;

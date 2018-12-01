@@ -82,7 +82,6 @@ export default class ScatterETH extends Plugin {
 
         return (_network, _web3) => {
             ethNetwork = Network.fromJson(_network);
-            if(!ethNetwork.isValid()) throw Error.noNetwork();
 
             const rpcUrl = `${ethNetwork.protocol}://${ethNetwork.hostport()}`;
 

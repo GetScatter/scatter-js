@@ -82,42 +82,61 @@ class Index {
         });
     }
 
-    getIdentity(requiredFields){
-        throwNoAuth();
-        return SocketService.sendApiRequest({
-            type:'getOrRequestIdentity',
-            payload:{
-                fields:requiredFields
-            }
-        }).then(id => {
-            if(id) this.identity = id;
-            return id;
-        });
+	/***
+     * Logs a user into your application
+	 * @param requiredFields
+	 * @returns {Promise<any>}
+	 */
+	login(requiredFields){
+	    throwNoAuth();
+	    return SocketService.sendApiRequest({
+		    type:'getOrRequestIdentity',
+		    payload:{
+			    fields:requiredFields
+		    }
+	    }).then(id => {
+		    if(id) this.identity = id;
+		    return id;
+	    });
     }
 
-    getIdentityFromPermissions(){
-        throwNoAuth();
-        return SocketService.sendApiRequest({
-            type:'identityFromPermissions',
-            payload:{}
-        }).then(id => {
-            if(id) this.identity = id;
-            return id;
-        });
+	/***
+     * Check is a user is logged in by tapping
+     * their Scatter, but does not issue a popup
+	 * @returns {Promise<any>}
+	 */
+	checkLogin(){
+	    throwNoAuth();
+	    return SocketService.sendApiRequest({
+		    type:'identityFromPermissions',
+		    payload:{}
+	    }).then(id => {
+		    if(id) this.identity = id;
+		    return id;
+	    });
     }
 
-    forgetIdentity(){
-        throwNoAuth();
-        return SocketService.sendApiRequest({
-            type:'forgetIdentity',
-            payload:{}
-        }).then(res => {
-            this.identity = null;
-            return res;
-        });
+	/***
+     * Logs a user out of your application.
+	 * @returns {Promise<any>}
+	 */
+	logout(){
+	    throwNoAuth();
+	    return SocketService.sendApiRequest({
+		    type:'forgetIdentity',
+		    payload:{}
+	    }).then(res => {
+		    this.identity = null;
+		    return res;
+	    });
     }
 
-    authenticate(nonce){
+	/***
+     * Authenticates a user's login using
+     * asymmetric encryption.
+	 * @param nonce
+	 */
+	authenticate(nonce){
         throwNoAuth();
         return SocketService.sendApiRequest({
             type:'authenticate',
@@ -125,18 +144,20 @@ class Index {
         });
     }
 
-    getArbitrarySignature(publicKey, data, whatfor = '', isHash = false){
+
+
+
+    getArbitrarySignature(publicKey, data){
         throwNoAuth();
         return SocketService.sendApiRequest({
             type:'requestArbitrarySignature',
             payload:{
                 publicKey,
-                data,
-                whatfor,
-                isHash
+                data
             }
         });
     }
+
 
     getPublicKey(blockchain){
         throwNoAuth();
@@ -146,11 +167,11 @@ class Index {
         });
     }
 
-    linkAccount(publicKey, network){
+    linkAccount(account, network){
         throwNoAuth();
         return SocketService.sendApiRequest({
             type:'linkAccount',
-            payload:{ publicKey, network }
+            payload:{ account, network }
         });
     }
 
@@ -202,6 +223,28 @@ class Index {
             }
         });
     }
+
+
+
+    /******************************/
+    /******** DEPRECATED **********/
+    /******************************/
+
+    // @deprecated - Use `login(requiredFields)`
+	getIdentity(requiredFields){
+		return this.login(requiredFields);
+	}
+
+	// @deprecated - Use `checkLogin()`
+	getIdentityFromPermissions(){
+		return this.checkLogin();
+	}
+
+	// @deprecated - Use `logout()`
+	forgetIdentity(){
+		return this.logout();
+	}
+
 }
 
 

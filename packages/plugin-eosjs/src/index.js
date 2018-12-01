@@ -34,7 +34,6 @@ export default class ScatterEOS extends Plugin {
         return (network, _eos, _options = {}) => {
 
             network = Network.fromJson(network);
-            if(!network.isValid()) throw Error.noNetwork();
 
             const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : _options.chainId;
 

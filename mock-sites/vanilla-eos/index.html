@@ -8,16 +8,43 @@
     <script src="../../bundles/scatterjs-core.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-eosjs.min.js"></script>
 </head>
-<body>
+<body style="padding:20px 50px;">
 
-<button onclick="login()">Get Identity</button>
-<button onclick="logout()">Forget Identity</button>
+<h1>Scatter Basics</h1>
+<button onclick="logout()">Logout</button>
+<button onclick="login()">Login</button>
+<button onclick="loginWithRequirements()">Login with Requirements</button>
+<button onclick="authenticate()">Authenticate</button>
+<br>
+<br>
+<button onclick="hasAccountFor()">Has Account For Network</button>
+<button onclick="getPublicKey()">Get Public Key</button>
+<button onclick="linkAccount()">Link Account</button>
+<button onclick="suggestNetwork()">Suggest Network & Token</button>
+<br>
+<br>
+<button onclick="arbitrary()">Arbitrary Signature</button>
+<button onclick="unsignableArbitrary()">Unsignable Arbitrary</button>
+
+<br>
+<br>
+
+<h1>EOSIO</h1>
+
 <button onclick="transfer()">Transfer</button>
+<button onclick="transferWithFields()">Transfer with Fields</button>
 <button onclick="contract()">Contract</button>
-<button onclick="multi()">Multi</button>
-<button onclick="fc()">Test FC</button>
-<button onclick="hookTransfer()">Hook Transfer</button>
+<button onclick="multi()">Multi Action Contract</button>
 <button onclick="donate()">Donate</button>
+
+<br>
+<br>
+
+<h1>Deep Link</h1>
+<p style="margin-top:-20px;">
+    Deep links will only work with a built version of Scatter, <br>
+    not a live development version.
+</p>
 
 <a href="scatter://transfer?payload=safetransfer/0/eos/aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906/ramdeathtest">
     <button>Donate with Deep Link</button>
@@ -29,19 +56,19 @@
 
     const network = ScatterJS.Network.fromJson({
         blockchain:'eos',
-        chainId:'038f4b0fc8ff18a4f0842a8f0564611f6e96e8535901dd45e43ac8691a1c4dca',
-        host:'jungle.eosio.cr',
-        port:443,
-        protocol:'https'
+        chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
+        host:'jungle2.cryptolions.io',
+        port:80,
+        protocol:'http'
     });
 
-//    const network = {
-//        blockchain:'eos',
-//        chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
-//        host:'nodes.get-scatter.com',
-//        port:443,
-//        protocol:'https'
-//    };
+   const network2 = {
+       blockchain:'eos',
+       chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+       host:'nodes.get-scatter.com',
+       port:443,
+       protocol:'https'
+   };
 
     let scatter, eos;
 
@@ -55,6 +82,24 @@
         await scatter.suggestNetwork(network);
         await scatter.getIdentity({accounts:[network]})
         eos = scatter.eos(network, Eos);
+    };
+
+    window.loginWithRequirements = async () => {
+        await scatter.suggestNetwork(network);
+        await scatter.getIdentity({
+            personal:['firstname', 'lastname', 'email'],
+            location:['country', 'phone', 'address'],
+            accounts:[network2, network2]
+        })
+        eos = scatter.eos(network, Eos);
+    };
+
+    window.authenticate = async () => {
+    	const getRandom = () => Math.round(Math.random() * 8 + 1).toString();
+    	let randomString = '';
+    	for(let i = 0; i < 12; i++) randomString += getRandom();
+    	console.log('randomString', randomString);
+        await scatter.authenticate(randomString).then(res => console.log(res));
     };
 
     window.logout = () => {
@@ -71,20 +116,24 @@
         })
     };
 
-    window.hookTransfer = () => {
-        const e = Eos({httpEndpoint:`${network.protocol}://${network.host}:${network.port}`, signProvider:scatter.eosHook(network), chainId:network.chainId});
+    window.transferWithFields = async () => {
         const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
-        const opts = { authorization:[`${account.name}@${account.authority}`] };
-        e.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
+        const requiredFields = {
+        	personal:['firstname', 'lastname'],
+            location:['address']
+        };
+        const opts = { authorization:[`${account.name}@${account.authority}`], requiredFields };
+        eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
             console.log('trx', trx);
         }).catch(err => {
-            console.error(err);
+//            console.error(err);
         })
     };
 
     window.donate = () => {
         const tokenDetails = {contract:'eosio.token', symbol:'EOS', memo:'', decimals:4};
-        scatter.requestTransfer(network, 'eosio', 0, tokenDetails);
+        // scatter.requestTransfer(network, 'eosio', 0, tokenDetails).then(res => console.log(res));
+        scatter.requestTransfer(network, 'eosio', '1.0000', tokenDetails).then(res => console.log(res));
     };
 
     window.contract = () => {
@@ -111,6 +160,8 @@
 				    owner: account.publicKey,
 				    active: account.publicKey
 			    });
+			    tr.delegatebw(account.name, account.name, '1.0000 EOS', '1.0000 EOS', 0, opts);
+			    tr.transfer(account.name, 'eosio', '1.0000 EOS', '', opts);
 		    })
 		    .then(trx => {
 			    console.log(trx.transaction_id);
@@ -118,20 +169,71 @@
 		    .catch(err => {
 			    console.log(err);
 		    });
+    };
 
-
-	    // eos.transaction(['eosio.token', 'eosio'], contracts => {
-        //     contracts['eosio_token'].transfer(account.name, 'eosio', '1.0000 EOS', '', opts);
-        //     contracts['eosio'].delegatebw(account.name, account.name, '1.0000 EOS', '1.0000 EOS', 0, opts);
-        // }).then(trx => {
-        //     console.log('trx', trx);
-        // }).catch(err => {
-        //     console.error(err);
-        // })
+    window.suggestNetwork = async () => {
+	    await scatter.suggestNetwork(ScatterJS.Network.fromJson({
+		    blockchain:'eos',
+		    chainId:'1',
+		    host:'not-real.com',
+		    port:443,
+		    protocol:'https',
+            token:{
+                symbol:'SYS',
+                contract:'eosio.token'
+            }
+	    })).then(res => console.log(res));
     }
 
-    window.fc = () => {
-        console.log('fc', eos.fc.abiCache);
+    window.arbitrary = () => {
+	    const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+        scatter.getArbitrarySignature(account.publicKey, 'This should be able to be signed by anything', 'Testing', false).then(signed => {
+        	console.log('signed', signed);
+        })
+    }
+
+    window.unsignableArbitrary = () => {
+	    const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+        scatter.getArbitrarySignature(account.publicKey, 'hello_world_im_too_long_yo', 'Testing', false);
+    }
+
+	 window.hasAccountFor = () => {
+		 scatter.hasAccountFor(network).then(res => {
+			 console.log('res', res);
+			 scatter.hasAccountFor({ host:'not-real.com', port:80, blockchain:'eos', chainId:'2' }).then(res => {
+				 console.log('should fail', res);
+			 }).catch(error => {
+				 console.log('should fail', error);
+			 });
+		 }).catch(error => {
+			 console.log('error', error)
+		 });
+
+	 }
+
+    let publicKey;
+    window.getPublicKey = () => {
+        scatter.getPublicKey('eos').then(res => {
+	        publicKey = res;
+            console.log('res', res);
+        }).catch(error => {
+        	console.log('error', error)
+        });
+    }
+
+    window.linkAccount = () => {
+
+    	const account = {
+    	    name:'hello',
+            authority:'active',
+            publicKey
+        };
+
+        scatter.linkAccount(account, network).then(res => {
+            console.log('res', res);
+        }).catch(error => {
+        	console.log('error', error)
+        });
     }
 
 </script>
