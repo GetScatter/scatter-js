@@ -5,24 +5,50 @@ import * as PluginTypes from './plugins/PluginTypes';
 import { Blockchains } from './models/Blockchains';
 import Network from './models/Network';
 
+let socketService = SocketService;
+
 let origin;
 
 const throwNoAuth = () => {
-    if(!holder.scatter.isExtension && !SocketService.isConnected())
+    if(!holder.scatter.isExtension && !socketService.isConnected())
         throw new Error('Connect and Authenticate first - scatter.connect( pluginName )');
 };
 
-const checkForExtension = (resolve, tries = 0) => {
-    if(tries > 20) return;
-    if(holder.scatter.isExtension) return resolve(true);
-    setTimeout(() => checkForExtension(resolve, tries + 1), 100);
+let extension;
+const fallback = (resolve, context) => {
+	const pollExtension = (callback, tries = 0) => {
+		if(tries > 4) return callback(false);
+		if(extension) return callback(true);
+		setTimeout(() => pollExtension(callback, tries + 1), 100);
+	};
+
+	pollExtension(foundExtension => {
+		console.log('checked for extension', foundExtension);
+		if(foundExtension){
+			holder.scatter = extension;
+			holder.scatter.isExtension = true;
+			// holder.scatter.connect = () => new Promise(resolve => resolve(true));
+			return resolve(true);
+		} else OAuthFallback(resolve, context);
+	});
 };
 
+let allowOAuth = false;
+const OAuthFallback = (resolve, context) => {
+	const plugin = PluginRepository.plugin('oauth');
+	if(!plugin) return resolve(false);
+
+	context.isBridge = true;
+	plugin.bindContext(context);
+	socketService = plugin;
+	resolve(true);
+}
 
 class Index {
 
     constructor(){
         this.isExtension = false;
+        this.isBridge = false;
         this.identity = null;
     }
 
@@ -30,12 +56,18 @@ class Index {
 		const noIdFunc = () => { if(!this.identity) throw new Error('No Identity') };
     	if(!plugin.isValid()) throw new Error(`${plugin.name} doesn't seem to be a valid ScatterJS plugin.`);
 
+
 		PluginRepository.loadPlugin(plugin);
+
 
 		if(plugin.isSignatureProvider()){
             this[plugin.name] = plugin.signatureProvider(noIdFunc, () => this.identity);
             this[plugin.name+'Hook'] = plugin.hookProvider;
         }
+
+        else if (plugin.type === PluginTypes.OAUTH_FALLBACK){
+			allowOAuth = true;
+		}
 	}
 
     async connect(pluginName, options){
@@ -50,13 +82,18 @@ class Index {
                 resolve(false);
             }, options.initTimeout);
 
-            // Defaults to scatter extension if exists
-            checkForExtension(resolve);
+
 
             // Tries to set up Desktop Connection
-            SocketService.init(pluginName, options.linkTimeout);
-            SocketService.link().then(async authenticated => {
-                if(!authenticated) return false;
+            socketService.init(pluginName, options.linkTimeout);
+            socketService.link().then(async authenticated => {
+
+	            // Fallback to Extension
+                if(!authenticated) {
+	                fallback(resolve, this);
+                	return false;
+                }
+
                 this.identity = await this.getIdentityFromPermissions();
                 return resolve(true);
             });
@@ -64,19 +101,19 @@ class Index {
     }
 
     disconnect(){
-        return SocketService.disconnect();
+        return socketService.disconnect();
     }
 
     isConnected(){
-        return SocketService.isConnected();
+        return socketService.isConnected();
     }
 
     isPaired(){
-        return SocketService.isPaired();
+        return socketService.isPaired();
     }
 
     getVersion(){
-        return SocketService.sendApiRequest({
+        return socketService.sendApiRequest({
             type:'getVersion',
             payload:{}
         });
@@ -89,7 +126,7 @@ class Index {
 	 */
 	login(requiredFields){
 	    throwNoAuth();
-	    return SocketService.sendApiRequest({
+	    return socketService.sendApiRequest({
 		    type:'getOrRequestIdentity',
 		    payload:{
 			    fields:requiredFields
@@ -107,7 +144,7 @@ class Index {
 	 */
 	checkLogin(){
 	    throwNoAuth();
-	    return SocketService.sendApiRequest({
+	    return socketService.sendApiRequest({
 		    type:'identityFromPermissions',
 		    payload:{}
 	    }).then(id => {
@@ -122,7 +159,7 @@ class Index {
 	 */
 	logout(){
 	    throwNoAuth();
-	    return SocketService.sendApiRequest({
+	    return socketService.sendApiRequest({
 		    type:'forgetIdentity',
 		    payload:{}
 	    }).then(res => {
@@ -138,7 +175,7 @@ class Index {
 	 */
 	authenticate(nonce){
         throwNoAuth();
-        return SocketService.sendApiRequest({
+        return socketService.sendApiRequest({
             type:'authenticate',
             payload:{ nonce }
         });
@@ -149,7 +186,7 @@ class Index {
 
     getArbitrarySignature(publicKey, data){
         throwNoAuth();
-        return SocketService.sendApiRequest({
+        return socketService.sendApiRequest({
             type:'requestArbitrarySignature',
             payload:{
                 publicKey,
@@ -161,7 +198,7 @@ class Index {
 
     getPublicKey(blockchain){
         throwNoAuth();
-        return SocketService.sendApiRequest({
+        return socketService.sendApiRequest({
             type:'getPublicKey',
             payload:{ blockchain }
         });
@@ -169,7 +206,7 @@ class Index {
 
     linkAccount(account, network){
         throwNoAuth();
-        return SocketService.sendApiRequest({
+        return socketService.sendApiRequest({
             type:'linkAccount',
             payload:{ account, network }
         });
@@ -177,7 +214,7 @@ class Index {
 
     hasAccountFor(network){
         throwNoAuth();
-        return SocketService.sendApiRequest({
+        return socketService.sendApiRequest({
             type:'hasAccountFor',
             payload:{
                 network
@@ -187,7 +224,7 @@ class Index {
 
     suggestNetwork(network){
         throwNoAuth();
-        return SocketService.sendApiRequest({
+        return socketService.sendApiRequest({
             type:'requestAddNetwork',
             payload:{
                 network
@@ -197,7 +234,7 @@ class Index {
 
     requestTransfer(network, to, amount, options = {}){
         const payload = {network, to, amount, options};
-        return SocketService.sendApiRequest({
+        return socketService.sendApiRequest({
             type:'requestTransfer',
             payload
         });
@@ -205,7 +242,7 @@ class Index {
 
     requestSignature(payload){
         throwNoAuth();
-        return SocketService.sendApiRequest({
+        return socketService.sendApiRequest({
             type:'requestSignature',
             payload
         });
@@ -213,7 +250,7 @@ class Index {
 
     createTransaction(blockchain, actions, account, network){
         throwNoAuth();
-        return SocketService.sendApiRequest({
+        return socketService.sendApiRequest({
             type:'createTransaction',
             payload:{
                 blockchain,
@@ -267,9 +304,10 @@ if(typeof window !== 'undefined') {
     // Catching extension instead of Desktop
     if(typeof document !== 'undefined'){
         const bindScatterClassic = () => {
-            holder.scatter = window.scatter;
-            holder.scatter.isExtension = true;
-            holder.scatter.connect = () => new Promise(resolve => resolve(true));
+	        extension = window.scatter;
+            // holder.scatter = window.scatter;
+            // holder.scatter.isExtension = true;
+            // holder.scatter.connect = () => new Promise(resolve => resolve(true));
         };
 
         if(typeof window.scatter !== 'undefined') bindScatterClassic();
@@ -283,7 +321,7 @@ holder.Plugin = Plugin;
 holder.PluginTypes = PluginTypes;
 holder.Blockchains = Blockchains;
 holder.Network = Network;
-holder.SocketService = SocketService;
+holder.SocketService = socketService;
 export {Plugin, PluginTypes, Blockchains, Network, SocketService};
 export default holder;
 

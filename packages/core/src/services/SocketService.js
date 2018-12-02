@@ -37,9 +37,6 @@ const getOrigin = () => {
 }
 
 
-// StorageService.removeAppKey();
-// StorageService.removeNonce();
-
 let appkey = StorageService.getAppKey();
 if(!appkey) appkey = 'appkey:'+random();
 

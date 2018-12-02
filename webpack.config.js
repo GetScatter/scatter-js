@@ -11,6 +11,7 @@ const packageFiles = [
 	'plugin-eosjs2',
 	'plugin-web3',
 	'plugin-tron',
+	'plugin-bridge',
 ];
 
 const entry = packageFiles.reduce((o, file) => Object.assign(o, {[`${file}.min.js`]: getPackagePath(file)}), {});

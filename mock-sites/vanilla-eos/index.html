@@ -7,6 +7,7 @@
     <script src="https://cdn.jsdelivr.net/npm/eosjs@16.0.0/lib/eos.min.js"></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-eosjs.min.js"></script>
+    <script src="../../bundles/scatterjs-plugin-bridge.min.js"></script>
 </head>
 <body style="padding:20px 50px;">
 
@@ -35,6 +36,7 @@
 <button onclick="transferWithFields()">Transfer with Fields</button>
 <button onclick="contract()">Contract</button>
 <button onclick="multi()">Multi Action Contract</button>
+<button onclick="multiSig()">Multi-Sig</button>
 <button onclick="donate()">Donate</button>
 
 <br>
@@ -52,7 +54,7 @@
 
 <script>
 
-	 ScatterJS.plugins( new ScatterEOS() );
+	 ScatterJS.plugins( new ScatterEOS(), new ScatterBridge() );
 
     const network = ScatterJS.Network.fromJson({
         blockchain:'eos',
@@ -73,13 +75,14 @@
     let scatter, eos;
 
     ScatterJS.scatter.connect('LernaVanillaTest').then(connected => {
+    	console.log('connected', connected);
         if(!connected) return false;
         scatter = ScatterJS.scatter;
         eos = scatter.eos(network, Eos);
     });
 
     window.login = async () => {
-        await scatter.suggestNetwork(network);
+        // await scatter.suggestNetwork(network);
         await scatter.getIdentity({accounts:[network]})
         eos = scatter.eos(network, Eos);
     };
@@ -169,6 +172,10 @@
 		    .catch(err => {
 			    console.log(err);
 		    });
+    };
+
+    window.multiSig = async () => {
+
     };
 
     window.suggestNetwork = async () => {
