@@ -1,0 +1,36 @@
+.popup {
+  max-width: 420px;
+  width: 100%;
+  height: 600px;
+  background: #fff;
+  border-top: 1px solid #dadada;
+  border-left: 1px solid #dadada;
+  overflow: hidden;
+  position: fixed;
+  bottom: 0;
+  right: 0; }
+  .popup section, .popup div, .popup figure {
+    margin: 0; }
+  .popup .pop-out-head {
+    flex: 0 0 auto;
+    height: 79px;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 30px;
+    border-bottom: 1px solid #dfe0e1; }
+    .popup .pop-out-head .logo {
+      flex: 2;
+      font-family: 'Grand Hotel', sans-serif;
+      font-size: 30px;
+      color: #39adff; }
+    .popup .pop-out-head .close {
+      cursor: pointer;
+      text-align: right;
+      line-height: 90px;
+      height: 90px;
+      padding: 0 30px;
+      font-size: 30px;
+      color: #cccdce; }
+      .popup .pop-out-head .close:hover {
+        color: #ff4645; }
