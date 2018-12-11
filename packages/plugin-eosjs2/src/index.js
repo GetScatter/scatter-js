@@ -32,6 +32,7 @@ export default class ScatterEOS extends Plugin {
 
             sign:async (signargs) => {
                 const requiredFields = fieldsFetcher ? fieldsFetcher() : {};
+                const serializedTransactionBytes = signargs.serializedTransaction
                 signargs.serializedTransaction = Buffer.from(signargs.serializedTransaction).toString('hex');
 
                 return new Promise(async (resolve, reject) => {
@@ -39,7 +40,7 @@ export default class ScatterEOS extends Plugin {
                     SocketService.sendApiRequest({
                         type:'requestSignature',
                         payload
-                    }).then(x => resolve(x.signatures))
+                    }).then(x => resolve({ signatures: x.signatures, serializedTransaction: serializedTransactionBytes }))
                       .catch(x => reject(x))
                 })
             }
