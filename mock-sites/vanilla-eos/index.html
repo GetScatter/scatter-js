@@ -16,6 +16,7 @@
 <button onclick="loginWithRequirements()">Login with Requirements</button>
 <button onclick="authenticate()">Authenticate</button>
 <button onclick="authenticateSpecific()">Authenticate w/Params</button>
+<button onclick="hardwareCapableProofs()">Prove Ownership</button>
 <br>
 <br>
 <button onclick="hasAccountFor()">Has Account For Network</button>
@@ -55,7 +56,7 @@
 
 	 ScatterJS.plugins( new ScatterEOS() );
 
-    const network = ScatterJS.Network.fromJson({
+    const network2 = ScatterJS.Network.fromJson({
         blockchain:'eos',
         chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
         host:'jungle2.cryptolions.io',
@@ -63,13 +64,13 @@
         protocol:'http'
     });
 
-   const network2 = {
-       blockchain:'eos',
-       chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
-       host:'nodes.get-scatter.com',
-       port:443,
-       protocol:'https'
-   };
+   const network = ScatterJS.Network.fromJson({
+	   blockchain:'eos',
+	   chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+	   host:'nodes.get-scatter.com',
+	   port:443,
+	   protocol:'https'
+   });
 
     let scatter, eos;
 
@@ -126,6 +127,33 @@
             	console.log('err', err);
             })
     };
+
+	 window.hardwareCapableProofs = async () => {
+		 const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+
+
+		 // We're going to catch a reference to the buffer
+		 let buffer;
+		 const signProvider = async buf => buffer = buf;
+
+		 // NOTICE WE ARE PUTTING THE signProvider HERE!!!!!
+		 const contract = await eos.contract('scatterproof', {signProvider});
+
+		 // NOTICE THE BROADCAST FALSE!!!!!!!!!!
+		 const opts = { broadcast:false, authorization:[`${account.name}@${account.authority}`] };
+
+		 const signed = await contract.prove(
+			 'now you can sign a sha256 (f0e4c2f76c58916ec258f246851bea091d14d4247a2fc3e18694461b1816e13b) or an EOS key: EOS5yhN6BBC42eLKxrNDXcQ4pbpmr3QBiroQBrEgZAVTufT3rgVXv from hardware devices',
+			 opts
+		 );
+
+		 const signature = signed.transaction.signatures[0];
+		 const unsigned = signed.transaction.transaction.actions[0].data;
+
+		 const {ecc} = Eos.modules;
+		 const recovered = ecc.recover(signature, buffer);
+		 console.log('recovered?', recovered === account.publicKey);
+	 }
 
     window.logout = () => {
         scatter.forgetIdentity();
