@@ -108,17 +108,20 @@
     	let nonce = '';
     	for(let i = 0; i < 12; i++) nonce += getRandom();
 	    const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+
+	    // You can't use authenticate with Hardware Devices! Use the identity key in that instance.
+	    const publicKey = account.isHardware ? scatter.identity.publicKey : account.publicKey;
+
 	    const toSign = 'helloworldiamtheonethatknocks';
-        await scatter.authenticate(nonce, toSign, account.publicKey)
+        await scatter.authenticate(nonce, toSign, publicKey)
             .then(res => {
             	const {ecc} = Eos.modules;
             	const shaData = ecc.sha256(
 		            ecc.sha256(toSign) +
             		ecc.sha256(nonce)
-
                 );
             	const recovered = ecc.recoverHash(res, shaData);
-            	console.log('recovered?', recovered === account.publicKey);
+            	console.log('recovered?', recovered === publicKey);
             }).catch(err => {
             	console.log('err', err);
             })
