@@ -1,13 +1,15 @@
 import PluginRepository from './plugins/PluginRepository';
 import SocketService from './services/SocketService';
+import StorageService from "./services/StorageService";
 import Plugin from './plugins/Plugin';
 import * as PluginTypes from './plugins/PluginTypes';
 import { Blockchains } from './models/Blockchains';
 import Network from './models/Network';
 
 let socketService = SocketService;
+let socketSetters = [];
 
-let origin;
+let origin, foundScatter = false;
 
 const throwNoAuth = () => {
     if(!holder.scatter.isExtension && !socketService.isConnected())
@@ -15,32 +17,41 @@ const throwNoAuth = () => {
 };
 
 let extension;
-const fallback = (resolve, context) => {
+const fallback = (resolve) => {
 	const pollExtension = (callback, tries = 0) => {
 		if(tries > 4) return callback(false);
 		if(extension) return callback(true);
-		setTimeout(() => pollExtension(callback, tries + 1), 100);
+		setTimeout(() => {
+			if(foundScatter) return;
+			pollExtension(callback, tries + 1)
+		}, 250);
 	};
 
 	pollExtension(foundExtension => {
 		console.log('checked for extension', foundExtension);
-		if(foundExtension){
+		if(foundExtension && !foundScatter){
 			holder.scatter = extension;
 			holder.scatter.isExtension = true;
 			// holder.scatter.connect = () => new Promise(resolve => resolve(true));
+			foundScatter = true;
 			return resolve(true);
-		} else OAuthFallback(resolve, context);
+		}
 	});
 };
 
 let allowOAuth = false;
-const OAuthFallback = (resolve, context) => {
+const OAuthFallback = (resolve, context, pluginName) => {
 	const plugin = PluginRepository.plugin('oauth');
 	if(!plugin) return resolve(false);
 
+
 	context.isBridge = true;
-	plugin.bindContext(context);
+	plugin.init(context, pluginName);
 	socketService = plugin;
+
+	socketSetters.map(x => x(socketService))
+
+
 	resolve(true);
 }
 
@@ -61,6 +72,7 @@ class Index {
 
 
 		if(plugin.isSignatureProvider()){
+			socketSetters.push(plugin.setSocketService);
             this[plugin.name] = plugin.signatureProvider(noIdFunc, () => this.identity);
             this[plugin.name+'Hook'] = plugin.hookProvider;
         }
@@ -90,13 +102,16 @@ class Index {
 
 	            // Fallback to Extension
                 if(!authenticated) {
-	                fallback(resolve, this);
+	                OAuthFallback(resolve, this, pluginName);
                 	return false;
                 }
 
+	            foundScatter = true;
                 this.identity = await this.getIdentityFromPermissions();
                 return resolve(true);
             });
+
+	        fallback(resolve);
         })
     }
 
@@ -322,7 +337,8 @@ holder.PluginTypes = PluginTypes;
 holder.Blockchains = Blockchains;
 holder.Network = Network;
 holder.SocketService = socketService;
-export {Plugin, PluginTypes, Blockchains, Network, SocketService};
+holder.StorageService = StorageService;
+export {Plugin, PluginTypes, Blockchains, Network, SocketService, StorageService};
 export default holder;
 
 

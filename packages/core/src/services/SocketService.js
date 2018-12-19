@@ -32,6 +32,7 @@ const getOrigin = () => {
             origin = location.hostname;
         else origin = plugin;
     else origin = plugin;
+    if(!origin) return;
     if(origin.substr(0, 4) === 'www.') origin = origin.replace('www.','');
     return origin;
 }
@@ -54,6 +55,10 @@ const pair = (passthrough = false) => {
 };
 
 export default class SocketService {
+
+    static random(){ return random(); }
+    static getOrigin(){ return getOrigin(); }
+    static sha256(data){ return sha256(data); }
 
     static init(_plugin, timeout = 60000){
         plugin = _plugin;

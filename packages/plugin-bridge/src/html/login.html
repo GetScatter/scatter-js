@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Title</title>
+	<link rel="stylesheet" type="text/css" href="../css/bridge.css" />
+</head>
+<body>
+
+
+
+	<script>
+
+		let bound = false;
+		window.onbeforeunload = () => {
+			if(!bound) window.opener.bindToken(null);
+		}
+
+		const POST = (route, data) => {
+			return fetch(`http://localhost:6546/${route}`, {
+				method:'POST',
+				headers: { 'Accept': 'application/json', 'Content-Type': 'application/json' },
+				body: JSON.stringify(data)
+			}).then(x => x.json())
+		}
+
+
+		const PANELS = {
+			Selector:'select',
+			LoginEmail:'emailLogin',
+			RegisterEmail:'emailRegister',
+		};
+
+		const getVisiblePanels = () => [...document.getElementById('ScatterLoginPopup').getElementsByClassName('panel')].filter(x => ![...x.classList].includes('hidden'));
+
+		const showPanel = panel => {
+			const visiblePanels = getVisiblePanels();
+			visiblePanels[0].classList.add('hidden');
+			document.getElementById(`Scatter${panel}`).classList.remove("hidden");
+		};
+
+		const emailLogin = (register = false) => {
+			const visiblePanels = getVisiblePanels();
+			const email = visiblePanels[0].getElementsByTagName('input')[0].value.trim();
+			const pass = visiblePanels[0].getElementsByTagName('input')[1].value.trim();
+
+			const origin = location.search.toString().replace('?origin=', '');
+
+			// TODO: Do all authentication here.
+			POST(`${register ? 'register' : 'login'}/email`, {email, pass, origin})
+				.then(result => {
+
+					if(register){
+
+						return;
+					}
+
+					console.log('token', result);
+					try {
+						window.opener.bindToken(result);
+						bound = true;
+					} catch(e){}
+					window.close();
+				})
+				.catch(err => {
+					console.log('err', err);
+				})
+		};
+
+		const html = `
+<section id="ScatterLoginPopup" class="popup">
+	<section class="pop-out-head">
+		<figure class="logo">Scatter</figure>
+		<figure class="close icon-cancel">
+			<div></div>
+			<div></div>
+		</figure>
+	</section>
+
+	<section class="action-info">
+		<figure class="origin" title="${origin}">${origin}</figure>
+		<figure class="action">
+			<b>login</b>
+		</figure>
+	</section>
+
+	<section id="Scatter${PANELS.Selector}" class="panel">
+		<button onclick="showPanel(PANELS.LoginEmail)">Login with Email</button>
+		<button onclick="showPanel(PANELS.RegisterEmail)">Register with Email</button>
+	</section>
+
+	<section id="Scatter${PANELS.LoginEmail}" class="panel hidden">
+		<input placeholder="email" />
+		<input placeholder="password" type="password" />
+		<button onclick="emailLogin()">Login</button>
+	</section>
+
+	<section id="Scatter${PANELS.RegisterEmail}" class="panel hidden">
+		<input placeholder="email" />
+		<input placeholder="password" type="password" />
+		<button onclick="emailLogin(true)">Register</button>
+	</section>
+</section>
+		`
+
+
+
+
+
+		window.onload = () => {
+			document.getElementsByTagName('body')[0].innerHTML = html;
+		}
+
+
+	</script>
+</body>
+</html>

@@ -1,5 +1,7 @@
-import login from './html/login.html';
+import login from './html/login.html.js';
 import css from './css/bridge.css.js';
+
+
 
 export default class DOM {
 
@@ -10,8 +12,29 @@ export default class DOM {
 		document.getElementsByTagName('head')[0].appendChild(style);
 	}
 
-	static loginPopup(){
-		document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend', login());
+	static loginPopup(origin, fields){
+		console.log('lorigin', origin);
+		return new Promise((resolve, reject) => {
+			let win;
+
+			const messageHandler = (e) => {
+				if(!e.data.hasOwnProperty('type')) return;
+
+				if(e.data.type === 'gimme') {
+					return win.postMessage({type:'gimme', origin, fields}, '*');
+				}
+
+				if(e.data.type === 'token'){
+					console.log('got token', e.data);
+					window.removeEventListener('message', messageHandler);
+					return resolve({token:e.data.token, identity:e.data.identity});
+				}
+			};
+
+			window.addEventListener('message', messageHandler);
+			win = window.open(`http://localhost:8080/allow`, "Scatter Login", "height=500,width=400,menubar=0,toolbar=0");
+			win.onbeforeunload = () => window.removeEventListener('message', messageHandler);
+		})
 	}
 
 }

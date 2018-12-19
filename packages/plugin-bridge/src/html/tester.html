@@ -1,15 +1,21 @@
 <link rel="stylesheet" type="text/css" href="../css/bridge.css" />
 <link href="https://fonts.googleapis.com/css?family=Grand+Hotel" rel="stylesheet">
-<script src="login.html.js"></script>
+<!--<script src="login.html.js"></script>-->
 
-<body>
-
-</body>
-
+<body></body>
 <script defer>
 
-	console.log(window);
 	window.onload = () => {
-		document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend', window.login());
+		// const returner = (user,pass) => {
+		// 	console.log('userpass', user,pass);
+		// }
+		// document.getElementsByTagName('body')[0].insertAdjacentHTML('beforeend', window.login(returner));
+
+
+		window.scatterPopupResult = (key) => {
+			console.log('result', key);
+		}
+
+		var win = window.open("login.html", "MyDialog", "height=500,width=400,menubar=0,toolbar=0");
 	}
 </script>

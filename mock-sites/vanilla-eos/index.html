@@ -56,7 +56,7 @@
 
 	 ScatterJS.plugins( new ScatterEOS(), new ScatterBridge() );
 
-    const network = ScatterJS.Network.fromJson({
+    const network2 = ScatterJS.Network.fromJson({
         blockchain:'eos',
         chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
         host:'jungle2.cryptolions.io',
@@ -64,7 +64,7 @@
         protocol:'http'
     });
 
-   const network2 = {
+   const network = {
        blockchain:'eos',
        chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
        host:'nodes.get-scatter.com',
@@ -83,7 +83,7 @@
 
     window.login = async () => {
         // await scatter.suggestNetwork(network);
-        await scatter.getIdentity({accounts:[network]})
+        await scatter.getIdentity({accounts:[network]});
         eos = scatter.eos(network, Eos);
     };
 
@@ -112,7 +112,7 @@
     window.transfer = async () => {
         const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
         const opts = { authorization:[`${account.name}@${account.authority}`], requiredFields:{} };
-        eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
+        eos.transfer(account.name, 'safetransfer', '0.0001 EOS', account.name, opts).then(trx => {
             console.log('trx', trx);
         }).catch(err => {
 //            console.error(err);
