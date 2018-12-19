@@ -148,7 +148,6 @@
 		 );
 
 		 const signature = signed.transaction.signatures[0];
-		 const unsigned = signed.transaction.transaction.actions[0].data;
 
 		 const {ecc} = Eos.modules;
 		 const recovered = ecc.recover(signature, buffer);
