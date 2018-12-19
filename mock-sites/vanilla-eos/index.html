@@ -15,6 +15,7 @@
 <button onclick="login()">Login</button>
 <button onclick="loginWithRequirements()">Login with Requirements</button>
 <button onclick="authenticate()">Authenticate</button>
+<button onclick="authenticateSpecific()">Authenticate w/Params</button>
 <br>
 <br>
 <button onclick="hasAccountFor()">Has Account For Network</button>
@@ -100,6 +101,27 @@
     	for(let i = 0; i < 12; i++) randomString += getRandom();
     	console.log('randomString', randomString);
         await scatter.authenticate(randomString).then(res => console.log(res));
+    };
+
+    window.authenticateSpecific = async () => {
+    	const getRandom = () => Math.round(Math.random() * 8 + 1).toString();
+    	let nonce = '';
+    	for(let i = 0; i < 12; i++) nonce += getRandom();
+	    const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+	    const toSign = 'helloworldiamtheonethatknocks';
+        await scatter.authenticate(nonce, toSign, account.publicKey)
+            .then(res => {
+            	const {ecc} = Eos.modules;
+            	const shaData = ecc.sha256(
+		            ecc.sha256(toSign) +
+            		ecc.sha256(nonce)
+
+                );
+            	const recovered = ecc.recoverHash(res, shaData);
+            	console.log('recovered?', recovered === account.publicKey);
+            }).catch(err => {
+            	console.log('err', err);
+            })
     };
 
     window.logout = () => {

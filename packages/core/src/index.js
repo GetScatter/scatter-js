@@ -132,15 +132,17 @@ class Index {
     }
 
 	/***
-     * Authenticates a user's login using
-     * asymmetric encryption.
+	 * Authenticates a user's login using
+	 * asymmetric encryption.
 	 * @param nonce
+	 * @param data - Optional data to sign ( fallback to appkey/origin )
+	 * @param publicKey - Optional key to use ( fallback to identity key )
 	 */
-	authenticate(nonce){
+	authenticate(nonce, data = null, publicKey = null){
         throwNoAuth();
         return SocketService.sendApiRequest({
             type:'authenticate',
-            payload:{ nonce }
+            payload:{ nonce, data, publicKey }
         });
     }
 
