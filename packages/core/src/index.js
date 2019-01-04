@@ -18,6 +18,11 @@ const checkForExtension = (resolve, tries = 0) => {
     setTimeout(() => checkForExtension(resolve, tries + 1), 100);
 };
 
+const EVENTS = {
+	Disconnected:'dced',
+	LoggedOut:'logout',
+}
+
 
 class Index {
 
@@ -57,6 +62,7 @@ class Index {
             SocketService.init(pluginName, options.linkTimeout);
             SocketService.link().then(async authenticated => {
                 if(!authenticated) return false;
+	            this.addEventHandler((t,x) => this.eventHandler(t,x), 'internal');
                 this.identity = await this.getIdentityFromPermissions();
                 return resolve(true);
             });
@@ -75,11 +81,29 @@ class Index {
         return SocketService.isPaired();
     }
 
+	addEventHandler(handler, key = null){ SocketService.addEventHandler(handler, key); }
+	removeEventHandler(key = null){ SocketService.removeEventHandler(key); }
+
+	async eventHandler(event, payload){
+		switch(event){
+			case EVENTS.Disconnected:
+				this.identity = null;
+				break;
+			case EVENTS.LoggedOut:
+				this.identity = await this.getIdentityFromPermissions();
+				break;
+		}
+	}
+
     getVersion(){
         return SocketService.sendApiRequest({
             type:'getVersion',
             payload:{}
         });
+    }
+
+    listen(handler){
+    	SocketService.addEventHandler(handler);
     }
 
 	/***
@@ -286,7 +310,8 @@ holder.PluginTypes = PluginTypes;
 holder.Blockchains = Blockchains;
 holder.Network = Network;
 holder.SocketService = SocketService;
-export {Plugin, PluginTypes, Blockchains, Network, SocketService};
+holder.EVENTS = EVENTS;
+export {Plugin, PluginTypes, Blockchains, Network, SocketService, EVENTS};
 export default holder;
 
 

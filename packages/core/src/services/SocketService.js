@@ -56,11 +56,23 @@ const pair = (passthrough = false) => {
     })
 };
 
+let eventHandlers = {};
+
 export default class SocketService {
 
     static init(_plugin, timeout = 60000){
         plugin = _plugin;
         this.timeout = timeout;
+    }
+
+    static addEventHandler(handler, key){
+        if(!key) key = 'app';
+	    eventHandlers[key] = handler;
+    }
+
+    static removeEventHandler(key){
+	    if(!key) key = 'app';
+	    delete eventHandlers[key];
     }
 
     static link(){
@@ -90,6 +102,7 @@ export default class SocketService {
                             case 'paired': return msg_paired(data);
                             case 'rekey': return msg_rekey();
                             case 'api': return msg_api(data);
+                            case 'event': return event_api(data);
                         }
                     };
 
@@ -128,9 +141,11 @@ export default class SocketService {
                         else openRequest.resolve(response.result);
                     };
 
-                    // socket.on('event', event => {
-                    //     console.log('event', event);
-                    // });
+                    const event_api = ({event, payload}) => {
+						if(Object.keys(eventHandlers).length) Object.keys(eventHandlers).map(key => {
+							eventHandlers[key](event, payload);
+						});
+                    };
                 };
 
                 const trySocket = (ssl = true, resolver = null) => {

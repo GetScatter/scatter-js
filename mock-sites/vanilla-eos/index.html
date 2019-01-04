@@ -11,6 +11,12 @@
 <body style="padding:20px 50px;">
 
 <h1>Scatter Basics</h1>
+
+<div id="status"></div>
+<br>
+<br>
+
+<button onclick="getVersion()">Version</button>
 <button onclick="logout()">Logout</button>
 <button onclick="login()">Login</button>
 <button onclick="loginWithRequirements()">Login with Requirements</button>
@@ -74,11 +80,32 @@
 
     let scatter, eos;
 
+    const setStatus = () => {
+    	const status = document.getElementById('status');
+    	if(!scatter) return status.innerText = 'No Scatter';
+    	if(!scatter.identity) return status.innerText = 'No Identity';
+    	status.innerText = scatter.identity.name;
+    };
+
+    setStatus();
+    setInterval(() => {
+	    setStatus();
+    }, 1000);
+
     ScatterJS.scatter.connect('LernaVanillaTest').then(connected => {
         if(!connected) return false;
         scatter = ScatterJS.scatter;
         eos = scatter.eos(network, Eos);
+
+        scatter.addEventHandler((event, payload) => {
+            console.log('app event', event, payload);
+        });
     });
+
+    window.getVersion = async () => {
+        const version = await scatter.getVersion();
+        console.log('version', version);
+    };
 
     window.login = async () => {
         await scatter.suggestNetwork(network);
@@ -154,8 +181,8 @@
 		 console.log('recovered?', recovered === account.publicKey);
 	 }
 
-    window.logout = () => {
-        scatter.forgetIdentity();
+    window.logout = async () => {
+        await scatter.forgetIdentity();
     };
 
     window.transfer = async () => {
