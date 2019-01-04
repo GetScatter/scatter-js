@@ -32,7 +32,7 @@ export default class DOM {
 			};
 
 			window.addEventListener('message', messageHandler);
-			win = window.open(`http://localhost:8080/allow`, "Scatter Login", "height=500,width=400,menubar=0,toolbar=0");
+			win = window.open(`http://bridge.devx:8080/allow`, "Scatter Login", "height=500,width=400,menubar=0,toolbar=0");
 			win.onbeforeunload = () => window.removeEventListener('message', messageHandler);
 		})
 	}

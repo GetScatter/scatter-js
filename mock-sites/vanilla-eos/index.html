@@ -56,20 +56,28 @@
 
 	 ScatterJS.plugins( new ScatterEOS(), new ScatterBridge() );
 
-    const network2 = ScatterJS.Network.fromJson({
-        blockchain:'eos',
-        chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
-        host:'jungle2.cryptolions.io',
-        port:80,
-        protocol:'http'
-    });
+    // const network = ScatterJS.Network.fromJson({
+    //     blockchain:'eos',
+    //     chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
+    //     host:'jungle2.cryptolions.io',
+    //     port:80,
+    //     protocol:'http'
+    // });
 
-   const network = {
+   const network2 = {
        blockchain:'eos',
        chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
        host:'nodes.get-scatter.com',
        port:443,
        protocol:'https'
+   };
+
+   const network = {
+       blockchain:'eos',
+       chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f',
+       host:'192.168.1.8',
+       port:8888,
+       protocol:'http'
    };
 
     let scatter, eos;

@@ -37,8 +37,13 @@ const baseUrl = 'http://localhost:6546/';
 const POST = (route, data) => {
 	return fetch(`${baseUrl}${route}`, {
 		method:'POST',
-		headers: { 'Accept': 'application/json', 'Content-Type': 'application/json', 'scatter-x-token':getToken() },
-		body: JSON.stringify(formatRequest(data))
+		headers: {
+			'Access-Control-Allow-Origin':location.host,
+			'Accept': 'application/json',
+			'Content-Type': 'application/json',
+			'Authorization':getToken()
+		},
+		body: JSON.stringify(formatRequest(data)),
 	}).then(x => x.json())
 };
 
@@ -103,10 +108,11 @@ export default class ScatterBridge extends Plugin {
 
 	async getOrRequestIdentity(data){
     	return new Promise(async (resolve, reject) => {
-		    if(context.identity) return resolve(context.identity);
+		    // if(context.identity) return resolve(context.identity);
 		    if(getToken() && await fromPermissions()) return resolve(context.identity);
 
-		    DOM.loginPopup(getOrigin(), data.payload.fields).then(({identity, token}) => {
+		    console.log('data.payload.fields', data.payload.fields);
+		    DOM.loginPopup(getOrigin(), data.payload.fields).then(async ({identity, token}) => {
 			    if(!identity || !token) return removeToken();
 			    setToken(token);
 			    resolve(identity);
