@@ -35,10 +35,9 @@ export default class ScatterEOS extends Plugin {
                 signargs.serializedTransaction = Buffer.from(signargs.serializedTransaction).toString('hex');
 
                 return new Promise(async (resolve, reject) => {
-                    const payload = { transaction:signargs, blockchain:Blockchains.EOS, network, requiredFields };
                     SocketService.sendApiRequest({
                         type:'requestSignature',
-                        payload
+                        payload:{ transaction:signargs, blockchain:Blockchains.EOS, network, requiredFields }
                     }).then(x => {
                         if(!beta3) return resolve(x.signatures);
 	                    resolve({signatures:x.signatures, serializedTransaction:Buffer.from(signargs.serializedTransaction, 'hex')})
