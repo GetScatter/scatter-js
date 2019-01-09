@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <title>Web Tester</title>
 
-    <script src="assets/eosjs-debug.js"></script>
-    <script src="assets/eosjs-jsonrpc-debug.js"></script>
-    <script src="assets/eosjs-jssig-debug.js"></script>
+    <script src='assets/eosjs-api.js'></script>
+    <script src='assets/eosjs-jsonrpc.js'></script>
+    <script src='assets/eosjs-jssig.js'></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-eosjs2.min.js"></script>
 </head>
@@ -45,8 +45,8 @@
         protocol:'http'
     };
 
-    const rpc = new eosjs_jsonrpc.JsonRpc(`${network.protocol}://${network.host}:${network.port}`);
-    const getApi = signatureProvider => new eosjs.Api({ rpc, signatureProvider });
+    const rpc = new eosjs_jsonrpc.default(`${network.protocol}://${network.host}:${network.port}`);
+    const getApi = signatureProvider => new eosjs_api.default({ rpc, signatureProvider });
 
     let scatter = null;
 
@@ -65,7 +65,7 @@
     };
 
     window.transfer = async () => {
-        const api = scatter.eos(network, eosjs.Api, {rpc});
+        const api = scatter.eos(network, eosjs_api.default, {rpc});
         tryTransfer(api);
     };
 
