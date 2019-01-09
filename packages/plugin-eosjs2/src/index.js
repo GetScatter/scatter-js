@@ -15,7 +15,7 @@ export default class ScatterEOS extends Plugin {
         super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT);
     }
 
-    hookProvider(network, fieldsFetcher = null){
+    hookProvider(network, fieldsFetcher = null, beta3 = false){
         network = Network.fromJson(network);
 
         return {
@@ -31,7 +31,6 @@ export default class ScatterEOS extends Plugin {
             },
 
             sign:async (signargs) => {
-                console.log('signargs', signargs);
                 const requiredFields = fieldsFetcher ? fieldsFetcher() : {};
                 signargs.serializedTransaction = Buffer.from(signargs.serializedTransaction).toString('hex');
 
@@ -41,8 +40,8 @@ export default class ScatterEOS extends Plugin {
                         type:'requestSignature',
                         payload
                     }).then(x => {
-                        console.log('res', x);
-	                    resolve({signatures:x.signatures, serializedTransaction:signargs.serializedTransaction})
+                        if(!beta3) return resolve(x.signatures);
+	                    resolve({signatures:x.signatures, serializedTransaction:Buffer.from(signargs.serializedTransaction, 'hex')})
                     })
                       .catch(x => reject(x))
                 })
@@ -61,7 +60,7 @@ export default class ScatterEOS extends Plugin {
 
             let requiredFields = {};
             const fieldsFetcher = () => requiredFields;
-            const signatureProvider = this.hookProvider(network, fieldsFetcher);
+            const signatureProvider = this.hookProvider(network, fieldsFetcher, _options.beta3 || false);
 
             // The proxy stands between the eosjs object and scatter.
             // This is used to add special functionality like adding `requiredFields` arrays to transactions

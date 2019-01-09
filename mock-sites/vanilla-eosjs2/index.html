@@ -4,9 +4,10 @@
     <meta charset="UTF-8">
     <title>Web Tester</title>
 
-    <script src='assets/eosjs-api.js'></script>
-    <script src='assets/eosjs-jsonrpc.js'></script>
-    <script src='assets/eosjs-jssig.js'></script>
+    <script src='assets/beta3/eosjs-api.js'></script>
+    <script src='assets/beta3/eosjs-jsonrpc.js'></script>
+    <script src="assets/beta2-/eosjs-debug.js"></script>
+    <script src="assets/beta2-/eosjs-jsonrpc-debug.js"></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-eosjs2.min.js"></script>
 </head>
@@ -19,89 +20,100 @@
 
 <script>
 
-	 ScatterJS.plugins( new ScatterEOS() );
+	ScatterJS.plugins( new ScatterEOS() );
 
-//    const network = {
-//        blockchain:'eos',
-//        chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f',
-//        host:'192.168.1.6',
-//        port:8888,
-//        protocol:'http'
-//    };
+	//    const network = {
+	//        blockchain:'eos',
+	//        chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f',
+	//        host:'192.168.1.6',
+	//        port:8888,
+	//        protocol:'http'
+	//    };
 
-//    const network = {
-//        blockchain:'eos',
-//        chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
-//        host:'nodes.get-scatter.com',
-//        port:443,
-//        protocol:'https'
-//    };
+	//    const network = {
+	//        blockchain:'eos',
+	//        chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+	//        host:'nodes.get-scatter.com',
+	//        port:443,
+	//        protocol:'https'
+	//    };
 
-    const network = {
-        blockchain:'eos',
-        chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
-        host:'dev.cryptolions.io',
-        port:18888,
-        protocol:'http'
-    };
+	const network = {
+		blockchain:'eos',
+		chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
+		host:'dev.cryptolions.io',
+		port:18888,
+		protocol:'http'
+	};
 
-    const rpc = new eosjs_jsonrpc.default(`${network.protocol}://${network.host}:${network.port}`);
-    const getApi = signatureProvider => new eosjs_api.default({ rpc, signatureProvider });
+	let scatter = null;
 
-    let scatter = null;
+	const beta3 = true;
 
-    ScatterJS.scatter.connect('LernaVanillaTest').then(connected => {
-        if(!connected) return false;
-        scatter = ScatterJS.scatter;
-    });
+	const rpc = beta3
+		? new eosjs_jsonrpc2.default(`${network.protocol}://${network.host}:${network.port}`)
+		: new eosjs_jsonrpc.JsonRpc(`${network.protocol}://${network.host}:${network.port}`);
 
-    window.login = async () => {
-        await scatter.suggestNetwork(network);
-        await scatter.getIdentity({accounts:[network]})
-    };
+	const getApi = (signatureProvider) => beta3
+		? new eosjs_api.default({ rpc, signatureProvider })
+		: new eosjs.Api({ rpc, signatureProvider });
 
-    window.logout = () => {
-        scatter.forgetIdentity();
-    };
+	const getScatterEos = () => beta3
+		? scatter.eos(network, eosjs_api.default, {rpc, beta3:true})
+		: scatter.eos(network, eosjs.Api, {rpc});
 
-    window.transfer = async () => {
-        const api = scatter.eos(network, eosjs_api.default, {rpc});
-        tryTransfer(api);
-    };
+	ScatterJS.scatter.connect('LernaVanillaTest').then(connected => {
+		if(!connected) return false;
+		scatter = ScatterJS.scatter;
+	});
 
-    window.hookTransfer = async () => {
-        const api = getApi(scatter.eosHook(network));
+	window.login = async () => {
+		await scatter.suggestNetwork(network);
+		await scatter.getIdentity({accounts:[network]})
+	};
+
+	window.logout = () => {
+		scatter.forgetIdentity();
+	};
+
+	window.transfer = async () => {
+		const api = getScatterEos();
+		tryTransfer(api);
+	};
+
+	window.hookTransfer = async () => {
+		const api = getApi(scatter.eosHook(network));
 		const from = scatter.identity.accounts[0];
-        tryTransfer(api);
-    };
+		tryTransfer(api);
+	};
 
-    const tryTransfer = async api => {
-        try {
-            const from = scatter.identity.accounts[0];
-            const result = await api.transact({
-                actions: [{
-                    account: 'eosio.token',
-                    name: 'transfer',
-                    authorization: [{
-                        actor: from.name,
-                        permission: from.authority,
-                    }],
-                    data: {
-                        from: from.name,
-                        to: 'eosio',
-                        quantity: '0.0001 EOS',
-                        memo: '',
-                    },
-                }]
-            }, {
-                blocksBehind: 3,
-                expireSeconds: 30,
-            });
-            console.log('result', result);
-        } catch (e) {
-            console.error(e);
-        }
-    }
+	const tryTransfer = async api => {
+		try {
+			const from = scatter.identity.accounts[0];
+			const result = await api.transact({
+				actions: [{
+					account: 'eosio.token',
+					name: 'transfer',
+					authorization: [{
+						actor: from.name,
+						permission: from.authority,
+					}],
+					data: {
+						from: from.name,
+						to: 'eosio',
+						quantity: '0.0001 EOS',
+						memo: '',
+					},
+				}]
+			}, {
+				blocksBehind: 3,
+				expireSeconds: 30,
+			});
+			console.log('result', result);
+		} catch (e) {
+			console.error(e);
+		}
+	}
 
 </script>
 </body>
