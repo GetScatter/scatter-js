@@ -62,7 +62,7 @@
 
 	 ScatterJS.plugins( new ScatterEOS() );
 
-    const network2 = ScatterJS.Network.fromJson({
+    const network = ScatterJS.Network.fromJson({
         blockchain:'eos',
         chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
         host:'jungle2.cryptolions.io',
@@ -70,7 +70,7 @@
         protocol:'http'
     });
 
-   const network = ScatterJS.Network.fromJson({
+   const network2 = ScatterJS.Network.fromJson({
 	   blockchain:'eos',
 	   chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
 	   host:'nodes.get-scatter.com',
@@ -92,7 +92,7 @@
 	    setStatus();
     }, 1000);
 
-    ScatterJS.scatter.connect('LernaVanillaTest').then(connected => {
+    ScatterJS.connect('LernaVanillaTest').then(connected => {
         if(!connected) return false;
         scatter = ScatterJS.scatter;
         eos = scatter.eos(network, Eos);
