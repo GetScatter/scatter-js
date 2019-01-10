@@ -31,16 +31,14 @@ const ALTERNATES = {
 export default class WalletInterface {
 
 	constructor(identifier, methods, context){
-		const unavailable = method => () => {
-			throw new Error(`${identifier} does not support the ${method} method.`);
-		};
+		const unavailable = method => () => { throw new Error(`${identifier} does not support the ${method} method.`); };
 
 		const bindToContext = (method, key) => {
 			if(typeof context[key] === 'undefined'){
 				context[key] = method ? method : unavailable(key);
 			}
 			if(ALTERNATES[key] && typeof context[ALTERNATES[key]] === 'undefined'){
-				context[ALTERNATES[key]] = method ? context[key] : unavailable(key);
+				context[ALTERNATES[key]] = context[key] ? context[key] : unavailable(key);
 			}
 		};
 

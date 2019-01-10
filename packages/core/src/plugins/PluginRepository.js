@@ -16,6 +16,10 @@ class PluginRepositorySingleton {
 			this.plugins.push(plugin);
 	}
 
+    wallets(){
+        return this.plugins.filter(plugin => plugin.type === PluginTypes.WALLET_SUPPORT);
+    }
+
     signatureProviders(){
         return this.plugins.filter(plugin => plugin.type === PluginTypes.BLOCKCHAIN_SUPPORT);
     }

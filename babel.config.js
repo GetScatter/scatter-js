@@ -1,5 +1,5 @@
 module.exports = {
-    presets:[ "@babel/env" ], //,"minify" // TODO:
+    presets:[ "@babel/env","minify" ],
     plugins:[
         "@babel/plugin-transform-runtime",
     ]

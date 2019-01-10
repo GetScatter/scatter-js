@@ -93,6 +93,7 @@
     }, 1000);
 
     ScatterJS.connect('LernaVanillaTest', {network}).then(connected => {
+    	console.log('connected', connected);
         if(!connected) return false;
         scatter = ScatterJS.scatter;
         eos = scatter.eos(network, Eos);
@@ -108,8 +109,9 @@
     };
 
     window.login = async () => {
-        await scatter.suggestNetwork(network);
+        // await scatter.suggestNetwork(network);
         await scatter.login({accounts:[network]})
+        // await scatter.getIdentity({accounts:[network]})
         eos = scatter.eos(network, Eos);
     };
 

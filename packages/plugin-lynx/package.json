@@ -1,0 +1,6 @@
+{
+	"name": "scatterjs-plugin-eosjs2",
+	"version": "1.4.0",
+	"main": "dist/index.js",
+	"license": "MIT"
+}
