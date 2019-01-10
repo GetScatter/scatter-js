@@ -128,7 +128,7 @@ const eos = Eos({httpEndpoint:'', signatureProvider:ScatterJS.scatter.eosHook(ne
 ```
 
 #### If you're using eosjs beta3
-`const eos = scatter.eos(network, Api, { rpc })`
+`const eos = scatter.eos(network, Api, { rpc, beta3:true })`
 
 
 # What now?
