@@ -4,12 +4,12 @@ import Plugin from './plugins/Plugin';
 import * as PluginTypes from './plugins/PluginTypes';
 import { Blockchains } from './models/Blockchains';
 import Network from './models/Network';
-import WalletInterface, {METHODS} from './models/WalletInterface';
+import WalletInterface, {WALLET_METHODS} from './models/WalletInterface';
 
 let origin;
 
 const checkForExtension = (resolve, tries = 0) => {
-    if(tries > 20) return;
+    if(tries > 5) return;
     if(holder.scatter.isExtension) return resolve(true);
     setTimeout(() => checkForExtension(resolve, tries + 1), 100);
 };
@@ -19,92 +19,76 @@ const EVENTS = {
 	LoggedOut:'logout',
 };
 
-
-const checkPlugins = async (plugins) => {
-
-};
-
-
 class Index {
 
 	constructor(){
 		this.isExtension = false;
 		this.identity = null;
+		this.network = null;
+
+		const setAndReturnId = (id, forget) => {
+			if(id || forget) this.identity = id;
+			return forget || id;
+		};
 
 		new WalletInterface('ScatterSockets', {
-			[METHODS.disconnect]:() => SocketService.disconnect(),
-			[METHODS.isConnected]:() => SocketService.isConnected(),
-			[METHODS.isPaired]:() => SocketService.isPaired(),
-			[METHODS.addEventHandler]:(handler, key = null) => SocketService.addEventHandler(handler, key),
-			[METHODS.removeEventHandler]:(key = null) => SocketService.removeEventHandler(key),
-			[METHODS.listen]:(handler) => SocketService.addEventHandler(handler),
-			[METHODS.getVersion]:(key = null) => SocketService.sendApiRequest({
-				type:'getVersion',
-				payload:{}
-			}),
-			[METHODS.getIdentity]:(requiredFields) => SocketService.sendApiRequest({
+			[WALLET_METHODS.disconnect]:() => SocketService.disconnect(),
+			[WALLET_METHODS.isConnected]:() => SocketService.isConnected(),
+			[WALLET_METHODS.isPaired]:() => SocketService.isPaired(),
+			[WALLET_METHODS.addEventHandler]:(handler, key = null) => SocketService.addEventHandler(handler, key),
+			[WALLET_METHODS.removeEventHandler]:(key = null) => SocketService.removeEventHandler(key),
+			[WALLET_METHODS.listen]:(handler) => SocketService.addEventHandler(handler),
+			[WALLET_METHODS.getVersion]:() => SocketService.sendApiRequest({ type:'getVersion', payload:{} }),
+			[WALLET_METHODS.getIdentity]:(requiredFields) => SocketService.sendApiRequest({
 				type:'getOrRequestIdentity',
-				payload:{
-					fields:requiredFields
-				}
-			}).then(id => {
-				if(id) this.identity = id;
-				return id;
-			}),
-			[METHODS.getIdentityFromPermissions]:() => SocketService.sendApiRequest({
+				payload:{ fields:requiredFields ? requiredFields : {accounts:[this.network]} }
+			}).then(setAndReturnId),
+			[WALLET_METHODS.getIdentityFromPermissions]:() => SocketService.sendApiRequest({
 				type:'identityFromPermissions',
 				payload:{}
-			}).then(id => {
-				if(id) this.identity = id;
-				return id;
-			}),
-			[METHODS.forgetIdentity]:() => SocketService.sendApiRequest({
+			}).then(setAndReturnId),
+			[WALLET_METHODS.forgetIdentity]:() => SocketService.sendApiRequest({
 				type:'forgetIdentity',
 				payload:{}
-			}).then(res => {
-				this.identity = null;
-				return res;
-			}),
-			[METHODS.authenticate]:(nonce, data = null, publicKey = null) => SocketService.sendApiRequest({
+			}).then(res => setAndReturnId(null, res)),
+			[WALLET_METHODS.authenticate]:(nonce, data = null, publicKey = null) => SocketService.sendApiRequest({
 				type:'authenticate',
 				payload:{ nonce, data, publicKey }
 			}),
-			[METHODS.getArbitrarySignature]:(publicKey, data) => SocketService.sendApiRequest({
+			[WALLET_METHODS.getArbitrarySignature]:(publicKey, data) => SocketService.sendApiRequest({
 				type:'requestArbitrarySignature',
 				payload:{ publicKey, data }
 			}),
-			[METHODS.getPublicKey]:(blockchain) => SocketService.sendApiRequest({
+			[WALLET_METHODS.getPublicKey]:(blockchain) => SocketService.sendApiRequest({
 				type:'getPublicKey',
 				payload:{ blockchain }
 			}),
-			[METHODS.linkAccount]:(account, network) => SocketService.sendApiRequest({
+			[WALLET_METHODS.linkAccount]:(account, network) => SocketService.sendApiRequest({
 				type:'linkAccount',
-				payload:{ account, network }
+				payload:{ account, network:network || this.network }
 			}),
-			[METHODS.hasAccountFor]:(network) => SocketService.sendApiRequest({
+			[WALLET_METHODS.hasAccountFor]:(network) => SocketService.sendApiRequest({
 				type:'hasAccountFor',
-				payload:{ network }
+				payload:{ network:network || this.network }
 			}),
-			[METHODS.suggestNetwork]:(network) => SocketService.sendApiRequest({
+			[WALLET_METHODS.suggestNetwork]:(network) => SocketService.sendApiRequest({
 				type:'requestAddNetwork',
-				payload:{ network }
+				payload:{ network:network || this.network }
 			}),
-			[METHODS.requestTransfer]:(network, to, amount, options = {}) => SocketService.sendApiRequest({
+			[WALLET_METHODS.requestTransfer]:(network, to, amount, options = {}) => SocketService.sendApiRequest({
 				type:'requestTransfer',
-				payload:{network, to, amount, options}
+				payload:{network:network || this.network, to, amount, options}
 			}),
-			[METHODS.requestSignature]:(payload) => SocketService.sendApiRequest({
+			[WALLET_METHODS.requestSignature]:(payload) => SocketService.sendApiRequest({
 				type:'requestSignature',
 				payload
 			}),
-			[METHODS.createTransaction]:(blockchain, actions, account, network) => SocketService.sendApiRequest({
+			[WALLET_METHODS.createTransaction]:(blockchain, actions, account, network) => SocketService.sendApiRequest({
 				type:'createTransaction',
-				payload:{ blockchain, actions, account, network }
+				payload:{ blockchain, actions, account, network:network || this.network }
 			}),
 
 		}, this);
-
-		console.log(this);
 	}
 
 	loadPlugin(plugin){
@@ -120,19 +104,12 @@ class Index {
 	}
 
 	async connect(pluginName, options){
+		this.network = options.hasOwnProperty('network') ? options.network : null;
+
 		return new Promise(resolve => {
 			if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
-
-			// Setting options defaults
 			options = Object.assign({initTimeout:10000, linkTimeout:30000}, options);
-
-			// Auto failer
-			setTimeout(() => {
-				resolve(false);
-			}, options.initTimeout);
-
-			// Defaults to scatter extension if exists
-			checkForExtension(resolve);
+			setTimeout(() => resolve(false), options.initTimeout);
 
 			// Tries to set up Desktop Connection
 			SocketService.init(pluginName, options.linkTimeout);
@@ -142,6 +119,9 @@ class Index {
 				this.identity = await this.getIdentityFromPermissions();
 				return resolve(true);
 			});
+
+			// Defaults to scatter extension if exists
+			checkForExtension(resolve);
 		})
 	}
 
@@ -155,8 +135,6 @@ class Index {
 				break;
 		}
 	}
-
-
 }
 
 
@@ -184,6 +162,7 @@ if(typeof window !== 'undefined') {
     if(typeof document !== 'undefined'){
         const bindScatterClassic = () => {
             holder.scatter = window.scatter;
+	        new WalletInterface('Extension', window.scatter, holder.scatter);
             holder.scatter.isExtension = true;
             holder.scatter.connect = () => new Promise(resolve => resolve(true));
         };

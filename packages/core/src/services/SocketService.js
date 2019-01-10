@@ -106,6 +106,7 @@ export default class SocketService {
                         }
                     };
 
+
                     const msg_paired = result => {
                         paired = result;
 

@@ -1,4 +1,3 @@
-import PluginRepository from "../plugins/PluginRepository";
 import {Blockchains} from "./Blockchains";
 
 export default class Token {

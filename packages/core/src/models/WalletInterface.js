@@ -1,4 +1,4 @@
-export const METHODS = {
+export const WALLET_METHODS = {
 	disconnect:'disconnect',
 	isConnected:'isConnected',
 	isPaired:'isPaired',
@@ -22,9 +22,9 @@ export const METHODS = {
 };
 
 const ALTERNATES = {
-	[METHODS.getIdentity]:'login',
-	[METHODS.forgetIdentity]:'logout',
-	[METHODS.getIdentityFromPermissions]:'checkLogin'
+	[WALLET_METHODS.getIdentity]:'login',
+	[WALLET_METHODS.forgetIdentity]:'logout',
+	[WALLET_METHODS.getIdentityFromPermissions]:'checkLogin'
 };
 
 
@@ -36,17 +36,15 @@ export default class WalletInterface {
 		};
 
 		const bindToContext = (method, key) => {
-			console.log('key', key, method);
-			if(method){
-				context[key] = method;
-				if(ALTERNATES[key]) context[ALTERNATES[key]] = method;
-			} else {
-				context[key] = unavailable(method);
-				if(ALTERNATES[key]) context[ALTERNATES[key]] = unavailable(method);
+			if(typeof context[key] === 'undefined'){
+				context[key] = method ? method : unavailable(key);
 			}
-		}
+			if(ALTERNATES[key] && typeof context[ALTERNATES[key]] === 'undefined'){
+				context[ALTERNATES[key]] = method ? context[key] : unavailable(key);
+			}
+		};
 
-		Object.keys(METHODS).map(key => bindToContext(methods[key], key));
+		Object.keys(WALLET_METHODS).map(key => bindToContext(methods[key], key));
 	}
 
 }
