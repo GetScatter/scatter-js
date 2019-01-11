@@ -55,12 +55,14 @@ export default class ScatterLynx extends Plugin {
 
     methods(){
         return {
+
+        	// TODO: Align to active
 	        [WALLET_METHODS.getIdentity]:async (requiredFields) => {
 		        const accountName = await window.lynxMobile.requestSetAccountName();
 		        if(!accountName) return null;
 		        const accountState = await window.lynxMobile.requestSetAccount(accountName);
 		        if(!accountState) return null;
-		        const perm = accountState.account.permissions.sort((a,b) => b.perm_name === 'owner' ? 1 : a.perm_name === 'owner' ? -1 : 0)[0];
+		        const perm = accountState.account.permissions.find(x => x.perm_name === 'active');
 		        const accounts = [{
 			        name:accountState.account.account_name,
 			        authority:perm.perm_name,
