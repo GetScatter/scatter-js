@@ -152,7 +152,7 @@ const account = ScatterJS.scatter.identity.find(x => {
 Blockchain wrappers wrap the actual blockchain libraries (eosjs, tronweb, web3, etc) that you pass in.
 That way you don't have to relearn any APIs or be forced to use any specific version.
 
-eosjs@16.0.9
+eosjs@16.0.9 ( scatterjs-plugin-eosjs )
 ```js
 import Eos from 'eosjs';
 const eos = ScatterJS.scatter.eos(network, Eos, eosjsOptions);
@@ -160,7 +160,7 @@ const eos = ScatterJS.scatter.eos(network, Eos, eosjsOptions);
 const result = await eos.transfer(...);
 ```
 
-eosjs@20.0.0-beta3
+eosjs@20.0.0-beta3 ( scatterjs-plugin-eosjs2 )
 ```js
 import {JsonRpc, Api} from 'eosjs'
 const rpc = new JsonRpc(network.fullhost());
