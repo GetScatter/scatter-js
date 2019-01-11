@@ -241,15 +241,6 @@ ScatterJS will mutate standardized requests for you into their required formats.
 | ---------- | -------- | -------| -------|
 | EOSIO | Lynx | Mobile | `scatterjs-plugin-lynx` |
 
-## Use Wallet Plugins
-Adding wallet plugins is just like adding blockchain plugins.
-Scatter will try all wallets simultaneously when the page loads and will pick up the first
-one available.
-
-```js
-ScatterJS.plugins( new ScatterEOS(), new ScatterLynx() )
-```
-
 
 
 <br/><br/>
