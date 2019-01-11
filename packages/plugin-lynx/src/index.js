@@ -99,8 +99,7 @@ export default class ScatterLynx extends Plugin {
 
 		        console.log('parsed', parsed);
 
-		        const result = await window.lynxMobile.transact(parsed);
-		        console.log('result', result);
+		        return window.lynxMobile.requestSignature(parsed);
 	        }
         }
     }
