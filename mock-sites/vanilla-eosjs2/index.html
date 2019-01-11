@@ -101,6 +101,7 @@
 	};
 
 	const tryTransfer = async api => {
+		console.log('account', scatter.getAccount('eos'));
 		try {
 			const from = scatter.identity.accounts[0];
 			const result = await api.transact({

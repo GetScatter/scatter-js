@@ -45,4 +45,16 @@ export default class WalletInterface {
 		Object.keys(WALLET_METHODS).map(key => bindToContext(methods[key], key));
 	}
 
+	static bindBasics(context){
+
+		context.getAccount = (blockchain) => {
+			if(!context.identity) return;
+			if(!context.identity.accounts) return;
+			return context.identity.accounts.find(x => x.blockchain === blockchain);
+		}
+
+
+
+	}
+
 }

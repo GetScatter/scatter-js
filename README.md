@@ -178,6 +178,29 @@ If you're having trouble packaging or compiling your project you probably need t
 -------------
 
 
+## Supported Wallets
+-------------
+
+#### Automatically Supported Wallets
+These wallets do not require you include any plugins. They run Scatter Protocols inside of
+their wallet and mimic our existing APIs.
+
+| blockchain | wallet |
+| ---------- | -------- |
+| EOSIO | TokenPocket |
+| EOSIO | MEET.ONE |
+| EOSIO | imToken |
+| EOSIO | PocketEOS |
+
+#### Plugin Supported Wallets
+These wallets have their un non-standardized APIs and require a plugin to support.
+ScatterJS will mutate standardized requests for you into their required formats.
+
+| blockchain | wallet | plugin |
+| ---------- | -------- | -------|
+| EOSIO | Lynx | `scatterjs-plugin-lynx` |
+
+
 # What now?
 Head over to the [Scatter Developer Documentation](https://get-scatter.com/docs/getting-started) to learn about
 all the amazing things you can do with Scatter.
