@@ -123,6 +123,23 @@ scatter.logout().then(...);
 **After a successful login, the "Identity" will be available at `scatter.identity`**.
 If a user refreshes the page and has already logged in, the `scatter.identity` property will be auto-filled.
 
+## Get blockchain account from the identity
+Because accounts are nested within the Identity there is an easy method for fetching them.
+
+#### Using the helper
+```js
+const account = ScatterJS.scatter.account('eos')
+const account = ScatterJS.scatter.account('eth')
+const account = ScatterJS.scatter.account('trx')
+```
+
+#### From the Identity
+```js
+const account = ScatterJS.scatter.identity.find(x => {
+    return x.blockchain === 'eos';
+});
+```
+
 ---------------------
 
 ## Using Blockchain Wrappers
