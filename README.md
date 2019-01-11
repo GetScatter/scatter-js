@@ -226,12 +226,12 @@ their wallet and mimic our existing APIs.
 
 | dapp supported blockchains | platform | wallet |
 | ---------- | -------- | -------- |
-| EOSIO, Tron, Ethereum | Scatter Desktop | Desktop |
+| EOSIO, Tron, Ethereum | [Scatter Desktop](https://get-scatter.com/) | Desktop |
 | EOSIO, Ethereum | Scatter Extension | Desktop |
-| EOSIO | TokenPocket | Mobile |
-| EOSIO | MEET.ONE | Mobile |
-| EOSIO | imToken | Mobile |
-| EOSIO | PocketEOS | Mobile |
+| EOSIO | [TokenPocket](https://www.mytokenpocket.vip/) | Mobile |
+| EOSIO | [MEET.ONE](https://meet.one/) | Mobile |
+| EOSIO | [imToken](https://token.im/) | Mobile |
+| EOSIO | [PocketEOS](https://pocketeos.com/) | Mobile |
 
 ## Plugin Supported Wallets
 These wallets require a plugin to support.
@@ -239,7 +239,7 @@ ScatterJS will mutate standardized blockchain library requests for you into thei
 
 | dapp supported blockchains | wallet | platform | plugin |
 | ---------- | -------- | -------| -------|
-| EOSIO | Lynx | Mobile | `scatterjs-plugin-lynx` |
+| EOSIO | [Lynx](https://eoslynx.com/) | Mobile | `scatterjs-plugin-lynx` |
 
 
 
