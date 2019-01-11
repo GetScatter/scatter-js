@@ -413,7 +413,9 @@ const eos = ScatterJS.scatter.eos(network, Eos, eosjsOptions);
 
 const result = await eos.transfer(...);
 ```
+
 <br/>
+
 [eosjs@20.0.0-beta3 ( scatterjs-plugin-eosjs2 )](https://github.com/EOSIO/eosjs)
 ```js
 import {JsonRpc, Api} from 'eosjs'
@@ -422,6 +424,8 @@ const eos = ScatterJS.scatter.eos(network, Api, {rpc, beta3:true}));
 <br/>
 const result = await eos.transact({...});
 ```
+
+<br/>
 
 [tronweb](https://github.com/tronprotocol/tron-web)
 ```js
@@ -433,7 +437,9 @@ tron = ScatterJS.scatter.trx(network, tron);
 
 const result = await tron.trx.sendTransaction(...)
 ```
+
 <br/>
+
 [web3](https://github.com/ethereum/web3.js/)
 ```js
 import Web3 from 'web3';
