@@ -234,8 +234,8 @@ their wallet and mimic our existing APIs.
 | EOSIO | PocketEOS | Mobile |
 
 ## Plugin Supported Wallets
-These wallets have their own non-standardized APIs and require a plugin to support.
-ScatterJS will mutate standardized requests for you into their required formats.
+These wallets require a plugin to support.
+ScatterJS will mutate standardized blockchain library requests for you into their required formats.
 
 | dapp supported blockchains | wallet | platform | plugin |
 | ---------- | -------- | -------| -------|
