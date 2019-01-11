@@ -405,6 +405,7 @@ That way you don't have to relearn any APIs or be forced to use any specific ver
 
 **You can click on the libraries here below to go directly to their respective githubs**.
 <br/>
+<br/>
 
 [eosjs@16.0.9 ( scatterjs-plugin-eosjs )](https://github.com/EOSIO/eosjs/tree/v16.0.9)
 ```js
