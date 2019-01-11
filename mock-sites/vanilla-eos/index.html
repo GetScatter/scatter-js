@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Web Tester</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <script src="https://cdn.jsdelivr.net/npm/eosjs@16.0.0/lib/eos.min.js"></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
@@ -93,7 +94,6 @@
     }, 1000);
 
     ScatterJS.connect('LernaVanillaTest', {network}).then(connected => {
-    	console.log('connected', connected);
         if(!connected) return false;
         scatter = ScatterJS.scatter;
         eos = scatter.eos(network, Eos);
@@ -110,7 +110,8 @@
 
     window.login = async () => {
         // await scatter.suggestNetwork(network);
-        await scatter.login({accounts:[network]})
+        await scatter.login({accounts:[network]});
+
         // await scatter.getIdentity({accounts:[network]})
         eos = scatter.eos(network, Eos);
     };

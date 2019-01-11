@@ -6,15 +6,22 @@ import {
     WALLET_METHODS
 } from 'scatterjs-core';
 
+import {JsonRpc, Api} from 'eosjs'
+
+let network;
 
 let isAvailable = false;
-window.addEventListener("lynxMobileLoaded", () => isAvailable = true);
+if(typeof window !== 'undefined') {
+	window.addEventListener('lynxMobileLoaded', () => isAvailable = true);
+}
 
-
-const pollExistence = async (tries = 0) => {
-	if(tries > 5) return false;
-	if(isAvailable) return true;
-	setTimeout(() => pollExistence(tries + 1), 100);
+const pollExistence = async (resolver = null, tries = 0) => {
+	return new Promise(r => {
+		if(!resolver) resolver = r;
+		if(isAvailable) return resolver(true);
+		if(tries > 5) return resolver(false);
+		setTimeout(() => pollExistence(resolver, tries + 1), 100);
+	})
 };
 
 export default class ScatterLynx extends Plugin {
@@ -24,70 +31,74 @@ export default class ScatterLynx extends Plugin {
 	    this.name = 'Lynx';
     }
 
-    async connect(){
-        const found = await pollExistence();
-	    if(found) return true;
+    init(context, holderFns, socketSetters){
+	    this.context = context;
+	    this.holderFns = holderFns;
+	    this.socketSetters = socketSetters;
     }
+
+	async connect(){
+		return new Promise(async resolve => {
+			const found = await pollExistence();
+			if(found) {
+			    resolve(true);
+			}
+		})
+	}
+
+	async runAfterInterfacing(){
+		this.methods()[WALLET_METHODS.getIdentity]();
+		const selfSocket = { sendApiRequest:x => this.methods()[x.type](x.payload) };
+		this.socketSetters.map(x => x(selfSocket));
+		return true;
+	}
 
     methods(){
         return {
-	        [WALLET_METHODS.getIdentity]:async () => {
+	        [WALLET_METHODS.getIdentity]:async (requiredFields) => {
 		        const accountName = await window.lynxMobile.requestSetAccountName();
+		        if(!accountName) return null;
 		        const accountState = await window.lynxMobile.requestSetAccount(accountName);
+		        if(!accountState) return null;
+		        const perm = accountState.account.permissions.sort((a,b) => b.perm_name === 'owner' ? 1 : a.perm_name === 'owner' ? -1 : 0)[0];
+		        const accounts = [{
+			        name:accountState.account.account_name,
+			        authority:perm.perm_name,
+			        publicKey:perm.required_auth.keys[0].key,
+			        blockchain:Blockchains.EOS,
+			        isHardware:false,
+			        chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
+		        }];
+
+		        const identity = {
+		            name:accounts[0].name,
+                    accounts
+                };
+
+		        this.context.identity = identity;
+		        return identity;
 	        },
+	        [WALLET_METHODS.forgetIdentity]:async () => {
+		        this.context.identity = null;
+		        return true;
+	        },
+	        ['identityFromPermissions']:async () => this.context.identity,
+	        [WALLET_METHODS.getIdentityFromPermissions]:async () => this.context.identity,
 
-	        [WALLET_METHODS.requestSignature]:async (transaction) => {
+	        [WALLET_METHODS.requestSignature]:async ({abis, transaction, network}) => {
+	        	console.log('transaction', transaction);
 		        if(!transaction.hasOwnProperty('serializedTransaction')) throw new Error('Lynx only supports eosjs2(20.0.0+) syntax');
+		        if(transaction.chainId !== 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906') throw new Error('Lynx only supports mainnet.');
+		        const rpc = new JsonRpc(Network.fromJson(network).fullhost());
+		        const api = new Api({rpc});
 
-		        // let transaction = {
-		        //     actions: [{
-		        //         account: "eosio",
-		        //         name: "delegatebw",
-		        //         data: {
-		        //             from: "funstuffgogo",
-		        //             receiver: "funstuffgogo",
-		        //             transfer: false,
-		        //             stake_cpu_quantity: "0.0005 EOS",
-		        //             stake_net_quantity: "0.0000 EOS"
-		        //         },
-		        //         authorization: [
-		        //             {
-		        // 	            actor: "funstuffgogo",
-		        // 	            permission: "active"
-		        //             }
-		        //         ]
-		        //     },
-		        //         {
-		        //             account: "eosio",
-		        //             name: "undelegatebw",
-		        //             data: {
-		        // 	            from: "funstuffgogo",
-		        // 	            receiver: "funstuffgogo",
-		        // 	            unstake_cpu_quantity: "0.0000 EOS",
-		        // 	            unstake_net_quantity: "0.0003 EOS"
-		        //             },
-		        //             authorization: [
-		        // 	            {
-		        // 		            actor: "funstuffgogo",
-		        // 		            permission: "active"
-		        // 	            }
-		        //             ]
-		        //         }]
-		        // }
+		        transaction.abis.map(({account_name, abi:rawAbi}) => api.cachedAbis.set(account_name, { rawAbi, abi:api.rawAbiToJson(rawAbi) }));
+		        const parsed = await api.deserializeTransactionWithActions(transaction.serializedTransaction);
 
-		        // (async () => {
-		        //
-		        //     let result;
-		        //
-		        //     try {
-		        //         result = await window.lynxMobile.transact(transaction);
-		        //     } catch (err) {
-		        //         console.log(err);
-		        //     }
-		        //
-		        //     console.log(result); // {transaction_id: "3a50d9a4bda0a8e2a4c23526da15369345bd61c72d37d844365f4bfee5c18fcb", processed: Object}
-		        //
-		        // })();
+		        console.log('parsed', parsed);
+
+		        const result = await window.lynxMobile.transact(parsed);
+		        console.log('result', result);
 	        }
         }
     }

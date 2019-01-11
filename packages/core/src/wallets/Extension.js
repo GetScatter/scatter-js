@@ -9,13 +9,6 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 	document.addEventListener('scatterLoaded', () => isAvailable = true);
 }
 
-/*
-holder.scatter = window.scatter;
-new WalletInterface('Extension', window.scatter, holder.scatter);
-holder.scatter.isExtension = true;
-holder.scatter.connect = () => new Promise(resolve => resolve(true));
- */
-
 const pollExistence = async (resolver = null, tries = 0) => {
 	return new Promise(r => {
 		if(!resolver) resolver = r;
@@ -37,7 +30,6 @@ export default class Extension extends Plugin {
 	async connect(){
 		return new Promise(async resolve => {
 			const found = await pollExistence();
-			console.log('found', found);
 			if(found) resolve(true);
 		})
 	}
@@ -45,19 +37,15 @@ export default class Extension extends Plugin {
 	async runBeforeInterfacing(){
 		this.holderFns.set(window.scatter);
 		this.context = this.holderFns.get();
-		console.log('runBeforeInterfacing', this.context, this.context.getIdentity);
 		return true;
 	}
 
 	async runAfterInterfacing(){
 		this.context.isExtension = true;
+		this.context.connect = () => new Promise(resolve => resolve(true));
 		return true;
 	}
 
-	methods(){
-		console.log('methods', window.scatter);
-
-		return {};
-	}
+	methods(){ return {}; }
 
 }

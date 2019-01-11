@@ -6,6 +6,7 @@ import {
 	SocketService
 } from 'scatterjs-core';
 
+let socketService = SocketService;
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 let cache = {};
 
@@ -15,16 +16,21 @@ export default class ScatterEOS extends Plugin {
         super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT);
     }
 
+	setSocketService(_s){
+		socketService = _s;
+	}
+
     hookProvider(network, fieldsFetcher = null, beta3 = false){
         network = Network.fromJson(network);
 
         return {
             requiredFields:{},
             getAvailableKeys:async () => {
-                return await SocketService.sendApiRequest({
+                return await socketService.sendApiRequest({
                     type:'identityFromPermissions',
                     payload:{}
                 }).then(id => {
+                    console.log('then', id)
                     if(!id) return [];
                     return id.accounts.filter(x => x.blockchain === Blockchains.EOS).map(x => x.publicKey)
                 });
@@ -35,7 +41,7 @@ export default class ScatterEOS extends Plugin {
                 signargs.serializedTransaction = Buffer.from(signargs.serializedTransaction).toString('hex');
 
                 return new Promise(async (resolve, reject) => {
-                    SocketService.sendApiRequest({
+	                socketService.sendApiRequest({
                         type:'requestSignature',
                         payload:{ transaction:signargs, blockchain:Blockchains.EOS, network, requiredFields }
                     }).then(x => {

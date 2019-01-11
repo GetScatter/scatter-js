@@ -10,6 +10,7 @@
     <script src="assets/beta2-/eosjs-jsonrpc-debug.js"></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-eosjs2.min.js"></script>
+    <script src="../../bundles/scatterjs-plugin-lynx.min.js"></script>
 </head>
 <body>
 
@@ -20,7 +21,7 @@
 
 <script>
 
-	ScatterJS.plugins( new ScatterEOS() );
+	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx() );
 
 	//    const network = {
 	//        blockchain:'eos',
@@ -30,25 +31,25 @@
 	//        protocol:'http'
 	//    };
 
-	//    const network = {
-	//        blockchain:'eos',
-	//        chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
-	//        host:'nodes.get-scatter.com',
-	//        port:443,
-	//        protocol:'https'
-	//    };
+    const network = {
+       blockchain:'eos',
+       chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+       host:'nodes.get-scatter.com',
+       port:443,
+       protocol:'https'
+    };
 
-	const network = {
-		blockchain:'eos',
-		chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
-		host:'dev.cryptolions.io',
-		port:18888,
-		protocol:'http'
-	};
+	// const network = {
+	// 	blockchain:'eos',
+	// 	chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
+	// 	host:'dev.cryptolions.io',
+	// 	port:18888,
+	// 	protocol:'http'
+	// };
 
 	let scatter = null;
 
-	const beta3 = true;
+	const beta3 = false;
 
 	const rpc = beta3
 		? new eosjs_jsonrpc2.default(`${network.protocol}://${network.host}:${network.port}`)
@@ -68,7 +69,7 @@
 	});
 
 	window.login = async () => {
-		await scatter.suggestNetwork(network);
+		// await scatter.suggestNetwork(network);
 		await scatter.getIdentity({accounts:[network]})
 	};
 
@@ -89,6 +90,7 @@
 
 	const tryTransfer = async api => {
 		try {
+			console.log(scatter.identity);
 			const from = scatter.identity.accounts[0];
 			const result = await api.transact({
 				actions: [{
@@ -100,9 +102,9 @@
 					}],
 					data: {
 						from: from.name,
-						to: 'eosio',
+						to: 'safetransfer',
 						quantity: '0.0001 EOS',
-						memo: '',
+						memo: from.name,
 					},
 				}]
 			}, {

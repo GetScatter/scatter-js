@@ -15,6 +15,8 @@ const EVENTS = {
 	LoggedOut:'logout',
 };
 
+let socketService = SocketService;
+let socketSetters = [];
 let holderFns = {};
 class Index {
 
@@ -35,11 +37,14 @@ class Index {
 		if(plugin.type === PluginTypes.BLOCKCHAIN_SUPPORT){
 			this[plugin.name] = plugin.signatureProvider(noIdFunc, () => this.identity);
 			this[plugin.name+'Hook'] = plugin.hookProvider;
+			socketSetters.push(plugin.setSocketService);
 		}
 
 		if(plugin.type === PluginTypes.WALLET_SUPPORT){
-
+			plugin.init(this, holderFns, socketSetters);
 		}
+
+		console.log(PluginRepository.plugins)
 	}
 
 	async connect(pluginName, options){
