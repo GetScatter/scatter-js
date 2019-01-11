@@ -34,10 +34,12 @@
 To use ScatterJS you must have _at least_ the core.
 From that point forward you can mix-match the plugins you require.
 
-- eosjs: `npm i -S scatterjs-core scatterjs-plugin-eosjs eosjs@16.0.9`
-- eosjs2 (@20+): `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0-beta3`
-- tronweb: `npm i -S scatterjs-core scatterjs-plugin-tron tronweb`
-- web3: `npm i -S scatterjs-core scatterjs-plugin-web3 web3`
+| blockchain | installation command |
+| ---------- | -------- |
+| eosjs | `npm i -S scatterjs-core scatterjs-plugin-eosjs eosjs@16.0.9` |
+| eosjs2 (@20+) | `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0-beta3` |
+| tronweb | `npm i -S scatterjs-core scatterjs-plugin-tron tronweb` |
+| web3 | `npm i -S scatterjs-core scatterjs-plugin-web3 web3` |
 
 
 
