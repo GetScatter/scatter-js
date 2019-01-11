@@ -241,20 +241,33 @@ ScatterJS.connect('YourAppName', {network}).then(connected => {
 These wallets do not require you include any plugins. They run Scatter Protocols inside of
 their wallet and mimic our existing APIs.
 
-| blockchain | wallet |
-| ---------- | -------- |
-| EOSIO | TokenPocket |
-| EOSIO | MEET.ONE |
-| EOSIO | imToken |
-| EOSIO | PocketEOS |
+*Does your wallet support Scatter Protocols? Issue a Pull Request on the README.md and add it here.*
+
+| blockchains | platform | wallet |
+| ---------- | -------- | -------- |
+| EOSIO, Tron, Ethereum | ScatterDesktop | Desktop |
+| EOSIO, Ethereum | ScatterExtension | Desktop |
+| EOSIO | TokenPocket | Mobile |
+| EOSIO | MEET.ONE | Mobile |
+| EOSIO | imToken | Mobile |
+| EOSIO | PocketEOS | Mobile |
 
 ## Plugin Supported Wallets
 These wallets have their own non-standardized APIs and require a plugin to support.
 ScatterJS will mutate standardized requests for you into their required formats.
 
-| blockchain | wallet | plugin |
-| ---------- | -------- | -------|
-| EOSIO | Lynx | `scatterjs-plugin-lynx` |
+| blockchains | wallet | platform | plugin |
+| ---------- | -------- | -------| -------|
+| EOSIO | Lynx | Mobile | `scatterjs-plugin-lynx` |
+
+#### Add Wallet Plugins
+Adding wallet plugins is just like adding blockchain plugins.
+Scatter will try all wallets simultaneously when the page loads and will pick up the first
+one available.
+
+```js
+ScatterJS.plugins( new ScatterEOS(), new ScatterLynx() )
+```
 
 
 
