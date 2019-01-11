@@ -47,12 +47,11 @@ export default class WalletInterface {
 
 	static bindBasics(context){
 
-		context.getAccount = (blockchain) => {
+		context.account = (blockchain) => {
 			if(!context.identity) return;
 			if(!context.identity.accounts) return;
 			return context.identity.accounts.find(x => x.blockchain === blockchain);
 		}
-
 
 
 	}

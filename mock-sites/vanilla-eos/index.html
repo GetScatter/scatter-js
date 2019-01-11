@@ -189,7 +189,7 @@
     };
 
     window.transfer = async () => {
-        const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
+	    const account = scatter.account('eos');
         const opts = { authorization:[`${account.name}@${account.authority}`], requiredFields:{} };
         eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
             console.log('trx', trx);
