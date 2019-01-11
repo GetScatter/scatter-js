@@ -129,8 +129,13 @@ Because accounts are nested within the Identity there is an easy method for fetc
 #### Using the helper
 ```js
 const account = ScatterJS.scatter.account('eos')
+// Result: {name:'...', authority:'active', publicKey:'...', blockchain:'eos', chainId:'...'}
+
 const account = ScatterJS.scatter.account('eth')
+// Result: {address:'...', blockchain:'eth', chainId:'1'}
+
 const account = ScatterJS.scatter.account('trx')
+// Result: {address:'...', blockchain:'trx', chainId:'1'}
 ```
 
 #### From the Identity
