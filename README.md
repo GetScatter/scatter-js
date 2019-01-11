@@ -235,3 +235,182 @@ section which will help you get the most out of ScatterJS, and make sure
 you aren't exposing your users to malicious non-Scatter plugins.
 
 
+
+-------------
+
+# Want some quick code?
+
+#### eosjs@16.0.9
+
+Installation: `npm i -S scatterjs-core scatterjs-plugin-eosjs eosjs@16.0.9`
+```js
+import ScatterJS from 'scatterjs-core';
+import ScatterEOS from 'scatterjs-plugin-eosjs';
+import Eos from 'eosjs';
+
+ScatterJS.plugins( new ScatterEOS() );
+
+const network = ScatterJS.Network.fromJson({
+    blockchain:'eos',
+    chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+    host:'nodes.get-scatter.com',
+    port:443,
+    protocol:'https'
+});
+
+ScatterJS.connect('YourAppName', {network}).then(connected => {
+    if(!connected) return console.error('no scatter');
+
+    const scatter = ScatterJS.scatter;
+    const eos = scatter.eos(network, Eos);
+
+    scatter.login().then(id => {
+        if(!id) return console.error('no identity');
+        const account = scatter.account('eos');
+        const options = {authorization:[`${account.name}@${account.authority}`]};
+        eos.transfer(account.name, 'safetransfer', '0.0001 EOS', account.name, options).then(res => {
+            console.log('sent: ', res);
+        }).catch(err => {
+            console.error('error: ', err);
+        });
+    });
+});
+```
+
+#### eosjs@20.0.0-beta3
+
+Installation: `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0-beta3`
+```js
+import ScatterJS from 'scatterjs-core';
+import ScatterEOS from 'scatterjs-plugin-eosjs2';
+import {JsonRpc, Api} from 'eosjs'
+
+ScatterJS.plugins( new ScatterEOS() );
+
+const network = ScatterJS.Network.fromJson({
+    blockchain:'eos',
+    chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+    host:'nodes.get-scatter.com',
+    port:443,
+    protocol:'https'
+});
+const rpc = new JsonRpc(network.fullhost());
+
+ScatterJS.connect('YourAppName', {network}).then(connected => {
+    if(!connected) return console.error('no scatter');
+
+    const scatter = ScatterJS.scatter;
+    const eos = scatter.eos(network, Api, {rpc, beta3:true}));
+
+    scatter.login().then(id => {
+        if(!id) return console.error('no identity');
+        const account = scatter.account('eos');
+
+        eos.transact({
+            actions: [{
+                account: 'eosio.token',
+                name: 'transfer',
+                authorization: [{
+                    actor: account.name,
+                    permission: account.authority,
+                }],
+                data: {
+                    from: account.name,
+                    to: 'safetransfer',
+                    quantity: '0.0001 EOS',
+                    memo: account.name,
+                },
+            }]
+        }, {
+            blocksBehind: 3,
+            expireSeconds: 30,
+        }).then(res => {
+            console.log('sent: ', res);
+        }).catch(err => {
+            console.error('error: ', err);
+        });
+    });
+});
+```
+
+#### tronweb
+
+Installation: `npm i -S scatterjs-core scatterjs-plugin-tron tronweb`
+```js
+import ScatterJS from 'scatterjs-core';
+import ScatterTron from 'scatterjs-plugin-tron';
+import TronWeb from 'tronweb';
+
+ScatterJS.plugins( new ScatterTron() );
+
+const network = ScatterJS.Network.fromJson({
+    blockchain:'tron',
+    chainId:'1',
+    host:'api.trongrid.io',
+    port:443,
+    protocol:'https'
+});
+
+const httpProvider = new TronWeb.providers.HttpProvider(network.fullhost());
+let tron = new TronWeb(httpProvider, httpProvider, network.fullhost());
+tron.setDefaultBlock('latest');
+
+ScatterJS.connect('YourAppName', {network}).then(connected => {
+    if(!connected) return console.error('no scatter');
+
+    const scatter = ScatterJS.scatter;
+    tron = scatter.trx(network, tron);
+
+    scatter.login().then(id => {
+        if(!id) return console.error('no identity');
+        const account = scatter.account('trx');
+        tron.trx.sendTransaction('TX...', 100).then(res => {
+            console.log('sent: ', res);
+        }).catch(err => {
+            console.error('error: ', err);
+        });
+    });
+});
+```
+
+#### web3
+
+Installation: `npm i -S scatterjs-core scatterjs-plugin-web3 web3`
+```js
+import ScatterJS from 'scatterjs-core';
+import ScatterETH from 'scatterjs-plugin-web3';
+import Web3 from 'web3';
+
+ScatterJS.plugins( new ScatterETH() );
+
+const network = ScatterJS.Network.fromJson({
+    blockchain:'tron',
+    chainId:'1',
+    host:'api.trongrid.io',
+    port:443,
+    protocol:'https'
+});
+
+ScatterJS.connect('YourAppName', {network}).then(connected => {
+    if(!connected) return console.error('no scatter');
+
+    const scatter = ScatterJS.scatter;
+    const web3 = scatter.web3(network, Web3);
+
+    scatter.login().then(id => {
+        if(!id) return console.error('no identity');
+        const account = scatter.account('trx');
+        web3.eth.sendTransaction({
+            from: account.address,
+            to: '0x...',
+            value: '1000000000000000'
+        }).then(res => {
+            console.log('sent: ', res);
+        }).catch(err => {
+            console.error('error: ', err);
+        });
+    });
+});
+```
+
+
