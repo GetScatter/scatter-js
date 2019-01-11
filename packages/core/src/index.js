@@ -7,6 +7,7 @@ import Network from './models/Network';
 import WalletInterface, {WALLET_METHODS} from './models/WalletInterface';
 import Desktop from "./wallets/Desktop";
 import Extension from "./wallets/Extension";
+import Token from "./models/Token";
 
 let origin;
 
@@ -91,6 +92,7 @@ holder.Plugin = Plugin;
 holder.PluginTypes = PluginTypes;
 holder.Blockchains = Blockchains;
 holder.Network = Network;
+holder.Token = Token;
 holder.SocketService = SocketService;
 holder.EVENTS = EVENTS;
 holder.WalletInterface = WalletInterface;

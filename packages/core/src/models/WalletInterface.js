@@ -19,6 +19,7 @@ export const WALLET_METHODS = {
 	requestTransfer:'requestTransfer',
 	requestSignature:'requestSignature',
 	createTransaction:'createTransaction',
+	addToken:'addToken',
 };
 
 const ALTERNATES = {
@@ -52,7 +53,6 @@ export default class WalletInterface {
 			if(!context.identity.accounts) return;
 			return context.identity.accounts.find(x => x.blockchain === blockchain);
 		}
-
 
 	}
 

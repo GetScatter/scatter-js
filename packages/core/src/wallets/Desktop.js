@@ -96,6 +96,10 @@ export default class Desktop extends Plugin {
 				type:'createTransaction',
 				payload:{ blockchain, actions, account, network:network || this.context.network }
 			}),
+			[WALLET_METHODS.addToken]:(token, network) => SocketService.sendApiRequest({
+				type:'addToken',
+				payload:{ token, network:network || this.context.network }
+			}),
 		}
 	}
 

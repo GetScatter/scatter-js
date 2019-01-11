@@ -24,6 +24,7 @@
 <button onclick="authenticate()">Authenticate</button>
 <button onclick="authenticateSpecific()">Authenticate w/Params</button>
 <button onclick="hardwareCapableProofs()">Prove Ownership</button>
+<button onclick="addToken()">Add Token</button>
 <br>
 <br>
 <button onclick="hasAccountFor()">Has Account For Network</button>
@@ -186,6 +187,19 @@
 
     window.logout = async () => {
         await scatter.forgetIdentity();
+    };
+
+
+    window.addToken = async () => {
+
+    	const token = ScatterJS.Token.fromJson({
+		    blockchain:'eos',
+            contract:'ridlridlcoin',
+            symbol:'RIDL1',
+            decimals:4
+        })
+
+        await scatter.addToken(token);
     };
 
     window.transfer = async () => {
