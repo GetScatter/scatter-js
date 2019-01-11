@@ -171,15 +171,7 @@ const result = await web3.eth.sendTransaction(...)
 
 
 
-## NodeJS and babel/webpack issues.
-If you're having trouble packaging or compiling your project you probably need to add a babel transpiler.
-- `npm i -D @babel/runtime` <-- run this command and it should compile.
-
--------------
-
-
 ## Supported Wallets
--------------
 
 #### Automatically Supported Wallets
 These wallets do not require you include any plugins. They run Scatter Protocols inside of
@@ -199,6 +191,16 @@ ScatterJS will mutate standardized requests for you into their required formats.
 | blockchain | wallet | plugin |
 | ---------- | -------- | -------|
 | EOSIO | Lynx | `scatterjs-plugin-lynx` |
+
+
+
+-------------
+
+## NodeJS and babel/webpack issues.
+If you're having trouble packaging or compiling your project you probably need to add a babel transpiler.
+- `npm i -D @babel/runtime` <-- run this command and it should compile.
+
+-------------
 
 
 # What now?
