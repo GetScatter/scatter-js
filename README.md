@@ -241,7 +241,7 @@ ScatterJS.connect('YourAppName', {network}).then(connected => {
 These wallets do not require you include any plugins. They run Scatter Protocols inside of
 their wallet and mimic our existing APIs.
 
-*Does your wallet support Scatter Protocols? Issue a Pull Request on the README.md and add it here.*
+*Does your wallet support Scatter Protocols? [Issue a Pull Request on the README.md and add it here.](https://github.com/GetScatter/scatter-js/edit/revamp/README.md)*
 
 | blockchains | platform | wallet |
 | ---------- | -------- | -------- |
