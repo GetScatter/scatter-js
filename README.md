@@ -10,18 +10,6 @@
 | wallet | [![npm version](https://badge.fury.io/js/scatterjs-plugin-lynx.svg)](https://badge.fury.io/js/scatterjs-plugin-lynx) | scatterjs-plugin-lynx |
 
 
-
-## CDN
-```
-<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-core.min.js"></script>
-<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs.min.js"></script>
-<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs2.min.js"></script>
-<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-web3.min.js"></script>
-<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-tron.min.js"></script>
-<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-lynx.min.js"></script>
-```
-
-
 ---------------
 
 
@@ -276,6 +264,18 @@ From that point forward you can mix-match the plugins you require.
 | eosjs2 (@20+) | `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0-beta3` |
 | tronweb | `npm i -S scatterjs-core scatterjs-plugin-tron tronweb` |
 | web3 | `npm i -S scatterjs-core scatterjs-plugin-web3 web3` |
+
+
+### CDN
+```
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-core.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs2.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-web3.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-tron.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-lynx.min.js"></script>
+```
+
 
 
 <br/><br/>
