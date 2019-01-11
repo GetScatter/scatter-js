@@ -101,6 +101,8 @@ ScatterJS.connect('HelloWorld', {network}).then(connected => {
 });
 ```
 
+[You can see full API docs here](https://get-scatter.com/docs/api-reference)
+
 ## Getting Blockchain Accounts
 
 Login with the network passed into `ScatterJS.connect`
