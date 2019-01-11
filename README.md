@@ -231,7 +231,33 @@ ScatterJS.connect('YourAppName', {network}).then(connected => {
 </p>
 </details>
 
----------------
+----------------
+
+
+
+
+# Supported Wallets
+
+## Automatically Supported Wallets
+These wallets do not require you include any plugins. They run Scatter Protocols inside of
+their wallet and mimic our existing APIs.
+
+| blockchain | wallet |
+| ---------- | -------- |
+| EOSIO | TokenPocket |
+| EOSIO | MEET.ONE |
+| EOSIO | imToken |
+| EOSIO | PocketEOS |
+
+## Plugin Supported Wallets
+These wallets have their own non-standardized APIs and require a plugin to support.
+ScatterJS will mutate standardized requests for you into their required formats.
+
+| blockchain | wallet | plugin |
+| ---------- | -------- | -------|
+| EOSIO | Lynx | `scatterjs-plugin-lynx` |
+
+
 
 
 
@@ -393,33 +419,6 @@ const web3 = ScatterJS.scatter.web3(network, Web3);
 
 const result = await web3.eth.sendTransaction(...)
 ```
-
-----------------
-
-
-
-
-# Supported Wallets
-
-## Automatically Supported Wallets
-These wallets do not require you include any plugins. They run Scatter Protocols inside of
-their wallet and mimic our existing APIs.
-
-| blockchain | wallet |
-| ---------- | -------- |
-| EOSIO | TokenPocket |
-| EOSIO | MEET.ONE |
-| EOSIO | imToken |
-| EOSIO | PocketEOS |
-
-## Plugin Supported Wallets
-These wallets have their own non-standardized APIs and require a plugin to support.
-ScatterJS will mutate standardized requests for you into their required formats.
-
-| blockchain | wallet | plugin |
-| ---------- | -------- | -------|
-| EOSIO | Lynx | `scatterjs-plugin-lynx` |
-
 
 
 -------------
