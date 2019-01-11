@@ -95,7 +95,7 @@ Once you are connected you can then call API methods on `ScatterJS.scatter`
 
 ```js
 
-ScatterJS.connect('HelloWorld', {network}).then(connected => {
+ScatterJS.connect('MyAppName', {network}).then(connected => {
     if(!connected) return false;
     // ScatterJS.scatter.someMethod();
 });
