@@ -243,10 +243,10 @@ their wallet and mimic our existing APIs.
 
 *Does your wallet support Scatter Protocols? [Issue a Pull Request on the README.md and add it here.](https://github.com/GetScatter/scatter-js/edit/revamp/README.md)*
 
-| blockchains | platform | wallet |
+| dapp supported blockchains | platform | wallet |
 | ---------- | -------- | -------- |
-| EOSIO, Tron, Ethereum | ScatterDesktop | Desktop |
-| EOSIO, Ethereum | ScatterExtension | Desktop |
+| EOSIO, Tron, Ethereum | Scatter Desktop | Desktop |
+| EOSIO, Ethereum | Scatter Extension | Desktop |
 | EOSIO | TokenPocket | Mobile |
 | EOSIO | MEET.ONE | Mobile |
 | EOSIO | imToken | Mobile |
@@ -256,7 +256,7 @@ their wallet and mimic our existing APIs.
 These wallets have their own non-standardized APIs and require a plugin to support.
 ScatterJS will mutate standardized requests for you into their required formats.
 
-| blockchains | wallet | platform | plugin |
+| dapp supported blockchains | wallet | platform | plugin |
 | ---------- | -------- | -------| -------|
 | EOSIO | Lynx | Mobile | `scatterjs-plugin-lynx` |
 
