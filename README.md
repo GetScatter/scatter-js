@@ -346,7 +346,7 @@ ScatterJS.connect('MyAppName', {network}).then(connected => {
 });
 ```
 
-[You can see full API docs here](https://get-scatter.com/docs/api-reference)
+[You can see full scatterjs-core API docs here](https://get-scatter.com/docs/api-reference)
 
 
 <br/><br/>
@@ -403,7 +403,10 @@ const account = ScatterJS.scatter.identity.find(x => {
 Blockchain wrappers wrap the actual blockchain libraries (eosjs, tronweb, web3, etc) that you pass in.
 That way you don't have to relearn any APIs or be forced to use any specific version.
 
-eosjs@16.0.9 ( scatterjs-plugin-eosjs )
+**You can click on the libraries here below to go directly to their respective githubs**.
+
+
+[eosjs@16.0.9 ( scatterjs-plugin-eosjs )](https://github.com/EOSIO/eosjs/tree/v16.0.9)
 ```js
 import Eos from 'eosjs';
 const eos = ScatterJS.scatter.eos(network, Eos, eosjsOptions);
@@ -411,7 +414,7 @@ const eos = ScatterJS.scatter.eos(network, Eos, eosjsOptions);
 const result = await eos.transfer(...);
 ```
 
-eosjs@20.0.0-beta3 ( scatterjs-plugin-eosjs2 )
+[eosjs@20.0.0-beta3 ( scatterjs-plugin-eosjs2 )](https://github.com/EOSIO/eosjs)
 ```js
 import {JsonRpc, Api} from 'eosjs'
 const rpc = new JsonRpc(network.fullhost());
@@ -420,7 +423,7 @@ const eos = ScatterJS.scatter.eos(network, Api, {rpc, beta3:true}));
 const result = await eos.transact({...});
 ```
 
-tronweb
+[tronweb](https://github.com/tronprotocol/tron-web)
 ```js
 import TronWeb from 'tronweb';
 const httpProvider = new TronWeb.providers.HttpProvider(network.fullhost());
@@ -431,7 +434,7 @@ tron = ScatterJS.scatter.trx(network, tron);
 const result = await tron.trx.sendTransaction(...)
 ```
 
-web3
+[web3](https://github.com/ethereum/web3.js/)
 ```js
 import Web3 from 'web3';
 const web3 = ScatterJS.scatter.web3(network, Web3);
