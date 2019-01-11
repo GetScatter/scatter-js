@@ -234,8 +234,7 @@ ScatterJS.connect('YourAppName', {network}).then(connected => {
 ----------------
 
 
-
-
+<br/><br/>
 # Supported Wallets
 
 ## Automatically Supported Wallets
@@ -259,8 +258,7 @@ ScatterJS will mutate standardized requests for you into their required formats.
 
 
 
-
-
+<br/><br/>
 # Installation
 
 To use ScatterJS you must have _at least_ the core.
@@ -274,7 +272,7 @@ From that point forward you can mix-match the plugins you require.
 | web3 | `npm i -S scatterjs-core scatterjs-plugin-web3 web3` |
 
 
-
+<br/><br/>
 # Instantiation
 As early as you can in your project, instantiate both ScatterJS and your selected plugins.
 
@@ -308,6 +306,7 @@ ScatterJS.plugins( new ScatterEOS(), new ScatterTron(), new ScatterLynx() );
 ```
 
 
+<br/><br/>
 # Build the network object
 Networks tell Scatter which blockchain nodes you're going to be working with.
 
@@ -322,6 +321,7 @@ const network = ScatterJS.Network.fromJson({
 ```
 
 
+<br/><br/>
 # Connect to an available wallet
 Once you are connected you can then call API methods on `ScatterJS.scatter`
 
@@ -335,6 +335,8 @@ ScatterJS.connect('MyAppName', {network}).then(connected => {
 
 [You can see full API docs here](https://get-scatter.com/docs/api-reference)
 
+
+<br/><br/>
 # Getting Blockchain Accounts
 
 Login with the network passed into `ScatterJS.connect`
@@ -355,6 +357,8 @@ scatter.logout().then(...);
 **After a successful login, the "Identity" will be available at `scatter.identity`**.
 If a user refreshes the page and has already logged in, the `scatter.identity` property will be auto-filled.
 
+
+<br/><br/>
 # Get blockchain accounts from the identity
 Because accounts are nested within the Identity there is an easy method for fetching them.
 
@@ -379,6 +383,8 @@ const account = ScatterJS.scatter.identity.find(x => {
 
 ---------------------
 
+
+<br/><br/>
 # Using Blockchain Wrappers
 
 Blockchain wrappers wrap the actual blockchain libraries (eosjs, tronweb, web3, etc) that you pass in.
@@ -423,6 +429,8 @@ const result = await web3.eth.sendTransaction(...)
 
 -------------
 
+
+<br/><br/>
 # NodeJS and babel/webpack issues.
 If you're having trouble packaging or compiling your project you probably need to add a babel transpiler.
 - `npm i -D @babel/runtime` <-- run this command and it should compile.
@@ -430,6 +438,8 @@ If you're having trouble packaging or compiling your project you probably need t
 -------------
 
 
+
+<br/><br/>
 # What now?
 Head over to the [Scatter Developer Documentation](https://get-scatter.com/docs/getting-started) to learn about
 all the amazing things you can do with Scatter.
