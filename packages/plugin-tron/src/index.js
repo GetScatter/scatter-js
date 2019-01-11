@@ -5,7 +5,7 @@ import {
 	Network,
 	SocketService
 } from 'scatterjs-core';
-
+let socketService = SocketService;
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 
 export default class ScatterTron extends Plugin {
@@ -13,6 +13,10 @@ export default class ScatterTron extends Plugin {
     constructor(){
         super(Blockchains.TRX, PluginTypes.BLOCKCHAIN_SUPPORT)
     }
+
+	setSocketService(_s){
+		socketService = _s;
+	}
 
     hookProvider(network){
         throw new Error('Tron hook provider not enabled yet.');
@@ -39,7 +43,7 @@ export default class ScatterTron extends Plugin {
                             participants:[_tron.defaultAddress.base58],
                         };
                         const payload = { transaction, blockchain:Blockchains.TRX, network, requiredFields:{}, abi };
-                        SocketService.sendApiRequest({
+	                    socketService.sendApiRequest({
                             type:'requestSignature',
                             payload
                         }).then(x => resolve(x.signatures[0]))

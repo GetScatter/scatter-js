@@ -15,7 +15,7 @@ import ethUtil from 'ethereumjs-util';
 
 
 let ethNetwork;
-
+let socketService = SocketService;
 
 
 
@@ -27,7 +27,7 @@ class ScatterEthereumWallet {
     }
 
     async getAccounts(callback) {
-        const result = await SocketService.sendApiRequest({
+        const result = await socketService.sendApiRequest({
             type:'identityFromPermissions',
             payload:{}
         });
@@ -56,7 +56,7 @@ class ScatterEthereumWallet {
             throw Error.signatureError('no_abi', 'You must provide a JSON ABI along with your transaction so that users can read the contract');
 
         const payload = Object.assign(transaction, { blockchain:Blockchains.ETH, network:ethNetwork, requiredFields });
-        const {signatures, returnedFields} = await SocketService.sendApiRequest({
+        const {signatures, returnedFields} = await socketService.sendApiRequest({
             type:'requestSignature',
             payload
         });
@@ -73,6 +73,10 @@ export default class ScatterETH extends Plugin {
     constructor(){
         super(Blockchains.ETH, PluginTypes.BLOCKCHAIN_SUPPORT)
     }
+
+	setSocketService(_s){
+		socketService = _s;
+	}
 
     hookProvider(network, requiredFields = {}){
         throw new Error('Ethereum hook prp')

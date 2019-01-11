@@ -30,7 +30,6 @@ export default class ScatterEOS extends Plugin {
                     type:'identityFromPermissions',
                     payload:{}
                 }).then(id => {
-                    console.log('then', id)
                     if(!id) return [];
                     return id.accounts.filter(x => x.blockchain === Blockchains.EOS).map(x => x.publicKey)
                 });

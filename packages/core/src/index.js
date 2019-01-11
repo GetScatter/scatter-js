@@ -43,8 +43,6 @@ class Index {
 		if(plugin.type === PluginTypes.WALLET_SUPPORT){
 			plugin.init(this, holderFns, socketSetters);
 		}
-
-		console.log(PluginRepository.plugins)
 	}
 
 	async connect(pluginName, options){

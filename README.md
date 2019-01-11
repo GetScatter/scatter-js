@@ -1,19 +1,22 @@
 # Scatter JS
 
+#### Core
 
 [![npm version](https://badge.fury.io/js/scatterjs-core.svg)](https://badge.fury.io/js/scatterjs-core) scatterjs-core
 
+#### Blockchain Plugins
 
 [![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs) scatterjs-plugin-eosjs
 
-
 [![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs2.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs2) scatterjs-plugin-eosjs2
-
 
 [![npm version](https://badge.fury.io/js/scatterjs-plugin-web3.svg)](https://badge.fury.io/js/scatterjs-plugin-web3) scatterjs-plugin-web3
 
-
 [![npm version](https://badge.fury.io/js/scatterjs-plugin-tron.svg)](https://badge.fury.io/js/scatterjs-plugin-tron) scatterjs-plugin-tron
+
+#### Wallet Plugins
+
+[![npm version](https://badge.fury.io/js/scatterjs-plugin-lynx.svg)](https://badge.fury.io/js/scatterjs-plugin-lynx) scatterjs-plugin-lynx
 
 ## CDN
 ```
@@ -22,67 +25,41 @@
 <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs2.min.js"></script>
 <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-web3.min.js"></script>
 <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-tron.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-lynx.min.js"></script>
 ```
 
 
 ## Installation
 
 To use ScatterJS you must have _at least_ the core.
-You can also use Scatter without any blockchain support
-by simply importing only the core without any blockchain specific
-plugins.
+From that point forward you can mix-match the plugins you require.
 
-This is great for sites that want to authenticate with users in a
-decentralized way, but don't need any blockchain functionality.
-
+Using eosjs
 ```js
-npm i -S scatterjs-core
+npm i -S scatterjs-core scatterjs-plugin-eosjs eosjs@16.0.9
 ```
 
---------
-
-### Plugins
-To keep this library small and focused only on the blockchains you want to use
-you can import each blockchain separately. The blockchains you don't import
-can't be used.
-
-#### EOSIO
-```
-npm i -S scatterjs-plugin-eosjs
-// OR
-npm i -S scatterjs-plugin-eosjs2
+Using eosjs2 (@20+)
+```js
+npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0-beta3
 ```
 
-#### Ethereum
-```
-npm i -S scatterjs-plugin-web3
-```
-
-#### Tron
-```
-npm i -S scatterjs-plugin-tron
+Using tron
+```js
+npm i -S scatterjs-core scatterjs-plugin-tron tronweb
 ```
 
--------------
+Using web3
+```js
+npm i -S scatterjs-core scatterjs-plugin-web3 web3
+```
 
 
 
-### NodeJS and babel/webpack.
-If you're having trouble packaging or compiling your project you probably need to add a babel transpiler.
-- `npm i -D @babel/runtime` <-- run this command and it should compile.
+## Instantiation
+As early as you can in your project, instantiate both ScatterJS and your selected plugins.
 
--------------
-
-
-## Importing ScatterJS into your project.
-Now that you have scatterjs-core and a plugin of your choosing you
-can go ahead and import it into your project.
-
-You should be doing this early in your application, somewhere like
-your main.js or app.js, and not inside sub-pages.
-
-Let's take `eosjs` as an example.
-
+#### Nodejs
 ```js
 import ScatterJS from 'scatterjs-core';
 import ScatterEOS from 'scatterjs-plugin-eosjs'
@@ -90,43 +67,115 @@ import ScatterEOS from 'scatterjs-plugin-eosjs'
 ScatterJS.plugins( new ScatterEOS() );
 ```
 
+#### Vanilla
+```html
+<script src="scatterjs-core.min.js"></script>
+<script src="scatterjs-plugin-eosjs.min.js"></script>
 
-## ScatterJS Usage
+<script>
+    ScatterJS.plugins( new ScatterEOS() );
+</script>
+```
 
-This library catches Scatter Desktop, Scatter Mobile and Scatter Classic ( extension ).
-You only need to write code once, and you will instantly support any Scatter the user has.
 
-
-#### Making a connection
+## Build the network object
+Networks tell Scatter which blockchain nodes you're going to be working with.
 
 ```js
-// Optional!
-const connectionOptions = {initTimeout:10000}
-
-ScatterJS.scatter.connect("Put_Your_App_Name_Here", connectionOptions).then(connected => {
-    if(!connected) {
-        // User does not have Scatter installed/unlocked.
-        return false;
-    }
-    
-    // Use `scatter` normally now.
-    ScatterJS.scatter.getIdentity(...);
+const network = ScatterJS.Network.fromJson({
+    blockchain:'eos',
+    chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+    host:'nodes.get-scatter.com',
+    port:443,
+    protocol:'https'
 });
 ```
 
------------
 
-#### Using a signature provider ( plugin )
-You can instantiate most plugins in two ways.
+## Connect to an available wallet
+Once you are connected you can then call API methods on `ScatterJS.scatter`
 
 ```js
-// Using a proxy wrapper
-const eos = ScatterJS.scatter.eos(network, Eos, eosjsOptions);
 
-// Or using a hook provider.
-const eos = Eos({httpEndpoint:'', signatureProvider:ScatterJS.scatter.eosHook(network)});
+ScatterJS.connect('HelloWorld', {network}).then(connected => {
+    if(!connected) return false;
+    // ScatterJS.scatter.someMethod();
+});
 ```
 
+## Getting Blockchain Accounts
+
+Login with the network passed into `ScatterJS.connect`
+```js
+scatter.login().then(...);
+```
+
+Login with multiple networks
+```js
+scatter.login({accounts:[network1, network2]).then(...);
+```
+
+Logout
+```js
+scatter.logout().then(...);
+```
+
+**After a successful login, the "Identity" will be available at `scatter.identity`**.
+If a user refreshes the page and has already logged in, the `scatter.identity` property will be auto-filled.
+
+---------------------
+
+## Using Blockchain Wrappers
+
+Blockchain wrappers wrap the actual blockchain libraries (eosjs, tronweb, web3, etc) that you pass in.
+That way you don't have to relearn any APIs or be forced to use any specific version.
+
+eosjs
+```js
+import Eos from 'eosjs';
+const eos = ScatterJS.scatter.eos(network, Eos, eosjsOptions);
+
+const result = await eos.transfer(...);
+```
+
+eosjs2
+```js
+import {JsonRpc, Api} from 'eosjs'
+const rpc = new JsonRpc(network.fullhost());
+const eos = ScatterJS.scatter.eos(network, Api, {rpc}));
+
+const result = await eos.transact({...});
+```
+
+tronweb
+```js
+import TronWeb from 'tronweb';
+const httpProvider = new TronWeb.providers.HttpProvider(network.fullhost());
+let tron = new TronWeb(httpProvider, httpProvider, network.fullhost());
+tron.setDefaultBlock('latest');
+tron = ScatterJS.scatter.trx(network, tron);
+
+const result = await tron.trx.sendTransaction(...)
+```
+
+web3
+```js
+import Web3 from 'web3';
+const web3 = ScatterJS.scatter.web3(network, Web3);
+
+const result = await web3.eth.sendTransaction(...)
+```
+
+----------------
+
+
+
+
+## NodeJS and babel/webpack issues.
+If you're having trouble packaging or compiling your project you probably need to add a babel transpiler.
+- `npm i -D @babel/runtime` <-- run this command and it should compile.
+
+-------------
 
 
 # What now?
@@ -139,9 +188,3 @@ section which will help you get the most out of ScatterJS, and make sure
 you aren't exposing your users to malicious non-Scatter plugins.
 
 
-
----------------------
-
-# Looking for the old `scatter-js` package?
-
-### [Click Here](https://github.com/GetScatter/scatter-js/tree/2.5.1) to go to `scatter-js@2.5.1`

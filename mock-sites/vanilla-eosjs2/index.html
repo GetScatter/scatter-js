@@ -13,6 +13,9 @@
     <script src="../../bundles/scatterjs-plugin-lynx.min.js"></script>
 </head>
 <body>
+<div id="status"></div>
+<br>
+<br>
 
 <button onclick="login()">Get Identity</button>
 <button onclick="logout()">Forget Identity</button>
@@ -23,37 +26,37 @@
 
 	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx() );
 
-	//    const network = {
-	//        blockchain:'eos',
-	//        chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f',
-	//        host:'192.168.1.6',
-	//        port:8888,
-	//        protocol:'http'
-	//    };
+	const network = ScatterJS.Network.fromJson({
+		blockchain:'eos',
+		chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
+		host:'nodes.get-scatter.com',
+		port:443,
+		protocol:'https'
+	});
 
-    const network = {
-       blockchain:'eos',
-       chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
-       host:'nodes.get-scatter.com',
-       port:443,
-       protocol:'https'
-    };
+    // const network = ScatterJS.Network.fromJson({
+    //     blockchain:'eos',
+    //     chainId:'cf057bbfb72640471fd910bcb67639c22df9f92470936cddc1ade0e2f2e7dc4f',
+    //     host:'192.168.1.6',
+    //     port:8888,
+    //     protocol:'http'
+    // });
 
-	// const network = {
-	// 	blockchain:'eos',
-	// 	chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
-	// 	host:'dev.cryptolions.io',
-	// 	port:18888,
-	// 	protocol:'http'
-	// };
+	// const network = ScatterJS.Network.fromJson({
+    //     blockchain:'eos',
+    //     chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
+    //     host:'dev.cryptolions.io',
+    //     port:18888,
+    //     protocol:'http'
+	// });
 
 	let scatter = null;
 
 	const beta3 = false;
 
 	const rpc = beta3
-		? new eosjs_jsonrpc2.default(`${network.protocol}://${network.host}:${network.port}`)
-		: new eosjs_jsonrpc.JsonRpc(`${network.protocol}://${network.host}:${network.port}`);
+		? new eosjs_jsonrpc2.default(network.fullhost())
+		: new eosjs_jsonrpc.JsonRpc(network.fullhost());
 
 	const getApi = (signatureProvider) => beta3
 		? new eosjs_api.default({ rpc, signatureProvider })
@@ -63,19 +66,28 @@
 		? scatter.eos(network, eosjs_api.default, {rpc, beta3:true})
 		: scatter.eos(network, eosjs.Api, {rpc});
 
-	ScatterJS.scatter.connect('LernaVanillaTest').then(connected => {
+
+
+
+	const setStatus = () => {
+		const status = document.getElementById('status');
+		if(!scatter) return status.innerText = 'No Scatter';
+		if(!scatter.identity) return status.innerText = 'No Identity';
+		status.innerText = scatter.identity.name;
+	};
+
+	setStatus();
+	setInterval(() => {
+		setStatus();
+	}, 50);
+
+	ScatterJS.scatter.connect('eosjs2-test', {network}).then(connected => {
 		if(!connected) return false;
 		scatter = ScatterJS.scatter;
 	});
 
-	window.login = async () => {
-		// await scatter.suggestNetwork(network);
-		await scatter.getIdentity({accounts:[network]})
-	};
-
-	window.logout = () => {
-		scatter.forgetIdentity();
-	};
+	window.login = async () => await scatter.login();
+	window.logout = () => scatter.logout();
 
 	window.transfer = async () => {
 		const api = getScatterEos();
@@ -90,7 +102,6 @@
 
 	const tryTransfer = async api => {
 		try {
-			console.log(scatter.identity);
 			const from = scatter.identity.accounts[0];
 			const result = await api.transact({
 				actions: [{

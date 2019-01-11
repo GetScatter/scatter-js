@@ -6,6 +6,7 @@ import {
 	SocketService
 } from 'scatterjs-core';
 
+let socketService = SocketService;
 const proxy = (dummy, handler) => new Proxy(dummy, handler);
 
 export default class ScatterEOS extends Plugin {
@@ -14,11 +15,15 @@ export default class ScatterEOS extends Plugin {
         super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT);
     }
 
+	setSocketService(_s){
+		socketService = _s;
+	}
+
     hookProvider(network){
         return signargs => {
             return new Promise((resolve, reject) => {
                 const payload = Object.assign(signargs, { blockchain:Blockchains.EOS, network, requiredFields:{} });
-                SocketService.sendApiRequest({
+	            socketService.sendApiRequest({
                     type:'requestSignature',
                     payload
                 }).then(x => resolve(x.signatures))
@@ -53,7 +58,7 @@ export default class ScatterEOS extends Plugin {
 
 	                        const requiredFields = args.find(arg => arg.hasOwnProperty('requiredFields')) || {requiredFields:{}};
 	                        const payload = Object.assign(signargs, { blockchain:Blockchains.EOS, network, requiredFields:requiredFields.requiredFields });
-	                        const result = await SocketService.sendApiRequest({ type:'requestSignature', payload });
+	                        const result = await socketService.sendApiRequest({ type:'requestSignature', payload });
 
 	                        // No signature
 	                        if(!result) return null;
