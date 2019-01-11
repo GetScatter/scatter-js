@@ -171,9 +171,9 @@ const result = await web3.eth.sendTransaction(...)
 
 
 
-## Supported Wallets
+# Supported Wallets
 
-#### Automatically Supported Wallets
+## Automatically Supported Wallets
 These wallets do not require you include any plugins. They run Scatter Protocols inside of
 their wallet and mimic our existing APIs.
 
@@ -184,7 +184,7 @@ their wallet and mimic our existing APIs.
 | EOSIO | imToken |
 | EOSIO | PocketEOS |
 
-#### Plugin Supported Wallets
+## Plugin Supported Wallets
 These wallets have their un non-standardized APIs and require a plugin to support.
 ScatterJS will mutate standardized requests for you into their required formats.
 
@@ -196,7 +196,7 @@ ScatterJS will mutate standardized requests for you into their required formats.
 
 -------------
 
-## NodeJS and babel/webpack issues.
+# NodeJS and babel/webpack issues.
 If you're having trouble packaging or compiling your project you probably need to add a babel transpiler.
 - `npm i -D @babel/runtime` <-- run this command and it should compile.
 
