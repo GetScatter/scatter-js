@@ -404,7 +404,7 @@ Blockchain wrappers wrap the actual blockchain libraries (eosjs, tronweb, web3, 
 That way you don't have to relearn any APIs or be forced to use any specific version.
 
 **You can click on the libraries here below to go directly to their respective githubs**.
-
+<br/>
 
 [eosjs@16.0.9 ( scatterjs-plugin-eosjs )](https://github.com/EOSIO/eosjs/tree/v16.0.9)
 ```js
@@ -413,13 +413,13 @@ const eos = ScatterJS.scatter.eos(network, Eos, eosjsOptions);
 
 const result = await eos.transfer(...);
 ```
-
+<br/>
 [eosjs@20.0.0-beta3 ( scatterjs-plugin-eosjs2 )](https://github.com/EOSIO/eosjs)
 ```js
 import {JsonRpc, Api} from 'eosjs'
 const rpc = new JsonRpc(network.fullhost());
 const eos = ScatterJS.scatter.eos(network, Api, {rpc, beta3:true}));
-
+<br/>
 const result = await eos.transact({...});
 ```
 
@@ -433,7 +433,7 @@ tron = ScatterJS.scatter.trx(network, tron);
 
 const result = await tron.trx.sendTransaction(...)
 ```
-
+<br/>
 [web3](https://github.com/ethereum/web3.js/)
 ```js
 import Web3 from 'web3';
