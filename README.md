@@ -34,7 +34,7 @@
 To use ScatterJS you must have _at least_ the core.
 From that point forward you can mix-match the plugins you require.
 
-| blockchain | installation command |
+| blockchain library | installation command |
 | ---------- | -------- |
 | eosjs | `npm i -S scatterjs-core scatterjs-plugin-eosjs eosjs@16.0.9` |
 | eosjs2 (@20+) | `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0-beta3` |
