@@ -261,7 +261,7 @@ ScatterJS will mutate standardized requests for you into their required formats.
 
 
 
-## Installation
+# Installation
 
 To use ScatterJS you must have _at least_ the core.
 From that point forward you can mix-match the plugins you require.
@@ -275,7 +275,7 @@ From that point forward you can mix-match the plugins you require.
 
 
 
-## Instantiation
+# Instantiation
 As early as you can in your project, instantiate both ScatterJS and your selected plugins.
 
 #### Nodejs
@@ -308,7 +308,7 @@ ScatterJS.plugins( new ScatterEOS(), new ScatterTron(), new ScatterLynx() );
 ```
 
 
-## Build the network object
+# Build the network object
 Networks tell Scatter which blockchain nodes you're going to be working with.
 
 ```js
@@ -322,7 +322,7 @@ const network = ScatterJS.Network.fromJson({
 ```
 
 
-## Connect to an available wallet
+# Connect to an available wallet
 Once you are connected you can then call API methods on `ScatterJS.scatter`
 
 ```js
@@ -335,7 +335,7 @@ ScatterJS.connect('MyAppName', {network}).then(connected => {
 
 [You can see full API docs here](https://get-scatter.com/docs/api-reference)
 
-## Getting Blockchain Accounts
+# Getting Blockchain Accounts
 
 Login with the network passed into `ScatterJS.connect`
 ```js
@@ -355,7 +355,7 @@ scatter.logout().then(...);
 **After a successful login, the "Identity" will be available at `scatter.identity`**.
 If a user refreshes the page and has already logged in, the `scatter.identity` property will be auto-filled.
 
-## Get blockchain account from the identity
+# Get blockchain accounts from the identity
 Because accounts are nested within the Identity there is an easy method for fetching them.
 
 #### Using the helper
@@ -379,7 +379,7 @@ const account = ScatterJS.scatter.identity.find(x => {
 
 ---------------------
 
-## Using Blockchain Wrappers
+# Using Blockchain Wrappers
 
 Blockchain wrappers wrap the actual blockchain libraries (eosjs, tronweb, web3, etc) that you pass in.
 That way you don't have to relearn any APIs or be forced to use any specific version.
