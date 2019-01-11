@@ -64,6 +64,17 @@ ScatterJS.plugins( new ScatterEOS() );
 </script>
 ```
 
+#### Multiple Plugins
+
+```js
+import ScatterJS from 'scatterjs-core';
+import ScatterEOS from 'scatterjs-plugin-eosjs'
+import ScatterTron from 'scatterjs-plugin-tron'
+import ScatterLynx from 'scatterjs-plugin-lynx'
+
+ScatterJS.plugins( new ScatterEOS(), new ScatterTron(), new ScatterLynx() );
+```
+
 
 ## Build the network object
 Networks tell Scatter which blockchain nodes you're going to be working with.
