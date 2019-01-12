@@ -98,7 +98,7 @@ export default class ScatterLynx extends Plugin {
 	        [WALLET_METHODS.authenticate]:(nonce, data = null, publicKey = null) => {
 		        const origin = SocketService.getOrigin();
 		        data = data ? data : origin;
-		        const toSign = ecc.sha256(ecc.sha256(nonce)+ecc.sha256(data))
+		        const toSign = ecc.sha256(ecc.sha256(data)+ecc.sha256(nonce))
 		        return window.lynxMobile.requestArbitrarySignature({data:toSign, whatFor:`${origin} is requesting an arbitrary signature`});
 	        },
 
