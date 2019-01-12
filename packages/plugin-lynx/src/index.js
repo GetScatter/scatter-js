@@ -42,9 +42,7 @@ export default class ScatterLynx extends Plugin {
 	async connect(){
 		return new Promise(async resolve => {
 			const found = await pollExistence();
-			if(found) {
-			    resolve(true);
-			}
+			if(found) resolve(true);
 		})
 	}
 
@@ -57,8 +55,10 @@ export default class ScatterLynx extends Plugin {
 
     methods(){
         return {
+	        [WALLET_METHODS.isConnected]:async () => true,
+	        [WALLET_METHODS.disconnect]:async () => true,
+	        [WALLET_METHODS.isPaired]:async () => true,
 
-        	// TODO: Align to active
 	        [WALLET_METHODS.getIdentity]:async (requiredFields) => {
 		        const accountName = await window.lynxMobile.requestSetAccountName();
 		        if(!accountName) return null;
