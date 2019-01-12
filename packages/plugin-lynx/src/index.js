@@ -116,9 +116,11 @@ export default class ScatterLynx extends Plugin {
 	        },
 
 	        [WALLET_METHODS.requestTransfer]:(network, to, amount, options = {}) => {
-		        return window.lynxMobile.eosTransfer({
-			        toAccount: to, amount: amount, memo: options.memo
-		        });
+	        	let {contract, symbol, memo, decimals} = options;
+	        	if(!contract) contract = 'eosio.token';
+	        	if(!symbol) symbol = 'EOS';
+
+		        return window.lynxMobile.transfer({ contract, symbol, toAccount:to, amount, memo });
 	        },
         }
     }
