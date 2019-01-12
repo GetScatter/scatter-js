@@ -3,10 +3,12 @@ import {
 	PluginTypes,
 	Blockchains,
 	Network,
+	SocketService,
     WALLET_METHODS
 } from 'scatterjs-core';
 
 import {JsonRpc, Api} from 'eosjs'
+import ecc from 'eosjs-ecc';
 
 let network;
 
@@ -63,10 +65,11 @@ export default class ScatterLynx extends Plugin {
 		        const accountState = await window.lynxMobile.requestSetAccount(accountName);
 		        if(!accountState) return null;
 		        const perm = accountState.account.permissions.find(x => x.perm_name === 'active');
+		        const publicKey = perm.required_auth.keys[0].key;
 		        const accounts = [{
 			        name:accountState.account.account_name,
 			        authority:perm.perm_name,
-			        publicKey:perm.required_auth.keys[0].key,
+			        publicKey,
 			        blockchain:Blockchains.EOS,
 			        isHardware:false,
 			        chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
@@ -74,7 +77,8 @@ export default class ScatterLynx extends Plugin {
 
 		        const identity = {
 		            name:accounts[0].name,
-                    accounts
+                    accounts,
+			        publicKey
                 };
 
 		        this.context.identity = identity;
@@ -87,6 +91,26 @@ export default class ScatterLynx extends Plugin {
 	        ['identityFromPermissions']:async () => this.context.identity,
 	        [WALLET_METHODS.getIdentityFromPermissions]:async () => this.context.identity,
 
+	        [WALLET_METHODS.getArbitrarySignature]:(publicKey, data) => {
+		        const origin = SocketService.getOrigin();
+		        return window.lynxMobile.getArbitrarySignature(data, `${origin} is requesting an arbitrary signature`);
+	        },
+	        [WALLET_METHODS.authenticate]:(nonce, data = null, publicKey = null) => {
+		        return new Promise(async (resolve, reject) => {
+			        publicKey = publicKey ? publicKey : this.context.identity.publicKey;
+			        const origin = SocketService.getOrigin();
+			        data = data ? data : origin;
+			        const toSign = ecc.sha256(ecc.sha256(nonce)+ecc.sha256(data))
+			        const signature = await window.lynxMobile.getArbitrarySignature(toSign, `${origin} is requesting an arbitrary signature`);
+			        try {
+				        if(ecc.recover(signature, data) !== publicKey) return reject(false);
+				        resolve(signature);
+			        } catch(e){
+				        reject(false);
+			        }
+		        })
+	        },
+
 	        [WALLET_METHODS.requestSignature]:async ({abis, transaction, network}) => {
 	        	console.log('transaction', transaction);
 		        if(!transaction.hasOwnProperty('serializedTransaction')) throw new Error('Lynx only supports eosjs2(20.0.0+) syntax');
@@ -97,10 +121,14 @@ export default class ScatterLynx extends Plugin {
 		        transaction.abis.map(({account_name, abi:rawAbi}) => api.cachedAbis.set(account_name, { rawAbi, abi:api.rawAbiToJson(rawAbi) }));
 		        const parsed = await api.deserializeTransactionWithActions(transaction.serializedTransaction);
 
-		        console.log('parsed', parsed);
-
 		        return window.lynxMobile.requestSignature(parsed);
-	        }
+	        },
+
+	        [WALLET_METHODS.requestTransfer]:(network, to, amount, options = {}) => {
+		        return window.lynxMobile.eosTransfer({
+			        toAccount: to, amount: amount, memo: options.memo
+		        });
+	        },
         }
     }
 

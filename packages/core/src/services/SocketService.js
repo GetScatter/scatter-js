@@ -65,6 +65,10 @@ export default class SocketService {
         this.timeout = timeout;
     }
 
+    static getOrigin(){
+        return getOrigin();
+    }
+
     static addEventHandler(handler, key){
         if(!key) key = 'app';
 	    eventHandlers[key] = handler;
