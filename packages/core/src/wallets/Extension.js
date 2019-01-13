@@ -2,6 +2,7 @@ import * as PluginTypes from "../plugins/PluginTypes";
 import Plugin from "../plugins/Plugin";
 import {Blockchains} from "../models/Blockchains";
 import WalletInterface, {WALLET_METHODS} from "../models/WalletInterface";
+import SocketService from "../services/SocketService";
 
 
 let isAvailable = false;
@@ -35,8 +36,22 @@ export default class Extension extends Plugin {
 	}
 
 	async runBeforeInterfacing(){
+		const network = this.context.network;
+
+		if(network){
+			const getId = window.scatter.getIdentity.bind(window.scatter);
+			window.scatter.getIdentity = fields => getId(fields ? fields : {accounts:[network]}).then(id => {
+				this.context.identity = id;
+				return id;
+			});
+
+			const suggest = window.scatter.suggestNetwork.bind(window.scatter);
+			window.scatter.suggestNetwork = net => suggest(net ? net : network);
+		}
+
 		this.holderFns.set(window.scatter);
 		this.context = this.holderFns.get();
+		this.context.useIdentity = () => {};
 		return true;
 	}
 
@@ -46,6 +61,10 @@ export default class Extension extends Plugin {
 		return true;
 	}
 
-	methods(){ return {}; }
+	methods(){ return {
+		[WALLET_METHODS.getIdentity]:(requiredFields) => {
+			console.log('getid')
+		},
+	}; }
 
 }
