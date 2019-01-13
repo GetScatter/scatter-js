@@ -112,7 +112,7 @@
 
     window.login = async () => {
         // await scatter.suggestNetwork(network);
-        await scatter.login({accounts:[network]});
+        await ScatterJS.login();
 
         // await scatter.getIdentity({accounts:[network]})
         eos = scatter.eos(network, Eos);
@@ -204,7 +204,7 @@
     };
 
     window.transfer = async () => {
-	    const account = scatter.account('eos');
+	    const account = ScatterJS.account('eos');
         const opts = { authorization:[`${account.name}@${account.authority}`], requiredFields:{} };
         eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
             console.log('trx', trx);

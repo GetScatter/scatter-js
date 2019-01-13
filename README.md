@@ -39,12 +39,11 @@ const network = ScatterJS.Network.fromJson({
 ScatterJS.connect('YourAppName', {network}).then(connected => {
     if(!connected) return console.error('no scatter');
 
-    const scatter = ScatterJS.scatter;
-    const eos = scatter.eos(network, Eos);
+    const eos = ScatterJS.eos(network, Eos);
 
-    scatter.login().then(id => {
+    ScatterJS.login().then(id => {
         if(!id) return console.error('no identity');
-        const account = scatter.account('eos');
+        const account = ScatterJS.account('eos');
         const options = {authorization:[`${account.name}@${account.authority}`]};
         eos.transfer(account.name, 'safetransfer', '0.0001 EOS', account.name, options).then(res => {
             console.log('sent: ', res);
@@ -81,12 +80,11 @@ const rpc = new JsonRpc(network.fullhost());
 ScatterJS.connect('YourAppName', {network}).then(connected => {
     if(!connected) return console.error('no scatter');
 
-    const scatter = ScatterJS.scatter;
     const eos = scatter.eos(network, Api, {rpc, beta3:true}));
 
-    scatter.login().then(id => {
+    ScatterJS.login().then(id => {
         if(!id) return console.error('no identity');
-        const account = scatter.account('eos');
+        const account = ScatterJS.account('eos');
 
         eos.transact({
             actions: [{
@@ -147,12 +145,11 @@ tron.setDefaultBlock('latest');
 ScatterJS.connect('YourAppName', {network}).then(connected => {
     if(!connected) return console.error('no scatter');
 
-    const scatter = ScatterJS.scatter;
-    tron = scatter.trx(network, tron);
+    tron = ScatterJS.trx(network, tron);
 
-    scatter.login().then(id => {
+    ScatterJS.login().then(id => {
         if(!id) return console.error('no identity');
-        const account = scatter.account('trx');
+        const account = ScatterJS.account('trx');
         tron.trx.sendTransaction('TX...', 100).then(res => {
             console.log('sent: ', res);
         }).catch(err => {
@@ -190,12 +187,11 @@ const network = ScatterJS.Network.fromJson({
 ScatterJS.connect('YourAppName', {network}).then(connected => {
     if(!connected) return console.error('no scatter');
 
-    const scatter = ScatterJS.scatter;
-    const web3 = scatter.web3(network, Web3);
+    const web3 = ScatterJS.web3(network, Web3);
 
-    scatter.login().then(id => {
+    ScatterJS.login().then(id => {
         if(!id) return console.error('no identity');
-        const account = scatter.account('trx');
+        const account = ScatterJS.account('trx');
         web3.eth.sendTransaction({
             from: account.address,
             to: '0x...',
@@ -320,13 +316,13 @@ const network = ScatterJS.Network.fromJson({
 
 <br/><br/>
 # Connect to an available wallet
-Once you are connected you can then call API methods on `ScatterJS.scatter`
+Once you are connected you can then call API methods on `ScatterJS`
 
 ```js
 
 ScatterJS.connect('MyAppName', {network}).then(connected => {
     if(!connected) return false;
-    // ScatterJS.scatter.someMethod();
+    // ScatterJS.someMethod();
 });
 ```
 
@@ -361,19 +357,19 @@ Because accounts are nested within the Identity there is an easy method for fetc
 
 #### Using the helper
 ```js
-const account = ScatterJS.scatter.account('eos')
+const account = ScatterJS.account('eos')
 // Result: {name:'...', authority:'active', publicKey:'...', blockchain:'eos', chainId:'...'}
 
-const account = ScatterJS.scatter.account('eth')
+const account = ScatterJS.account('eth')
 // Result: {address:'...', blockchain:'eth', chainId:'1'}
 
-const account = ScatterJS.scatter.account('trx')
+const account = ScatterJS.account('trx')
 // Result: {address:'...', blockchain:'trx', chainId:'1'}
 ```
 
 #### From the Identity
 ```js
-const account = ScatterJS.scatter.identity.find(x => {
+const account = ScatterJS.identity.find(x => {
     return x.blockchain === 'eos';
 });
 ```
@@ -394,7 +390,7 @@ That way you don't have to relearn any APIs or be forced to use any specific ver
 [eosjs@16.0.9 ( scatterjs-plugin-eosjs )](https://github.com/EOSIO/eosjs/tree/v16.0.9)
 ```js
 import Eos from 'eosjs';
-const eos = ScatterJS.scatter.eos(network, Eos, eosjsOptions);
+const eos = ScatterJS.eos(network, Eos, eosjsOptions);
 
 const result = await eos.transfer(...);
 ```
@@ -405,7 +401,7 @@ const result = await eos.transfer(...);
 ```js
 import {JsonRpc, Api} from 'eosjs'
 const rpc = new JsonRpc(network.fullhost());
-const eos = ScatterJS.scatter.eos(network, Api, {rpc, beta3:true}));
+const eos = ScatterJS.eos(network, Api, {rpc, beta3:true}));
 <br/>
 const result = await eos.transact({...});
 ```
@@ -418,7 +414,7 @@ import TronWeb from 'tronweb';
 const httpProvider = new TronWeb.providers.HttpProvider(network.fullhost());
 let tron = new TronWeb(httpProvider, httpProvider, network.fullhost());
 tron.setDefaultBlock('latest');
-tron = ScatterJS.scatter.trx(network, tron);
+tron = ScatterJS.trx(network, tron);
 
 const result = await tron.trx.sendTransaction(...)
 ```
@@ -428,7 +424,7 @@ const result = await tron.trx.sendTransaction(...)
 [web3](https://github.com/ethereum/web3.js/)
 ```js
 import Web3 from 'web3';
-const web3 = ScatterJS.scatter.web3(network, Web3);
+const web3 = ScatterJS.web3(network, Web3);
 
 const result = await web3.eth.sendTransaction(...)
 ```

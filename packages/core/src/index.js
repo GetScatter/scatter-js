@@ -79,10 +79,19 @@ class Holder {
 	connect(...params){
     	return this.scatter.connect(...params);
 	}
+
+	catchAll(...params){
+
+	}
 }
 
 
-let holder = new Holder(new Index());
+let holder = new Proxy(new Holder(new Index()), {
+	get(target,name) {
+		if(typeof target[name] !== 'undefined') return target[name];
+		return target.scatter[name];
+	}
+});
 holderFns.set = s => holder.scatter = s;
 holderFns.get = () => holder.scatter;
 if(typeof window !== 'undefined') window.ScatterJS = holder;

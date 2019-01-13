@@ -26,6 +26,8 @@ const pollExistence = async (resolver = null, tries = 0) => {
 	})
 };
 
+
+
 export default class ScatterLynx extends Plugin {
 
     constructor(){
