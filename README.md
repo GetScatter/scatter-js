@@ -80,7 +80,7 @@ const rpc = new JsonRpc(network.fullhost());
 ScatterJS.connect('YourAppName', {network}).then(connected => {
     if(!connected) return console.error('no scatter');
 
-    const eos = scatter.eos(network, Api, {rpc, beta3:true}));
+    const eos = ScatterJS.eos(network, Api, {rpc, beta3:true}));
 
     ScatterJS.login().then(id => {
         if(!id) return console.error('no identity');
@@ -334,21 +334,21 @@ ScatterJS.connect('MyAppName', {network}).then(connected => {
 
 Login with the network passed into `ScatterJS.connect`
 ```js
-scatter.login().then(...);
+ScatterJS.login().then(...);
 ```
 
 Login with multiple networks
 ```js
-scatter.login({accounts:[network1, network2]).then(...);
+ScatterJS.login({accounts:[network1, network2]).then(...);
 ```
 
 Logout
 ```js
-scatter.logout().then(...);
+ScatterJS.logout().then(...);
 ```
 
-**After a successful login, the "Identity" will be available at `scatter.identity`**.
-If a user refreshes the page and has already logged in, the `scatter.identity` property will be auto-filled.
+**After a successful login, the "Identity" will be available at `ScatterJS.identity`**.
+If a user refreshes the page and has already logged in, the `ScatterJS.identity` property will be auto-filled.
 
 
 <br/><br/>

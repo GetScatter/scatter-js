@@ -113,8 +113,6 @@
     window.login = async () => {
         // await scatter.suggestNetwork(network);
         await ScatterJS.login();
-
-        // await scatter.getIdentity({accounts:[network]})
         eos = scatter.eos(network, Eos);
     };
 
