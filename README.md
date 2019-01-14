@@ -64,7 +64,7 @@ Installation: `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0-beta
 ```js
 import ScatterJS from 'scatterjs-core';
 import ScatterEOS from 'scatterjs-plugin-eosjs2';
-import {JsonRpc, Api} from 'eosjs'
+import {JsonRpc, Api} from 'eosjs';
 
 ScatterJS.plugins( new ScatterEOS() );
 
