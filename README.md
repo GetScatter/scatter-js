@@ -229,6 +229,7 @@ their wallet and mimic our existing APIs.
 | EOSIO | [imToken](https://token.im/) | Mobile |
 | EOSIO | [PocketEOS](https://pocketeos.com/) | Mobile |
 | EOSIO | [MoreWallet](https://more.top/) | Mobile |
+| EOSIO | [NOVAWallet](http://eosnova.io/) | Mobile |
 
 ## Plugin Supported Wallets
 These wallets require a plugin to support.
