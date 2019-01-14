@@ -177,9 +177,9 @@ import Web3 from 'web3';
 ScatterJS.plugins( new ScatterETH() );
 
 const network = ScatterJS.Network.fromJson({
-    blockchain:'tron',
+    blockchain:'eth',
     chainId:'1',
-    host:'api.trongrid.io',
+    host:'YOUR ETHEREUM NODE',
     port:443,
     protocol:'https'
 });
