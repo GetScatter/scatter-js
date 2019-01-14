@@ -228,6 +228,7 @@ their wallet and mimic our existing APIs.
 | EOSIO | [MEET.ONE](https://meet.one/) | Mobile |
 | EOSIO | [imToken](https://token.im/) | Mobile |
 | EOSIO | [PocketEOS](https://pocketeos.com/) | Mobile |
+| EOSIO | [MoreWallet](https://more.top/) | Mobile |
 
 ## Plugin Supported Wallets
 These wallets require a plugin to support.
