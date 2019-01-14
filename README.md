@@ -440,6 +440,8 @@ If you're having trouble packaging or compiling your project you probably need t
 
 -------------
 
+#### If you're using eosjs beta3
+`const eos = scatter.eos(network, Api, { rpc, beta3:true })`
 
 
 <br/><br/>
