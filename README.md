@@ -64,7 +64,7 @@ Installation: `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0-beta
 ```js
 import ScatterJS from 'scatterjs-core';
 import ScatterEOS from 'scatterjs-plugin-eosjs2';
-import {JsonRpc, Api} from 'eosjs'
+import {JsonRpc, Api} from 'eosjs';
 
 ScatterJS.plugins( new ScatterEOS() );
 
@@ -177,9 +177,9 @@ import Web3 from 'web3';
 ScatterJS.plugins( new ScatterETH() );
 
 const network = ScatterJS.Network.fromJson({
-    blockchain:'tron',
+    blockchain:'eth',
     chainId:'1',
-    host:'api.trongrid.io',
+    host:'YOUR ETHEREUM NODE',
     port:443,
     protocol:'https'
 });
@@ -228,6 +228,8 @@ their wallet and mimic our existing APIs.
 | EOSIO | [MEET.ONE](https://meet.one/) | Mobile |
 | EOSIO | [imToken](https://token.im/) | Mobile |
 | EOSIO | [PocketEOS](https://pocketeos.com/) | Mobile |
+| EOSIO | [MoreWallet](https://more.top/) | Mobile |
+| EOSIO | [NOVAWallet](http://eosnova.io/) | Mobile |
 
 ## Plugin Supported Wallets
 These wallets require a plugin to support.
