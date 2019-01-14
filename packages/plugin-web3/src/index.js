@@ -10,14 +10,11 @@ import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';
 import WebsocketSubprovider from 'web3-provider-engine/subproviders/websocket';
 import HookedWalletSubprovider from "web3-provider-engine/subproviders/hooked-wallet";
-import ethUtil from 'ethereumjs-util';
 
 
 
 let ethNetwork;
 let socketService = SocketService;
-
-
 
 
 class ScatterEthereumWallet {
@@ -45,7 +42,7 @@ class ScatterEthereumWallet {
         // Basic settings
         if (transaction.gas !== undefined) transaction.gasLimit = transaction.gas;
         transaction.value = transaction.value || '0x00';
-        if(transaction.hasOwnProperty('data')) transaction.data = ethUtil.addHexPrefix(transaction.data);
+        if(transaction.hasOwnProperty('data')) transaction.data = '0x'+transaction.data;
 
         // Required Fields
         const requiredFields = transaction.hasOwnProperty('requiredFields') ? transaction.requiredFields : {};
