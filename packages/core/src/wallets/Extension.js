@@ -40,10 +40,13 @@ export default class Extension extends Plugin {
 
 		if(network){
 			const getId = window.scatter.getIdentity.bind(window.scatter);
+			const useIdentity = window.scatter.useIdentity.bind(window.scatter);
 			window.scatter.getIdentity = fields => getId(fields ? fields : {accounts:[network]}).then(id => {
-				this.context.identity = id;
+				this.holderFns.get().identity = id;
+				useIdentity(id);
 				return id;
 			});
+
 
 			const suggest = window.scatter.suggestNetwork.bind(window.scatter);
 			window.scatter.suggestNetwork = net => suggest(net ? net : network);
