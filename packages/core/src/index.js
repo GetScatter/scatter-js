@@ -30,7 +30,7 @@ class Index {
 	}
 
 	loadPlugin(plugin){
-		const noIdFunc = () => { if(!this.identity) throw new Error('No Identity') };
+		const noIdFunc = () => { if(!holderFns.get().identity) throw new Error('No Identity') };
 		if(!plugin.isValid()) throw new Error(`${plugin.name} doesn't seem to be a valid ScatterJS plugin.`);
 
 		PluginRepository.loadPlugin(plugin);
