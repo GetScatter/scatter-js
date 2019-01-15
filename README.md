@@ -371,7 +371,7 @@ const account = ScatterJS.account('trx')
 
 #### From the Identity
 ```js
-const account = ScatterJS.identity.find(x => {
+const account = ScatterJS.identity.accounts.find(x => {
     return x.blockchain === 'eos';
 });
 ```
@@ -404,7 +404,7 @@ const result = await eos.transfer(...);
 import {JsonRpc, Api} from 'eosjs'
 const rpc = new JsonRpc(network.fullhost());
 const eos = ScatterJS.eos(network, Api, {rpc, beta3:true}));
-<br/>
+
 const result = await eos.transact({...});
 ```
 
