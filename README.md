@@ -371,7 +371,7 @@ const account = ScatterJS.account('trx')
 
 #### From the Identity
 ```js
-const account = ScatterJS.identity.find(x => {
+const account = ScatterJS.identity.accounts.find(x => {
     return x.blockchain === 'eos';
 });
 ```
