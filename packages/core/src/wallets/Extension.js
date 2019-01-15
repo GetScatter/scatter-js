@@ -44,6 +44,7 @@ export default class Extension extends Plugin {
 			window.scatter.getIdentity = fields => getId(fields ? fields : {accounts:[network]}).then(id => {
 				this.holderFns.get().identity = id;
 				useIdentity(id);
+				console.log('funpm')
 				return id;
 			});
 
