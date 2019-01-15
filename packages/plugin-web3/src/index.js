@@ -13,7 +13,7 @@ import HookedWalletSubprovider from "web3-provider-engine/subproviders/hooked-wa
 
 
 
-let ethNetwork;
+let ethNetwork, idGetter;
 let socketService = SocketService;
 
 
@@ -24,11 +24,13 @@ class ScatterEthereumWallet {
     }
 
     async getAccounts(callback) {
-        const result = await socketService.sendApiRequest({
-            type:'identityFromPermissions',
-            payload:{}
-        });
-        const accounts = !result ? [] : result.accounts
+	    const result = await SocketService.sendApiRequest({
+		    type:'identityFromPermissions',
+		    payload:{}
+	    });
+	    console.log('result', result);
+
+        const accounts = !idGetter() ? [] : idGetter().accounts
             .filter(account => account.blockchain === Blockchains.ETH)
             .map(account => account.address);
 
@@ -68,7 +70,7 @@ class ScatterEthereumWallet {
 export default class ScatterETH extends Plugin {
 
     constructor(){
-        super(Blockchains.ETH, PluginTypes.BLOCKCHAIN_SUPPORT)
+        super(Blockchains.ETH, PluginTypes.BLOCKCHAIN_SUPPORT);
     }
 
 	setSocketService(_s){
@@ -80,6 +82,7 @@ export default class ScatterETH extends Plugin {
     }
 
     signatureProvider(...args){
+        idGetter = args[1];
 
         return (_network, _web3) => {
             ethNetwork = Network.fromJson(_network);

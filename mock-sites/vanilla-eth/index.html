@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Tester</title>
+
+    <script src="assets/web3.min.js"></script>
+    <script src="../../bundles/scatterjs-core.min.js"></script>
+    <script src="../../bundles/scatterjs-plugin-web3.min.js"></script>
+</head>
+<body>
+<div id="status"></div>
+<br>
+<br>
+
+<button onclick="login()">Get Identity</button>
+<button onclick="logout()">Forget Identity</button>
+<button onclick="transfer()">Transfer</button>
+<button onclick="transfer()">Sign Personal Message</button>
+
+<script>
+
+	ScatterJS.plugins( new ScatterETH() );
+
+	const network = ScatterJS.Network.fromJson({
+		blockchain:'eth',
+		chainId:'1',
+		host:'mainnet.infura.io/v3/d56f9f2bffc644ab917c4347dde95d37',
+		port:'',
+		protocol:'https'
+	});
+
+	const setStatus = () => {
+		const status = document.getElementById('status');
+		if(!ScatterJS.scatter) return status.innerText = 'No Scatter';
+		if(!ScatterJS.identity) return status.innerText = 'No Identity';
+		status.innerText = ScatterJS.identity.name;
+	};
+
+	setStatus();
+	setInterval(() => {
+		setStatus();
+	}, 50);
+
+	let web3;
+
+	ScatterJS.connect('web3-test', {network}).then(connected => {
+		if(!connected) return false;
+		web3 = ScatterJS.eth(network, Web3);
+	});
+
+	window.login = async () => await ScatterJS.login();
+	window.logout = () => ScatterJS.logout();
+
+	window.transfer = async () => {
+		const account = ScatterJS.account('eth');
+		console.log('acc', account, ScatterJS.identity)
+		web3.eth.sendTransaction({
+			from: account.address,
+			to: '0xf030e68ce5adfc3c028c79982fea5d3c724e8aa9',
+			value: '1000000000000000'
+		}).then(res => {
+			console.log('sent: ', res);
+		}).catch(err => {
+			console.error('error: ', err);
+		});
+	};
+
+</script>
+</body>
+</html>

@@ -36,7 +36,7 @@ class Index {
 		PluginRepository.loadPlugin(plugin);
 
 		if(plugin.type === PluginTypes.BLOCKCHAIN_SUPPORT){
-			this[plugin.name] = plugin.signatureProvider(noIdFunc, () => this.identity);
+			this[plugin.name] = plugin.signatureProvider(noIdFunc, () => holderFns.get().identity);
 			this[plugin.name+'Hook'] = plugin.hookProvider;
 			socketSetters.push(plugin.setSocketService);
 		}
