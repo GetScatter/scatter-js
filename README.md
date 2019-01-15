@@ -404,7 +404,7 @@ const result = await eos.transfer(...);
 import {JsonRpc, Api} from 'eosjs'
 const rpc = new JsonRpc(network.fullhost());
 const eos = ScatterJS.eos(network, Api, {rpc, beta3:true}));
-<br/>
+
 const result = await eos.transact({...});
 ```
 
