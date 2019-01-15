@@ -40,8 +40,10 @@ export default class Extension extends Plugin {
 
 		if(network){
 			const getId = window.scatter.getIdentity.bind(window.scatter);
+			const useIdentity = window.scatter.useIdentity.bind(window.scatter);
 			window.scatter.getIdentity = fields => getId(fields ? fields : {accounts:[network]}).then(id => {
 				this.context.identity = id;
+				useIdentity(id);
 				return id;
 			});
 
