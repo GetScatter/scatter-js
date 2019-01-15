@@ -47,7 +47,6 @@ export default class Extension extends Plugin {
 				return id;
 			});
 
-
 			const suggest = window.scatter.suggestNetwork.bind(window.scatter);
 			window.scatter.suggestNetwork = net => suggest(net ? net : network);
 		}
