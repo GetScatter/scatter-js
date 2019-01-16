@@ -38,7 +38,7 @@ export default class Desktop extends Plugin {
 	methods(){
 		const setAndReturnId = (id, forget) => {
 			if(id || forget) this.holderFns.get().identity = id;
-			if(forget) SocketService.removeAppKeys();
+			// if(forget) SocketService.removeAppKeys();
 			return forget || id;
 		};
 
