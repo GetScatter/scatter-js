@@ -60,6 +60,10 @@ export default class Desktop extends Plugin {
 				type:'forgetIdentity',
 				payload:{}
 			}).then(res => setAndReturnId(null, res)),
+			[WALLET_METHODS.changeIdentity]:({name, kyc}) => SocketService.sendApiRequest({
+				type:'changeIdentity',
+				payload:{name, kyc}
+			}).then(setAndReturnId),
 			[WALLET_METHODS.authenticate]:(nonce, data = null, publicKey = null) => SocketService.sendApiRequest({
 				type:'authenticate',
 				payload:{ nonce, data, publicKey }

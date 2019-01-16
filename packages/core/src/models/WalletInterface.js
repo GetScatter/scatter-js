@@ -10,6 +10,7 @@ export const WALLET_METHODS = {
 	getIdentity:'getIdentity',
 	getIdentityFromPermissions:'getIdentityFromPermissions',
 	forgetIdentity:'forgetIdentity',
+	changeIdentity:'changeIdentity',
 	authenticate:'authenticate',
 	getArbitrarySignature:'getArbitrarySignature',
 	getPublicKey:'getPublicKey',
