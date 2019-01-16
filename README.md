@@ -220,24 +220,24 @@ their wallet and mimic our existing APIs.
 
 *Does your wallet support Scatter Protocols? [Issue a Pull Request on the README.md and add it here.](https://github.com/GetScatter/scatter-js/edit/revamp/README.md)*
 
-| dapp supported blockchains | platform | wallet |
-| ---------- | -------- | -------- |
-| EOSIO, Tron, Ethereum | [Scatter Desktop](https://get-scatter.com/) | Desktop |
-| EOSIO, Ethereum | Scatter Extension | Desktop |
-| EOSIO | [TokenPocket](https://www.mytokenpocket.vip/) | Mobile |
-| EOSIO | [MEET.ONE](https://meet.one/) | Mobile |
-| EOSIO | [imToken](https://token.im/) | Mobile |
-| EOSIO | [PocketEOS](https://pocketeos.com/) | Mobile |
-| EOSIO | [MoreWallet](https://more.top/) | Mobile |
-| EOSIO | [NOVAWallet](http://eosnova.io/) | Mobile |
+| dapp supported blockchains | platform | wallet | libs |
+| ---------- | -------- | -------- | -------- |
+| EOSIO, Tron, Ethereum | [Scatter Desktop](https://get-scatter.com/) | Desktop | eosjs@16.0.9, eosjs@20+, tronweb, web3 | 
+| EOSIO, Ethereum | Scatter Extension | Desktop | eosjs@16.0.9, web3 |
+| EOSIO | [TokenPocket](https://www.mytokenpocket.vip/) | Mobile | eosjs@16.0.9 |
+| EOSIO | [MEET.ONE](https://meet.one/) | Mobile | eosjs@16.0.9 |
+| EOSIO | [imToken](https://token.im/) | Mobile | eosjs@16.0.9 |
+| EOSIO | [PocketEOS](https://pocketeos.com/) | Mobile | eosjs@16.0.9 |
+| EOSIO | [MoreWallet](https://more.top/) | Mobile | eosjs@16.0.9 |
+| EOSIO | [NOVAWallet](http://eosnova.io/) | Mobile | eosjs@16.0.9 |
 
 ## Plugin Supported Wallets
 These wallets require a plugin to support.
 ScatterJS will mutate standardized blockchain library requests for you into their required formats.
 
-| dapp supported blockchains | wallet | platform | plugin |
-| ---------- | -------- | -------| -------|
-| EOSIO | [Lynx](https://eoslynx.com/) | Mobile | `scatterjs-plugin-lynx` |
+| dapp supported blockchains | wallet | platform | plugin | libs |
+| ---------- | -------- | -------| -------| -------|
+| EOSIO | [Lynx](https://eoslynx.com/) | Mobile | `scatterjs-plugin-lynx` | eosjs@20+ |
 
 
 
