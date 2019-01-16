@@ -36,10 +36,6 @@ const getOrigin = () => {
     return origin;
 }
 
-
-// StorageService.removeAppKey();
-// StorageService.removeNonce();
-
 let appkey = StorageService.getAppKey();
 if(!appkey) appkey = 'appkey:'+random();
 
@@ -202,6 +198,11 @@ export default class SocketService {
     static disconnect(){
         if(socket) socket.disconnect();
         return true;
+    }
+
+    static removeAppKeys(){
+	    StorageService.removeAppKey();
+	    StorageService.removeNonce();
     }
 
     static sendApiRequest(request){

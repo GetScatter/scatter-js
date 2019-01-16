@@ -6,10 +6,11 @@ import {EVENTS, WALLET_METHODS} from "../index";
 
 
 export default class Desktop extends Plugin {
-	constructor(context){
+	constructor(context, holderFns){
 		super(Blockchains.EOS, PluginTypes.WALLET_SUPPORT);
 		this.name = 'ScatterSockets';
 		this.context = context;
+		this.holderFns = holderFns;
 	}
 
 	connect(pluginName, options = {}){
@@ -22,21 +23,22 @@ export default class Desktop extends Plugin {
 			SocketService.init(pluginName, options.linkTimeout);
 			SocketService.link().then(async authenticated => {
 				if(!authenticated) return false;
-				this.context.isExtension = false;
+				this.holderFns.get().isExtension = false;
 				return resolve(true);
 			});
 		})
 	}
 
 	async runAfterInterfacing(){
-		this.context.addEventHandler((t,x) => this.eventHandler(t,x), 'internal');
-		this.context.identity = await this.context.getIdentityFromPermissions();
+		this.holderFns.get().addEventHandler((t,x) => this.eventHandler(t,x), 'internal');
+		this.holderFns.get().identity = await this.holderFns.get().getIdentityFromPermissions();
 		return true;
 	}
 
 	methods(){
 		const setAndReturnId = (id, forget) => {
-			if(id || forget) this.context.identity = id;
+			if(id || forget) this.holderFns.get().identity = id;
+			if(forget) SocketService.removeAppKeys();
 			return forget || id;
 		};
 
@@ -50,7 +52,7 @@ export default class Desktop extends Plugin {
 			[WALLET_METHODS.getVersion]:() => SocketService.sendApiRequest({ type:'getVersion', payload:{} }),
 			[WALLET_METHODS.getIdentity]:(requiredFields) => SocketService.sendApiRequest({
 				type:'getOrRequestIdentity',
-				payload:{ fields:requiredFields ? requiredFields : {accounts:[this.context.network]} }
+				payload:{ fields:requiredFields ? requiredFields : {accounts:[this.holderFns.get().network]} }
 			}).then(setAndReturnId),
 			[WALLET_METHODS.getIdentityFromPermissions]:() => SocketService.sendApiRequest({
 				type:'identityFromPermissions',
@@ -60,10 +62,10 @@ export default class Desktop extends Plugin {
 				type:'forgetIdentity',
 				payload:{}
 			}).then(res => setAndReturnId(null, res)),
-			[WALLET_METHODS.changeIdentity]:({name, kyc}) => SocketService.sendApiRequest({
-				type:'changeIdentity',
+			[WALLET_METHODS.updateIdentity]:({name, kyc}) => SocketService.sendApiRequest({
+				type:'updateIdentity',
 				payload:{name, kyc}
-			}).then(setAndReturnId),
+			}).then(id => id ? setAndReturnId(id) : null),
 			[WALLET_METHODS.authenticate]:(nonce, data = null, publicKey = null) => SocketService.sendApiRequest({
 				type:'authenticate',
 				payload:{ nonce, data, publicKey }
@@ -78,19 +80,19 @@ export default class Desktop extends Plugin {
 			}),
 			[WALLET_METHODS.linkAccount]:(account, network) => SocketService.sendApiRequest({
 				type:'linkAccount',
-				payload:{ account, network:network || this.context.network }
+				payload:{ account, network:network || this.holderFns.get().network }
 			}),
 			[WALLET_METHODS.hasAccountFor]:(network) => SocketService.sendApiRequest({
 				type:'hasAccountFor',
-				payload:{ network:network || this.context.network }
+				payload:{ network:network || this.holderFns.get().network }
 			}),
 			[WALLET_METHODS.suggestNetwork]:(network) => SocketService.sendApiRequest({
 				type:'requestAddNetwork',
-				payload:{ network:network || this.context.network }
+				payload:{ network:network || this.holderFns.get().network }
 			}),
 			[WALLET_METHODS.requestTransfer]:(network, to, amount, options = {}) => SocketService.sendApiRequest({
 				type:'requestTransfer',
-				payload:{network:network || this.context.network, to, amount, options}
+				payload:{network:network || this.holderFns.get().network, to, amount, options}
 			}),
 			[WALLET_METHODS.requestSignature]:(payload) => SocketService.sendApiRequest({
 				type:'requestSignature',
@@ -98,11 +100,11 @@ export default class Desktop extends Plugin {
 			}),
 			[WALLET_METHODS.createTransaction]:(blockchain, actions, account, network) => SocketService.sendApiRequest({
 				type:'createTransaction',
-				payload:{ blockchain, actions, account, network:network || this.context.network }
+				payload:{ blockchain, actions, account, network:network || this.holderFns.get().network }
 			}),
 			[WALLET_METHODS.addToken]:(token, network) => SocketService.sendApiRequest({
 				type:'addToken',
-				payload:{ token, network:network || this.context.network }
+				payload:{ token, network:network || this.holderFns.get().network }
 			}),
 		}
 	}
@@ -110,10 +112,10 @@ export default class Desktop extends Plugin {
 	async eventHandler(event, payload){
 		switch(event){
 			case EVENTS.Disconnected:
-				this.context.identity = null;
+				this.holderFns.get().identity = null;
 				break;
 			case EVENTS.LoggedOut:
-				this.context.identity = await this.context.getIdentityFromPermissions();
+				this.holderFns.get().identity = await this.holderFns.get().getIdentityFromPermissions();
 				break;
 		}
 	}

@@ -22,6 +22,7 @@
 <button onclick="logout()">Logout</button>
 <button onclick="login()">Login</button>
 <button onclick="loginWithRequirements()">Login with Requirements</button>
+<button onclick="updateIdentity()">Update Identity</button>
 <button onclick="authenticate()">Authenticate</button>
 <button onclick="authenticateSpecific()">Authenticate w/Params</button>
 <button onclick="hardwareCapableProofs()">Prove Ownership</button>
@@ -124,6 +125,13 @@
             accounts:[network2, network2]
         })
         eos = scatter.eos(network, Eos);
+    };
+
+    window.updateIdentity = async () => {
+        const done = await scatter.updateIdentity({
+            name:'HelloWorld',
+        })
+        console.log('done', done);
     };
 
     window.authenticate = async () => {
