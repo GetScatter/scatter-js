@@ -80,7 +80,7 @@ const rpc = new JsonRpc(network.fullhost());
 ScatterJS.connect('YourAppName', {network}).then(connected => {
     if(!connected) return console.error('no scatter');
 
-    const eos = ScatterJS.eos(network, Api, {rpc, beta3:true}));
+    const eos = ScatterJS.eos(network, Api, {rpc, beta3:true});
 
     ScatterJS.login().then(id => {
         if(!id) return console.error('no identity');
