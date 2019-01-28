@@ -196,7 +196,7 @@ export default class SocketService {
     }
 
     static disconnect(){
-        if(socket) socket.disconnect();
+        if(socket) socket.close();
         return true;
     }
 
