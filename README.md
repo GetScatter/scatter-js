@@ -231,6 +231,7 @@ their wallet and mimic our existing APIs.
 | EOSIO | [MoreWallet](https://more.top/) | Mobile | eosjs@16.0.9 |
 | EOSIO | [NOVAWallet](http://eosnova.io/) | Mobile | eosjs@16.0.9 |
 | EOSIO | [Chaince Wallet](https://chaince.com/) | Mobile | eosjs@16.0.9 |
+| EOSIO | [EOS LIVE](https://eos.live/) | Mobile | eosjs@16.0.9 |
 
 ## Plugin Supported Wallets
 These wallets require a plugin to support.
