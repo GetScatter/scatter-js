@@ -53,7 +53,7 @@ export default class Extension extends Plugin {
 
 		this.holderFns.set(window.scatter);
 		this.context = this.holderFns.get();
-		this.context.useIdentity = () => {};
+		// this.context.useIdentity = () => {};
 		return true;
 	}
 
