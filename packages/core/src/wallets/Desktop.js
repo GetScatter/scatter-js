@@ -66,6 +66,10 @@ export default class Desktop extends Plugin {
 				type:'updateIdentity',
 				payload:{name, kyc}
 			}).then(id => id ? setAndReturnId(id) : null),
+			[WALLET_METHODS.triggerRidl]:() => SocketService.sendApiRequest({
+				type:'triggerRidl',
+				payload:{}
+			}),
 			[WALLET_METHODS.authenticate]:(nonce, data = null, publicKey = null) => SocketService.sendApiRequest({
 				type:'authenticate',
 				payload:{ nonce, data, publicKey }

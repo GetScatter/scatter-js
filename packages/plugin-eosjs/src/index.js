@@ -71,7 +71,7 @@ export default class ScatterEOS extends Plugin {
 	                        }
 
 	                        return result;
-                        };;
+                        };
 
                         return new Promise((resolve, reject) => {
                             instance[method](...args).then(result => {

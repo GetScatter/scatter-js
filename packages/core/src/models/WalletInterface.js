@@ -11,6 +11,7 @@ export const WALLET_METHODS = {
 	getIdentityFromPermissions:'getIdentityFromPermissions',
 	forgetIdentity:'forgetIdentity',
 	updateIdentity:'updateIdentity',
+	triggerRidl:'triggerRidl',
 	authenticate:'authenticate',
 	getArbitrarySignature:'getArbitrarySignature',
 	getPublicKey:'getPublicKey',

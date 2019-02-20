@@ -5,7 +5,7 @@
     <title>Web Tester</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script src="https://cdn.jsdelivr.net/npm/eosjs@16.0.0/lib/eos.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/eosjs@16.0.9/lib/eos.min.js"></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-eosjs.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-lynx.min.js"></script>
@@ -23,6 +23,7 @@
 <button onclick="login()">Login</button>
 <button onclick="loginWithRequirements()">Login with Requirements</button>
 <button onclick="updateIdentity()">Update Identity</button>
+<button onclick="triggerRidl()">Trigger RIDL</button>
 <button onclick="authenticate()">Authenticate</button>
 <button onclick="authenticateSpecific()">Authenticate w/Params</button>
 <button onclick="hardwareCapableProofs()">Prove Ownership</button>
@@ -52,6 +53,8 @@
 <br>
 <br>
 
+<button onclick="rex()">Rex</button>
+
 <h1>Deep Link</h1>
 <p style="margin-top:-20px;">
     Deep links will only work with a built version of Scatter, <br>
@@ -66,15 +69,15 @@
 
 	 ScatterJS.plugins( new ScatterEOS(), new ScatterLynx() );
 
-    const network2 = ScatterJS.Network.fromJson({
+    const network = ScatterJS.Network.fromJson({
         blockchain:'eos',
         chainId:'e70aaab8997e1dfce58fbfac80cbbb8fecec7b99cf982a9444273cbc64c41473',
         host:'jungle2.cryptolions.io',
-        port:80,
-        protocol:'http'
+        port:443,
+        protocol:'https'
     });
 
-   const network = ScatterJS.Network.fromJson({
+   const network2 = ScatterJS.Network.fromJson({
 	   blockchain:'eos',
 	   chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906',
 	   host:'nodes.get-scatter.com',
@@ -106,6 +109,32 @@
         });
     });
 
+    window.rex = async () => {
+	    const account = ScatterJS.account('eos');
+	    // const opts = { authorization:[`${account.name}@${account.authority}`] };
+        // const contract = await eos.contract('eosio');
+        // const res = contract.buyrex(account.name, '1.0000 EOS', opts);
+
+
+	    var actions = [];
+	    actions.push({
+		    account: 'eosio',
+		    name: 'buyrex',
+		    authorization: [`${account.name}@${account.authority}`],
+		    data: {from: account.name, amount: '0.0001 EOS'}
+	    });
+
+	    eos.transaction(
+		    {
+			    actions: actions
+		    }
+	    ).then(function(tx) {
+		    console.log(tx)
+	    }).catch(function(err) {
+		    console.log(err)
+	    });
+    };
+
     window.getVersion = async () => {
         const version = await scatter.getVersion();
         console.log('version', version);
@@ -130,8 +159,14 @@
     window.updateIdentity = async () => {
         const done = await scatter.updateIdentity({
             name:'HelloWorld',
+            kyc:'carbon.money::F0E4C2F76C58916EC258F246851BEA091D14D4247A2FC3E18694461B1816E13B'
         })
         console.log('done', done);
+    };
+
+    window.triggerRidl = async () => {
+        const done = await scatter.triggerRidl()
+        console.log('triggerRidl', done);
     };
 
     window.authenticate = async () => {
