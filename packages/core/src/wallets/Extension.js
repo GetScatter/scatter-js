@@ -31,7 +31,10 @@ export default class Extension extends Plugin {
 	async connect(){
 		return new Promise(async resolve => {
 			const found = await pollExistence();
-			if(found) resolve(true);
+			if(found) {
+				this.holderFns.get().wallet = this.name;
+				resolve(true);
+			}
 		})
 	}
 

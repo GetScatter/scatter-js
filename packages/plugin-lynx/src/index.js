@@ -44,7 +44,10 @@ export default class ScatterLynx extends Plugin {
 	async connect(){
 		return new Promise(async resolve => {
 			const found = await pollExistence();
-			if(found) resolve(true);
+			if(found) {
+				resolve(true);
+				this.context.wallet = this.name;
+			}
 		})
 	}
 
