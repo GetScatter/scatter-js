@@ -54,15 +54,19 @@ export default class Extension extends Plugin {
 			window.scatter.suggestNetwork = net => suggest(net ? net : network);
 		}
 
+		if(this.holderFns.get().wallet === this.name){
+			window.scatter.wallet = this.name;
+		}
+
 		this.holderFns.set(window.scatter);
 		this.context = this.holderFns.get();
-		// this.context.useIdentity = () => {};
+
 		return true;
 	}
 
 	async runAfterInterfacing(){
 		this.context.isExtension = true;
-		this.context.connect = () => new Promise(resolve => resolve(true));
+		this.context.connect = () => this.connect;
 		return true;
 	}
 
