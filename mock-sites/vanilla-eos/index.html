@@ -101,6 +101,9 @@
         scatter = ScatterJS.scatter;
         eos = scatter.eos(network, Eos);
 
+        console.log(ScatterJS);
+        console.log(ScatterJS.scatter);
+
         scatter.addEventHandler((event, payload) => {
             console.log('app event', event, payload);
         });
