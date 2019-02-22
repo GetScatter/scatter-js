@@ -32,7 +32,10 @@ export default class Extension extends Plugin {
 		return new Promise(async resolve => {
 			const found = await pollExistence();
 			if(found) {
-				this.holderFns.get().wallet = this.name;
+				if(typeof this.holderFns.get !== 'undefined'){
+					this.holderFns.get().wallet = this.name;
+				}
+
 				resolve(true);
 			}
 		})
