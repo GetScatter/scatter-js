@@ -32,10 +32,7 @@ export default class Extension extends Plugin {
 		return new Promise(async resolve => {
 			const found = await pollExistence();
 			if(found) {
-				if(typeof this.holderFns.get !== 'undefined'){
-					this.holderFns.get().wallet = this.name;
-				}
-
+				this.holderFns.get().wallet = this.name;
 				resolve(true);
 			}
 		})
@@ -69,7 +66,7 @@ export default class Extension extends Plugin {
 
 	async runAfterInterfacing(){
 		this.context.isExtension = true;
-		this.context.connect = () => this.connect;
+		this.context.connect = this.connect;
 		return true;
 	}
 
