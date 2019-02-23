@@ -24,7 +24,7 @@ export default class Desktop extends Plugin {
 			SocketService.link().then(async authenticated => {
 				if(!authenticated) return false;
 				this.holderFns.get().isExtension = false;
-				this.holderFns.get().wallet = this.name;
+				if(!this.holderFns.get().wallet) this.holderFns.get().wallet = this.name;
 				return resolve(true);
 			});
 		})
