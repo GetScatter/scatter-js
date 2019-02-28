@@ -13,7 +13,7 @@ if(typeof window !== 'undefined' && typeof document !== 'undefined') {
 const pollExistence = async (resolver = null, tries = 0) => {
 	return new Promise(r => {
 		if(!resolver) resolver = r;
-		if(isAvailable || (typeof window !== 'undefined' && typeof window.scatter !== 'undefined')) return resolver(true);
+		if(isAvailable) return resolver(true);
 		if(tries > 5) return resolver(false);
 		setTimeout(() => pollExistence(resolver, tries + 1), 100);
 	})
