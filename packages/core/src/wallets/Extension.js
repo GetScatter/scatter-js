@@ -7,6 +7,7 @@ import SocketService from "../services/SocketService";
 
 let isAvailable = false;
 if(typeof window !== 'undefined' && typeof document !== 'undefined') {
+	isAvailable === !!window.scatter;
 	document.addEventListener('scatterLoaded', () => isAvailable = true);
 }
 
