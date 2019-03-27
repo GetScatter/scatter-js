@@ -233,6 +233,7 @@ their wallet and mimic our existing APIs.
 | EOSIO | [Chaince Wallet](https://chaince.com/) | Mobile | eosjs@16.0.9 |
 | EOSIO | [EOS LIVE](https://eos.live/) | Mobile | eosjs@16.0.9 |
 | EOSIO | [Starteos](http://starteos.io/) | Mobile | eosjs@16.0.9, eosjs@20+ |
+| EOSIO | [TokenBase Wallet](http://tokenbase.one) | Mobile | eosjs@16.0.9, eosjs@20+ |
 
 ## Plugin Supported Wallets
 These wallets require a plugin to support.
