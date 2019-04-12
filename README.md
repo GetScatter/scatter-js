@@ -224,7 +224,7 @@ their wallet and mimic our existing APIs.
 | ---------- | -------- | -------- | -------- |
 | EOSIO, Tron, Ethereum | [Scatter Desktop](https://get-scatter.com/) | Desktop | eosjs@16.0.9, eosjs@20+, tronweb, web3 | 
 | EOSIO, Ethereum | Scatter Extension | Desktop | eosjs@16.0.9, web3 |
-| EOSIO | [TokenPocket](https://www.mytokenpocket.vip/) | Mobile | eosjs@16.0.9 |
+| EOSIO | [TokenPocket](https://www.tokenpocket.pro/) | Mobile | eosjs@16.0.9, eosjs@20+ |
 | EOSIO | [MEET.ONE](https://meet.one/) | Mobile | eosjs@16.0.9 |
 | EOSIO | [imToken](https://token.im/) | Mobile | eosjs@16.0.9 |
 | EOSIO | [PocketEOS](https://pocketeos.com/) | Mobile | eosjs@16.0.9 |
