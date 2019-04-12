@@ -9,6 +9,35 @@
     <script src="assets/beta2-/eosjs-debug.js"></script>
     <script src="assets/beta2-/eosjs-jsonrpc-debug.js"></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
+
+    <!--<script>-->
+	    <!--window.lynxMobile = {-->
+            <!--requestSetAccountName:x => {-->
+	            <!--const accounts = [{-->
+		            <!--name:'testaccount1',-->
+		            <!--authority:'active',-->
+		            <!--publicKey:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG',-->
+		            <!--blockchain:'eos',-->
+		            <!--isHardware:false,-->
+		            <!--chainId:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG'-->
+	            <!--}];-->
+
+	            <!--const identity = {-->
+		            <!--name:accounts[0].name,-->
+		            <!--accounts,-->
+		            <!--publicKey:'EOS8RFgis6KAbChv89L3ibPmSH9raqN3iaFWbyLrDgmAuV3rsZ9SM'-->
+	            <!--};-->
+
+	            <!--ScatterJS.scatter.identity = identity;-->
+	            <!--console.log(ScatterJS.scatter.identity);-->
+	            <!--return identity;-->
+            <!--},-->
+		    <!--requestSetAccount:name => {},-->
+            <!--requestArbitrarySignature:x => { console.log(x); },-->
+		    <!--requestSignature:x => { console.log(x); }-->
+	    <!--};-->
+    <!--</script>-->
+
     <script src="../../bundles/scatterjs-plugin-eosjs2.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-lynx.min.js"></script>
 </head>
@@ -21,10 +50,11 @@
 <button onclick="logout()">Forget Identity</button>
 <button onclick="transfer()">Transfer</button>
 <button onclick="hookTransfer()">Hook Transfer</button>
+<button onclick="authenticate()">Authenticate</button>
 
 <script>
 
-	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx() );
+	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx({Api:eosjs_api.default, JsonRpc:eosjs_jsonrpc2.default}) );
 
 	const network = ScatterJS.Network.fromJson({
 		blockchain:'eos',
@@ -98,6 +128,14 @@
 		const api = getApi(scatter.eosHook(network));
 		const from = scatter.identity.accounts[0];
 		tryTransfer(api);
+	};
+
+	window.authenticate = async () => {
+		const getRandom = () => Math.round(Math.random() * 8 + 1).toString();
+		let randomString = '';
+		for(let i = 0; i < 12; i++) randomString += getRandom();
+		console.log('randomString', randomString);
+		await scatter.authenticate(randomString).then(res => console.log(res));
 	};
 
 	const tryTransfer = async api => {

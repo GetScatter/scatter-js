@@ -8,6 +8,34 @@
     <script src="https://cdn.jsdelivr.net/npm/eosjs@16.0.0/lib/eos.min.js"></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-eosjs.min.js"></script>
+
+    <!--<script>-->
+		<!--window.lynxMobile = {-->
+			<!--requestSetAccountName:x => {-->
+				<!--const accounts = [{-->
+					<!--name:'testaccount1',-->
+					<!--authority:'active',-->
+					<!--publicKey:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG',-->
+					<!--blockchain:'eos',-->
+					<!--isHardware:false,-->
+					<!--chainId:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG'-->
+				<!--}];-->
+
+				<!--const identity = {-->
+					<!--name:accounts[0].name,-->
+					<!--accounts,-->
+					<!--publicKey:'EOS8RFgis6KAbChv89L3ibPmSH9raqN3iaFWbyLrDgmAuV3rsZ9SM'-->
+				<!--};-->
+
+				<!--ScatterJS.scatter.identity = identity;-->
+				<!--console.log(ScatterJS.scatter.identity);-->
+				<!--return identity;-->
+			<!--},-->
+			<!--requestSetAccount:name => {},-->
+			<!--requestArbitrarySignature:x => { console.log(x); },-->
+			<!--requestSignature:x => { console.log(x); }-->
+		<!--};-->
+    <!--</script>-->
     <script src="../../bundles/scatterjs-plugin-lynx.min.js"></script>
 </head>
 <body style="padding:20px 50px;">
@@ -64,7 +92,8 @@
 
 <script>
 
-	 ScatterJS.plugins( new ScatterEOS(), new ScatterLynx() );
+    console.log(Eos);
+	 ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
 
     const network2 = ScatterJS.Network.fromJson({
         blockchain:'eos',

@@ -1,20 +1,12 @@
-import {
-	Plugin,
-	PluginTypes,
-	Blockchains,
-	Network,
-	SocketService,
-    WALLET_METHODS
-} from 'scatterjs-core';
-
-import {JsonRpc, Api} from 'eosjs'
-import ecc from 'eosjs-ecc';
+import {Blockchains, Network, Plugin, PluginTypes, SocketService, WALLET_METHODS} from 'scatterjs-core';
 
 let network;
 
 let isAvailable = false;
 if(typeof window !== 'undefined') {
-	window.addEventListener('lynxMobileLoaded', () => isAvailable = true);
+	console.log(window.lynxMobile);
+	if(typeof window.lynxMobile !== 'undefined') isAvailable = true;
+	else window.addEventListener('lynxMobileLoaded', () => isAvailable = true);
 }
 
 const pollExistence = async (resolver = null, tries = 0) => {
@@ -27,12 +19,43 @@ const pollExistence = async (resolver = null, tries = 0) => {
 };
 
 
+const hashHex = buffer => {
+	let digest = '';
+	let view = new DataView(buffer);
+	for(let i = 0; i < view.byteLength; i += 4) {
+		const PADDING = '00000000';
+		digest += (PADDING + view.getUint32(i).toString(16)).slice(-PADDING.length)
+	}
+
+	return digest;
+};
+
+const sha256 = async data => {
+	const buffer = new TextEncoder("utf-8").encode(data);
+	return hashHex(await crypto.subtle.digest('SHA-256', buffer));
+}
+
 
 export default class ScatterLynx extends Plugin {
 
-    constructor(){
+    constructor(eosjs){
+    	if(!eosjs) throw new Error('Lynx Plugin: You must pass in an eosjs version. Either ({Api, JsonRpc}) for eosjs2 or (Eos) for eosjs1');
         super(Blockchains.EOS, PluginTypes.WALLET_SUPPORT);
 	    this.name = 'Lynx';
+	    this.isEosjs2 = false;
+
+	    // eosjs2
+	    if(eosjs.hasOwnProperty('JsonRpc')){
+	    	this.eosjs = {Api:eosjs.Api, JsonRpc:eosjs.JsonRpc};
+		    this.isEosjs2 = true;
+	    }
+
+	    // eosjs1
+	    if(eosjs.toString().indexOf('fc') > -1){
+	    	this.eosjs = eosjs;
+	    }
+
+	    if(!this.eosjs) throw new Error('Lynx Plugin: Invalid eosjs. Please use 16.0.9 or 20+');
     }
 
     init(context, holderFns, socketSetters){
@@ -100,22 +123,53 @@ export default class ScatterLynx extends Plugin {
 		        const origin = SocketService.getOrigin();
 		        return window.lynxMobile.requestArbitrarySignature({data, whatFor:`${origin} is requesting an arbitrary signature`});
 	        },
-	        [WALLET_METHODS.authenticate]:(nonce, data = null, publicKey = null) => {
+	        [WALLET_METHODS.authenticate]:async (nonce, data = null, publicKey = null) => {
 		        const origin = SocketService.getOrigin();
 		        data = data ? data : origin;
-		        const toSign = ecc.sha256(ecc.sha256(data)+ecc.sha256(nonce))
+		        const toSign = await sha256(await sha256(data)+await sha256(nonce))
 		        return window.lynxMobile.requestArbitrarySignature({data:toSign, whatFor:`${origin} wants to authenticate your public key`});
 	        },
 
 	        [WALLET_METHODS.requestSignature]:async ({abis, transaction, network}) => {
-	        	console.log('transaction', transaction);
-		        if(!transaction.hasOwnProperty('serializedTransaction')) throw new Error('Lynx only supports eosjs2(20.0.0+) syntax');
-		        if(transaction.chainId !== 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906') throw new Error('Lynx only supports mainnet.');
-		        const rpc = new JsonRpc(Network.fromJson(network).fullhost());
-		        const api = new Api({rpc});
+		        let parsed;
 
-		        transaction.abis.map(({account_name, abi:rawAbi}) => api.cachedAbis.set(account_name, { rawAbi, abi:api.rawAbiToJson(rawAbi) }));
-		        const parsed = await api.deserializeTransactionWithActions(transaction.serializedTransaction);
+		        if(network.chainId !== 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906') throw new Error('Lynx only supports mainnet.');
+
+		        if(this.isEosjs2){
+			        const rpc = new this.eosjs.JsonRpc(Network.fromJson(network).fullhost());
+			        const api = new this.eosjs.Api({rpc});
+
+			        transaction.abis.map(({account_name, abi:rawAbi}) => api.cachedAbis.set(account_name, { rawAbi, abi:api.rawAbiToJson(rawAbi) }));
+			        parsed = await api.deserializeTransactionWithActions(transaction.serializedTransaction);
+		        }
+		        else {
+		        	const eos = new this.eosjs({httpEndpoint:Network.fromJson(network).fullhost(), chainId:network.chainId});
+		        	let abis = {};
+			        const contracts = transaction.actions.map(action => action.account).reduce((acc,x) => {
+			        	if(!acc.includes(x)) acc.push(x);
+			        	return acc;
+			        }, []);
+			        await Promise.all(contracts.map(async contractAccount => {
+				        abis[contractAccount] = (await eos.contract(contractAccount)).fc;
+			        }));
+
+			        parsed = await Promise.all(transaction.actions.map(async (action, index) => {
+				        const contractAccountName = action.account;
+				        let abi = abis[contractAccountName];
+
+				        const typeName = abi.abi.actions.find(x => x.name === action.name).type;
+				        const data = abi.fromBuffer(typeName, action.data);
+				        const actionAbi = abi.abi.actions.find(fcAction => fcAction.name === action.name);
+				        eos.fc.abiCache.abi(contractAccountName, abi.abi);
+
+				        return {
+					        data,
+					        account:action.account,
+					        name:action.name,
+					        authorization:action.authorization,
+				        };
+			        }));
+		        }
 
 		        return window.lynxMobile.requestSignature(parsed);
 	        },

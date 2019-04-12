@@ -7,7 +7,8 @@ import SocketService from "../services/SocketService";
 
 let isAvailable = false;
 if(typeof window !== 'undefined' && typeof document !== 'undefined') {
-	document.addEventListener('scatterLoaded', () => isAvailable = true);
+	if(typeof window.scatter !== 'undefined') isAvailable = true;
+	else document.addEventListener('scatterLoaded', () => isAvailable = true);
 }
 
 const pollExistence = async (resolver = null, tries = 0) => {
