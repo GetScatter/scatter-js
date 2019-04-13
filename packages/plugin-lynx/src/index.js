@@ -4,7 +4,6 @@ let network;
 
 let isAvailable = false;
 if(typeof window !== 'undefined') {
-	console.log(window.lynxMobile);
 	if(typeof window.lynxMobile !== 'undefined') isAvailable = true;
 	else window.addEventListener('lynxMobileLoaded', () => isAvailable = true);
 }
@@ -39,8 +38,12 @@ const sha256 = async data => {
 export default class ScatterLynx extends Plugin {
 
     constructor(eosjs){
-    	if(!eosjs) throw new Error('Lynx Plugin: You must pass in an eosjs version. Either ({Api, JsonRpc}) for eosjs2 or (Eos) for eosjs1');
-        super(Blockchains.EOS, PluginTypes.WALLET_SUPPORT);
+	    super(Blockchains.EOS, PluginTypes.WALLET_SUPPORT);
+
+    	if(!eosjs) {
+    		console.error('Lynx Plugin: You must pass in an eosjs version. Either ({Api, JsonRpc}) for eosjs2 or (Eos) for eosjs1');
+    		return;
+	    }
 	    this.name = 'Lynx';
 	    this.isEosjs2 = false;
 
