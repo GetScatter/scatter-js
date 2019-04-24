@@ -154,21 +154,26 @@ export default class ScatterLynx extends Plugin {
 			        }));
 
 			        parsed = {actions:await Promise.all(transaction.actions.map(async (action, index) => {
-					        const contractAccountName = action.account;
-					        let abi = abis[contractAccountName];
+				        const contractAccountName = action.account;
+				        let abi = abis[contractAccountName];
 
-					        const typeName = abi.abi.actions.find(x => x.name === action.name).type;
-					        const data = abi.fromBuffer(typeName, action.data);
-					        const actionAbi = abi.abi.actions.find(fcAction => fcAction.name === action.name);
-					        eos.fc.abiCache.abi(contractAccountName, abi.abi);
+				        const typeName = abi.abi.actions.find(x => x.name === action.name).type;
+				        const data = abi.fromBuffer(typeName, action.data);
+				        const actionAbi = abi.abi.actions.find(fcAction => fcAction.name === action.name);
+				        eos.fc.abiCache.abi(contractAccountName, abi.abi);
 
-					        return {
-						        data,
-						        account:action.account,
-						        name:action.name,
-						        authorization:action.authorization,
-					        };
-				        }))};
+				        return {
+					        data,
+					        account:action.account,
+					        name:action.name,
+					        authorization:action.authorization,
+				        };
+			        }))};
+
+			        const clone = Object.assign({}, transaction);
+			        delete clone.actions;
+			        parsed = Object.assign(parsed, clone);
+
 		        }
 
 		        return window.lynxMobile.requestSignature(parsed);

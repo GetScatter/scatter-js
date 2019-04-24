@@ -10,33 +10,33 @@
     <script src="assets/beta2-/eosjs-jsonrpc-debug.js"></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
 
-    <!--<script>-->
-	    <!--window.lynxMobile = {-->
-            <!--requestSetAccountName:x => {-->
-	            <!--const accounts = [{-->
-		            <!--name:'testaccount1',-->
-		            <!--authority:'active',-->
-		            <!--publicKey:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG',-->
-		            <!--blockchain:'eos',-->
-		            <!--isHardware:false,-->
-		            <!--chainId:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG'-->
-	            <!--}];-->
+    <script>
+	    window.lynxMobile = {
+            requestSetAccountName:x => {
+	            const accounts = [{
+		            name:'testaccount1',
+		            authority:'active',
+		            publicKey:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG',
+		            blockchain:'eos',
+		            isHardware:false,
+		            chainId:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG'
+	            }];
 
-	            <!--const identity = {-->
-		            <!--name:accounts[0].name,-->
-		            <!--accounts,-->
-		            <!--publicKey:'EOS8RFgis6KAbChv89L3ibPmSH9raqN3iaFWbyLrDgmAuV3rsZ9SM'-->
-	            <!--};-->
+	            const identity = {
+		            name:accounts[0].name,
+		            accounts,
+		            publicKey:'EOS8RFgis6KAbChv89L3ibPmSH9raqN3iaFWbyLrDgmAuV3rsZ9SM'
+	            };
 
-	            <!--ScatterJS.scatter.identity = identity;-->
-	            <!--console.log(ScatterJS.scatter.identity);-->
-	            <!--return identity;-->
-            <!--},-->
-		    <!--requestSetAccount:name => {},-->
-            <!--requestArbitrarySignature:x => { console.log(x); },-->
-		    <!--requestSignature:x => { console.log(x); }-->
-	    <!--};-->
-    <!--</script>-->
+	            ScatterJS.scatter.identity = identity;
+	            console.log(ScatterJS.scatter.identity);
+	            return identity;
+            },
+		    requestSetAccount:name => {},
+            requestArbitrarySignature:x => { console.log(x); },
+		    requestSignature:x => { console.log(x); }
+	    };
+    </script>
 
     <script src="../../bundles/scatterjs-plugin-eosjs2.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-lynx.min.js"></script>
