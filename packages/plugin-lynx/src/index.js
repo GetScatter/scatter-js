@@ -52,13 +52,10 @@ export default class ScatterLynx extends Plugin {
 	    	this.eosjs = {Api:eosjs.Api, JsonRpc:eosjs.JsonRpc};
 		    this.isEosjs2 = true;
 	    }
-
-	    // eosjs1
-	    if(eosjs.toString().indexOf('fc') > -1){
-	    	this.eosjs = eosjs;
+	    else {
+	    	if(typeof eosjs !== 'function') throw new Error('Lynx Plugin: Invalid eosjs. Please use 16.0.9 or 20+');
+		    this.eosjs = eosjs;
 	    }
-
-	    if(!this.eosjs) throw new Error('Lynx Plugin: Invalid eosjs. Please use 16.0.9 or 20+');
     }
 
     init(context, holderFns, socketSetters){

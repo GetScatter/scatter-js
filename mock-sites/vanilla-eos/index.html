@@ -5,37 +5,37 @@
     <title>Web Tester</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <script src="https://cdn.jsdelivr.net/npm/eosjs@16.0.0/lib/eos.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/eosjs@16.0.9/lib/eos.min.js"></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-eosjs.min.js"></script>
 
-    <script>
-		window.lynxMobile = {
-			requestSetAccountName:x => {
-				const accounts = [{
-					name:'testaccount1',
-					authority:'active',
-					publicKey:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG',
-					blockchain:'eos',
-					isHardware:false,
-					chainId:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG'
-				}];
+    <!--<script>-->
+		<!--window.lynxMobile = {-->
+			<!--requestSetAccountName:x => {-->
+				<!--const accounts = [{-->
+					<!--name:'testaccount1',-->
+					<!--authority:'active',-->
+					<!--publicKey:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG',-->
+					<!--blockchain:'eos',-->
+					<!--isHardware:false,-->
+					<!--chainId:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG'-->
+				<!--}];-->
 
-				const identity = {
-					name:accounts[0].name,
-					accounts,
-					publicKey:'EOS8RFgis6KAbChv89L3ibPmSH9raqN3iaFWbyLrDgmAuV3rsZ9SM'
-				};
+				<!--const identity = {-->
+					<!--name:accounts[0].name,-->
+					<!--accounts,-->
+					<!--publicKey:'EOS8RFgis6KAbChv89L3ibPmSH9raqN3iaFWbyLrDgmAuV3rsZ9SM'-->
+				<!--};-->
 
-				ScatterJS.scatter.identity = identity;
-				console.log(ScatterJS.scatter.identity);
-				return identity;
-			},
-			requestSetAccount:name => {},
-			requestArbitrarySignature:x => { console.log(x); },
-			requestSignature:x => { console.log(x); }
-		};
-    </script>
+				<!--ScatterJS.scatter.identity = identity;-->
+				<!--console.log(ScatterJS.scatter.identity);-->
+				<!--return identity;-->
+			<!--},-->
+			<!--requestSetAccount:name => {},-->
+			<!--requestArbitrarySignature:x => { console.log(x); },-->
+			<!--requestSignature:x => { console.log(x); }-->
+		<!--};-->
+    <!--</script>-->
     <script src="../../bundles/scatterjs-plugin-lynx.min.js"></script>
 </head>
 <body style="padding:20px 50px;">
@@ -92,8 +92,8 @@
 
 <script>
 
-    console.log(Eos);
-	 ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
+    console.log(Eos.toString().indexOf('fc'));
+	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
 
     const network2 = ScatterJS.Network.fromJson({
         blockchain:'eos',
@@ -244,7 +244,7 @@
     window.transfer = async () => {
 	    const account = ScatterJS.account('eos');
         const opts = { authorization:[`${account.name}@${account.authority}`], requiredFields:{} };
-        eos.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
+        eos.transfer(account.name, 'safetransfer', '0.0001 EOS', account.name, opts).then(trx => {
             console.log('trx', trx);
         }).catch(err => {
 //            console.error(err);
@@ -274,8 +274,15 @@
     window.contract = () => {
         const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
         const opts = { authorization:[`${account.name}@${account.authority}`] };
-        eos.contract('eosio.token', {requiredFields:{}}).then(contract => {
-            contract.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
+        // eos.contract('eosio.token', {requiredFields:{}}).then(contract => {
+        //     contract.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
+        //         console.log('trx', trx);
+        //     }).catch(err => {
+        //         console.error(err);
+        //     })
+        // })
+        eos.contract('wizardstoken').then(contract => {
+            contract.createwizard(opts).then(trx => {
                 console.log('trx', trx);
             }).catch(err => {
                 console.error(err);
