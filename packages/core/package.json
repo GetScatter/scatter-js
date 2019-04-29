@@ -1,6 +1,6 @@
 {
 	"name": "scatterjs-core",
-	"version": "2.7.17",
+	"version": "2.7.18",
 	"main": "dist/index.js",
 	"license": "MIT",
 	"dependencies": {
