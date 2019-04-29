@@ -56,7 +56,7 @@
 
 
 
-	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx({Api:eosjs_api.default, JsonRpc:eosjs_jsonrpc2.default}) );
+	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx({Api:eosjs_api.default, JsonRpc:eosjs_jsonrpc2.default, textEncoder:() => {}}) );
 
 	const network = ScatterJS.Network.fromJson({
 		blockchain:'eos',
