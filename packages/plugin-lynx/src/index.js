@@ -50,6 +50,8 @@ export default class ScatterLynx extends Plugin {
 	    // eosjs2
 	    if(eosjs.hasOwnProperty('JsonRpc')){
 	    	this.eosjs = {Api:eosjs.Api, JsonRpc:eosjs.JsonRpc};
+	    	this.eosjs.TextEncoder = eosjs.hasOwnProperty('TextEncoder') ? eosjs.TextEncoder : null;
+	    	this.eosjs.TextDecoder = eosjs.hasOwnProperty('TextDecoder') ? eosjs.TextDecoder : null;
 		    this.isEosjs2 = true;
 	    }
 	    else {
@@ -137,7 +139,10 @@ export default class ScatterLynx extends Plugin {
 
 		        if(this.isEosjs2){
 			        const rpc = new this.eosjs.JsonRpc(Network.fromJson(network).fullhost());
-			        const api = new this.eosjs.Api({rpc});
+			        const OPTIONS = {rpc};
+			        if(this.eosjs.TextEncoder) OPTIONS.textEncoder = new this.eosjs.TextEncoder();
+			        if(this.eosjs.TextDecoder) OPTIONS.textDecoder = new this.eosjs.TextDecoder();
+			        const api = new this.eosjs.Api(OPTIONS);
 
 			        transaction.abis.map(({account_name, abi:rawAbi}) => api.cachedAbis.set(account_name, { rawAbi, abi:api.rawAbiToJson(rawAbi) }));
 			        parsed = await api.deserializeTransactionWithActions(transaction.serializedTransaction);
