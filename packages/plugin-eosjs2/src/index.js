@@ -68,7 +68,7 @@ export default class ScatterEOS extends Plugin {
 
             // The proxy stands between the eosjs object and scatter.
             // This is used to add special functionality like adding `requiredFields` arrays to transactions
-            return proxy(new _api(Object.assign(_options, {signatureProvider})), {
+            return proxy(new _api(Object.assign(_options, network, {signatureProvider})), {
                 get(eosInstance, method) {
 
                     return (...args) => {
