@@ -20,7 +20,7 @@ export default class ScatterEOS extends Plugin {
 		socketService = _s;
 	}
 
-    hookProvider(network, fieldsFetcher = null, beta3 = false){
+    hookProvider(network, fieldsFetcher = null, beta3 = true){
         network = Network.fromJson(network);
 
         return {
@@ -64,7 +64,7 @@ export default class ScatterEOS extends Plugin {
 
             let requiredFields = {};
             const fieldsFetcher = () => requiredFields;
-            const signatureProvider = this.hookProvider(network, fieldsFetcher, _options.beta3 || false);
+            const signatureProvider = this.hookProvider(network, fieldsFetcher, _options.beta3 || true);
 
             // The proxy stands between the eosjs object and scatter.
             // This is used to add special functionality like adding `requiredFields` arrays to transactions
