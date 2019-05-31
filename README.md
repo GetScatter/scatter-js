@@ -215,7 +215,7 @@ ScatterJS.connect('YourAppName', {network}).then(connected => {
 # Supported Wallets
 
 ## Automatically Supported Wallets
-**Disclaimer: Wallets being supported by this SDK does not mean they are endorsed or vetted.**
+#### **Disclaimer: Wallets being supported by this SDK does not mean they are endorsed or vetted.**
 
 These wallets do not require you include any plugins. They run Scatter Protocols inside of
 their wallet and mimic our existing APIs.
