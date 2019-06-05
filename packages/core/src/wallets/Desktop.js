@@ -16,7 +16,7 @@ export default class Desktop extends Plugin {
 	connect(pluginName, options = {}){
 		return new Promise(resolve => {
 			if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
-			options = Object.assign({initTimeout:10000, linkTimeout:30000}, options);
+			options = Object.assign({initTimeout:1000, linkTimeout:3000}, options);
 
 
 			// Tries to set up Desktop Connection
@@ -54,6 +54,10 @@ export default class Desktop extends Plugin {
 			[WALLET_METHODS.getIdentity]:(requiredFields) => SocketService.sendApiRequest({
 				type:'getOrRequestIdentity',
 				payload:{ fields:requiredFields ? requiredFields : {accounts:[this.holderFns.get().network]} }
+			}).then(setAndReturnId),
+			[WALLET_METHODS.getAllAccountsFor]:(requiredFields) => SocketService.sendApiRequest({
+				type:'getAllAccountsFor',
+				payload:{ fields:requiredFields }
 			}).then(setAndReturnId),
 			[WALLET_METHODS.getIdentityFromPermissions]:() => SocketService.sendApiRequest({
 				type:'identityFromPermissions',

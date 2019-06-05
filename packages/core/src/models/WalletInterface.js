@@ -8,6 +8,7 @@ export const WALLET_METHODS = {
 
 	getVersion:'getVersion',
 	getIdentity:'getIdentity',
+	getAllAccountsFor:'getAllAccountsFor',
 	getIdentityFromPermissions:'getIdentityFromPermissions',
 	forgetIdentity:'forgetIdentity',
 	updateIdentity:'updateIdentity',
@@ -25,6 +26,7 @@ export const WALLET_METHODS = {
 
 const ALTERNATES = {
 	[WALLET_METHODS.getIdentity]:'login',
+	[WALLET_METHODS.getAllAccountsFor]:'loginAll',
 	[WALLET_METHODS.forgetIdentity]:'logout',
 	[WALLET_METHODS.getIdentityFromPermissions]:'checkLogin'
 };

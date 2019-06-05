@@ -11,7 +11,6 @@ const packageFiles = [
 	'plugin-eosjs2',
 	'plugin-web3',
 	'plugin-tron',
-
 	'plugin-lynx',
 ];
 

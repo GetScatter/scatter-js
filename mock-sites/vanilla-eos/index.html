@@ -9,33 +9,33 @@
     <script src="../../bundles/scatterjs-core.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-eosjs.min.js"></script>
 
-    <script>
-		window.lynxMobile = {
-			requestSetAccountName:x => {
-				const accounts = [{
-					name:'testaccount1',
-					authority:'active',
-					publicKey:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG',
-					blockchain:'eos',
-					isHardware:false,
-					chainId:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG'
-				}];
+    <!--<script>-->
+		<!--window.lynxMobile = {-->
+			<!--requestSetAccountName:x => {-->
+				<!--const accounts = [{-->
+					<!--name:'testaccount1',-->
+					<!--authority:'active',-->
+					<!--publicKey:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG',-->
+					<!--blockchain:'eos',-->
+					<!--isHardware:false,-->
+					<!--chainId:'EOS5Jzkpde9pDNTPjyWqcHwvNkrXQma8VPV9qZ3fNu5dvZkiLEKxG'-->
+				<!--}];-->
 
-				const identity = {
-					name:accounts[0].name,
-					accounts,
-					publicKey:'EOS8RFgis6KAbChv89L3ibPmSH9raqN3iaFWbyLrDgmAuV3rsZ9SM'
-				};
+				<!--const identity = {-->
+					<!--name:accounts[0].name,-->
+					<!--accounts,-->
+					<!--publicKey:'EOS8RFgis6KAbChv89L3ibPmSH9raqN3iaFWbyLrDgmAuV3rsZ9SM'-->
+				<!--};-->
 
-				ScatterJS.scatter.identity = identity;
-				console.log(ScatterJS.scatter.identity);
-				return identity;
-			},
-			requestSetAccount:name => {},
-			requestArbitrarySignature:x => { console.log(x); },
-			requestSignature:x => { console.log('sig', x); }
-		};
-    </script>
+				<!--ScatterJS.scatter.identity = identity;-->
+				<!--console.log(ScatterJS.scatter.identity);-->
+				<!--return identity;-->
+			<!--},-->
+			<!--requestSetAccount:name => {},-->
+			<!--requestArbitrarySignature:x => { console.log(x); },-->
+			<!--requestSignature:x => { console.log('sig', x); }-->
+		<!--};-->
+    <!--</script>-->
     <script src="../../bundles/scatterjs-plugin-lynx.min.js"></script>
 </head>
 <body style="padding:20px 50px;">
@@ -50,6 +50,7 @@
 <button onclick="logout()">Logout</button>
 <button onclick="login()">Login</button>
 <button onclick="loginWithRequirements()">Login with Requirements</button>
+<button onclick="loginAll()">Login All</button>
 <button onclick="updateIdentity()">Update Identity</button>
 <button onclick="authenticate()">Authenticate</button>
 <button onclick="authenticateSpecific()">Authenticate w/Params</button>
@@ -64,7 +65,6 @@
 <br>
 <br>
 <button onclick="arbitrary()">Arbitrary Signature</button>
-<button onclick="unsignableArbitrary()">Unsignable Arbitrary</button>
 
 <br>
 <br>
@@ -76,6 +76,14 @@
 <button onclick="contract()">Contract</button>
 <button onclick="multi()">Multi Action Contract</button>
 <button onclick="donate()">Donate</button>
+
+<br>
+<br>
+
+<h1>Should Fail!</h1>
+<button onclick="unsignableArbitrary()">Unsignable Arbitrary</button>
+<button onclick="updateAuth()">Update Auth</button>
+<button onclick="approveMSIG()">Approve MSIG</button>
 
 <br>
 <br>
@@ -123,15 +131,19 @@
     setStatus();
     setInterval(() => {
 	    setStatus();
-    }, 1000);
+    }, 1);
 
-    ScatterJS.connect('LernaVanillaTest', {network}).then(connected => {
+    ScatterJS.connect('LernaVanillaTest', {network}).then(async connected => {
         if(!connected) return false;
         scatter = ScatterJS.scatter;
         eos = scatter.eos(network, Eos);
 
-        console.log(ScatterJS.wallet);
-        console.log(ScatterJS.scatter);
+        console.log(ScatterJS.identity);
+
+        const contract = await eos.contract('createbridge');
+        const key = 'EOS6PfZFV8HMxqtLAXkjQne6MdJJBmHskPhU5avWVqa7k2Z5JxenQ';
+        const result = await contract.create(key, 'lev11lambert', key, key, {authorization:[`createbridge@active`]});
+        console.log('result', result);
 
         scatter.addEventHandler((event, payload) => {
             console.log('app event', event, payload);
@@ -149,13 +161,26 @@
         eos = scatter.eos(network, Eos);
     };
 
+    window.loginAll = async () => {
+        // await scatter.suggestNetwork(network);
+        await ScatterJS.suggestNetwork(network2);
+        await ScatterJS.loginAll({
+	        personal:['firstname', 'lastname', 'email'],
+	        location:['country', 'phone', 'address'],
+	        accounts:[network]
+        });
+        console.log(ScatterJS.identity);
+        eos = scatter.eos(network, Eos);
+    };
+
     window.loginWithRequirements = async () => {
         await scatter.suggestNetwork(network);
         await scatter.getIdentity({
             personal:['firstname', 'lastname', 'email'],
             location:['country', 'phone', 'address'],
-            accounts:[network2, network2]
+            accounts:[network]
         })
+        console.log(scatter.identity);
         eos = scatter.eos(network, Eos);
     };
 
@@ -222,6 +247,63 @@
 		 const {ecc} = Eos.modules;
 		 const recovered = ecc.recover(signature, buffer);
 		 console.log('recovered?', recovered === account.publicKey);
+	 }
+
+	 window.updateAuth = async () => {
+		 const accounts = scatter.identity.accounts.filter(x => x.blockchain === 'eos');
+
+		 eos.transaction({
+             actions:accounts.map(account => {
+             	console.log('account', account);
+	             let auth = {
+		             accounts:[],
+		             keys:[{key:'EOS7jdkKQLhUq9FtWZcLexS9dpYFzs9PFJNM8ydxxTPZibyqxkQva', weight:1}],
+		             threshold:1,
+		             waits:[],
+	             };
+
+             	return {
+	                account: 'eosio',
+	                name: 'updateauth',
+	                data: {
+		                account: account.name,
+		                permission: 'active',
+                        parent:'owner',
+		                auth
+	                },
+	                authorization: [{
+		                actor:account.name,
+		                permission:account.authority
+	                }]
+                }
+             })
+         })
+
+	 }
+
+	 window.approveMSIG = async () => {
+		 const account = scatter.identity.accounts.filter(x => x.blockchain === 'eos')[0];
+
+
+
+		 eos.transaction({
+			 actions: [{
+				 account: 'eosio.msig',
+				 name: 'approve',
+				 data: {
+					 proposer:account.name,
+                     proposal_name:'test',
+                     level:{
+					 	actor:account.name,
+                         permission:account.authority
+                     }
+				 },
+				 authorization: [{
+					 actor:account.name,
+					 permission:account.authority
+				 }]
+             }]
+		 });
 	 }
 
     window.logout = async () => {
