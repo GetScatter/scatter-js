@@ -28,7 +28,6 @@ class ScatterEthereumWallet {
 		    type:'identityFromPermissions',
 		    payload:{}
 	    });
-	    console.log('result', result);
 
         const accounts = !idGetter() ? [] : idGetter().accounts
             .filter(account => account.blockchain === Blockchains.ETH)

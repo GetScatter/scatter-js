@@ -57,10 +57,10 @@ ScatterJS.connect('YourAppName', {network}).then(connected => {
 </p>
 </details>
 
-<details><summary>eosjs@20.0.0-beta3</summary>
+<details><summary>eosjs@20.0.0</summary>
 <p>
 
-Installation: `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0-beta3`
+Installation: `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0`
 ```js
 import ScatterJS from 'scatterjs-core';
 import ScatterEOS from 'scatterjs-plugin-eosjs2';
@@ -80,7 +80,7 @@ const rpc = new JsonRpc(network.fullhost());
 ScatterJS.connect('YourAppName', {network}).then(connected => {
     if(!connected) return console.error('no scatter');
 
-    const eos = ScatterJS.eos(network, Api, {rpc, beta3:true});
+    const eos = ScatterJS.eos(network, Api, {rpc});
 
     ScatterJS.login().then(id => {
         if(!id) return console.error('no identity');
@@ -253,7 +253,7 @@ From that point forward you can mix-match the plugins you require.
 | blockchain library | installation command |
 | ---------- | -------- |
 | eosjs | `npm i -S scatterjs-core scatterjs-plugin-eosjs eosjs@16.0.9` |
-| eosjs2 (@20+) | `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0-beta3` |
+| eosjs2 (@20+) | `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0` |
 | tronweb | `npm i -S scatterjs-core scatterjs-plugin-tron tronweb` |
 | web3 | `npm i -S scatterjs-core scatterjs-plugin-web3 web3` |
 
@@ -402,11 +402,11 @@ const result = await eos.transfer(...);
 
 <br/>
 
-[eosjs@20.0.0-beta3 ( scatterjs-plugin-eosjs2 )](https://github.com/EOSIO/eosjs)
+[eosjs@20.0.0 ( scatterjs-plugin-eosjs2 )](https://github.com/EOSIO/eosjs)
 ```js
 import {JsonRpc, Api} from 'eosjs'
 const rpc = new JsonRpc(network.fullhost());
-const eos = ScatterJS.eos(network, Api, {rpc, beta3:true}));
+const eos = ScatterJS.eos(network, Api, {rpc}));
 
 const result = await eos.transact({...});
 ```
@@ -442,11 +442,6 @@ const result = await web3.eth.sendTransaction(...)
 # NodeJS and babel/webpack issues.
 If you're having trouble packaging or compiling your project you probably need to add a babel transpiler.
 - `npm i -D @babel/runtime` <-- run this command and it should compile.
-
--------------
-
-#### If you're using eosjs beta3
-`const eos = scatter.eos(network, Api, { rpc, beta3:true })`
 
 
 <br/><br/>
