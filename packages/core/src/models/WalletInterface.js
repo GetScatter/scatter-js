@@ -19,6 +19,7 @@ export const WALLET_METHODS = {
 	hasAccountFor:'hasAccountFor',
 	suggestNetwork:'suggestNetwork',
 	requestTransfer:'requestTransfer',
+	getAvatar:'getAvatar',
 	requestSignature:'requestSignature',
 	createTransaction:'createTransaction',
 	addToken:'addToken',

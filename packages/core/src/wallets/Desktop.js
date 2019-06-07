@@ -99,6 +99,10 @@ export default class Desktop extends Plugin {
 				type:'requestTransfer',
 				payload:{network:network || this.holderFns.get().network, to, amount, options}
 			}),
+			[WALLET_METHODS.getAvatar]:() => SocketService.sendApiRequest({
+				type:'getAvatar',
+				payload:{}
+			}),
 			[WALLET_METHODS.requestSignature]:(payload) => SocketService.sendApiRequest({
 				type:'requestSignature',
 				payload
