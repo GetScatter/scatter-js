@@ -238,6 +238,7 @@ their wallet and mimic our existing APIs.
 | EOSIO | [CoinUs Wallet](https://coinus.io/) | Mobile | eosjs@16.0.9 |
 | EOSIO | [TokenBase Wallet](http://tokenbase.one) | Mobile | eosjs@16.0.9, eosjs@20+ |
 | EOSIO | [ET Wallet](http://www.eostoken.im/) | Mobile | eosjs@16.0.9, eosjs@20+ |
+| EOSIO | [AnyBit Wallet](http://www.anybit.i0/) | Mobile | eosjs@16.0.9, eosjs@20+ |
 
 ## Plugin Supported Wallets
 These wallets require a plugin to support.
