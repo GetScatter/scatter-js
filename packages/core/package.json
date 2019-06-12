@@ -1,6 +1,6 @@
 {
 	"name": "@scatterjs/core",
-	"version": "2.7.22",
+	"version": "2.7.23",
 	"main": "dist/index.js",
 	"license": "MIT",
 	"dependencies": {
@@ -9,5 +9,6 @@
 		"get-random-values": "^1.2.0",
 		"isomorphic-ws": "^4.0.1",
 		"ws": "^6.1.0"
-	}
+	},
+	"gitHead": "dadb46787c05b190765b3a112b85d9d26c451c08"
 }
