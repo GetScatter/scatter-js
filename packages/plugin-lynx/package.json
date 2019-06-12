@@ -1,6 +1,6 @@
 {
 	"name": "@scatterjs/lynx",
-	"version": "1.6.8",
+	"version": "1.6.9",
 	"main": "dist/index.js",
 	"license": "MIT"
 }
