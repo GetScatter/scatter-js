@@ -2,12 +2,12 @@
 
 | type | version | package |
 | ---- | ------- | ------- |
-| core | [![npm version](https://badge.fury.io/js/@scatterjs/core.svg)](https://badge.fury.io/js/@scatterjs/core) | @scatterjs/core |
-| blockchain | [![npm version](https://badge.fury.io/js/@scatterjs/eosjs.svg)](https://badge.fury.io/js/@scatterjs/eosjs) | @scatterjs/eosjs |
-| blockchain | [![npm version](https://badge.fury.io/js/@scatterjs/eosjs2.svg)](https://badge.fury.io/js/@scatterjs/eosjs2) | @scatterjs/eosjs2 |
-| blockchain | [![npm version](https://badge.fury.io/js/@scatterjs/web3.svg)](https://badge.fury.io/js/@scatterjs/web3) | @scatterjs/web3 |
-| blockchain | [![npm version](https://badge.fury.io/js/@scatterjs/tron.svg)](https://badge.fury.io/js/@scatterjs/tron) | @scatterjs/tron |
-| wallet | [![npm version](https://badge.fury.io/js/scatterjs-plugin-lynx.svg)](https://badge.fury.io/js/scatterjs-plugin-lynx) | @scatterjs/lynx |
+| core | [![npm version](https://badge.fury.io/js/%40scatterjs%2Fcore.svg)](https://badge.fury.io/js/%40scatterjs%2Fcore) | @scatterjs/core |
+| blockchain | [![npm version](https://badge.fury.io/js/%40scatterjs%2Feosjs.svg)](https://badge.fury.io/js/%40scatterjs%2Feosjs) | @scatterjs/eosjs |
+| blockchain | [![npm version](https://badge.fury.io/js/%40scatterjs%2Feosjs2.svg)](https://badge.fury.io/js/%40scatterjs%2Feosjs2) | @scatterjs/eosjs2 |
+| blockchain | [![npm version](https://badge.fury.io/js/%40scatterjs%2Fweb3.svg)](https://badge.fury.io/js/%40scatterjs%2Fweb3) | @scatterjs/web3 |
+| blockchain | [![npm version](https://badge.fury.io/js/%40scatterjs%2Ftron.svg)](https://badge.fury.io/js/%40scatterjs%2Ftron) | @scatterjs/tron |
+| wallet | [![npm version](https://badge.fury.io/js/%40scatterjs%2Flynx.svg)](https://badge.fury.io/js/%40scatterjs%2Flynx) | @scatterjs/lynx |
 
 
 ---------------
