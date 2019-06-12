@@ -4,10 +4,8 @@
     <meta charset="UTF-8">
     <title>Web Tester</title>
 
-    <script src='assets/beta3/eosjs-api.js'></script>
-    <script src='assets/beta3/eosjs-jsonrpc.js'></script>
-    <script src="assets/beta2-/eosjs-debug.js"></script>
-    <script src="assets/beta2-/eosjs-jsonrpc-debug.js"></script>
+    <script src='assets/eosjs-api.js'></script>
+    <script src='assets/eosjs-jsonrpc.js'></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
 
     <!--<script>-->
@@ -56,7 +54,7 @@
 
 
 
-	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx({Api:eosjs_api.default, JsonRpc:eosjs_jsonrpc2.default, textEncoder:() => {}}) );
+	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx({Api:eosjs_api.Api, JsonRpc:eosjs_jsonrpc.JsonRpc, textEncoder:() => {}}) );
 
 	const network = ScatterJS.Network.fromJson({
 		blockchain:'eos',
@@ -84,22 +82,11 @@
 
 	let scatter = null;
 
-	const beta3 = false;
+	const rpc = new eosjs_jsonrpc.JsonRpc(network.fullhost());
 
-	const rpc = beta3
-		? new eosjs_jsonrpc2.default(network.fullhost())
-		: new eosjs_jsonrpc.JsonRpc(network.fullhost());
+	const getApi = (signatureProvider) => new eosjs_api.Api({ rpc, signatureProvider });
 
-	const getApi = (signatureProvider) => beta3
-		? new eosjs_api.default({ rpc, signatureProvider })
-		: new eosjs.Api({ rpc, signatureProvider });
-
-	const getScatterEos = () => beta3
-		? scatter.eos(network, eosjs_api.default, {rpc, beta3:true})
-		: scatter.eos(network, eosjs.Api, {rpc});
-
-
-
+	const getScatterEos = () => scatter.eos(network, eosjs_api.Api, {rpc});
 
 	const setStatus = () => {
 		const status = document.getElementById('status');

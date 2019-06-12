@@ -1,5 +1,5 @@
 {
-	"name": "scatterjs-plugin-eosjs",
+	"name": "@scatterjs/eosjs",
 	"version": "1.5.1",
 	"main": "dist/index.js",
 	"license": "MIT",

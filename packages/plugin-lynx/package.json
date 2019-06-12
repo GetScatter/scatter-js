@@ -1,5 +1,5 @@
 {
-	"name": "scatterjs-plugin-lynx",
+	"name": "@scatterjs/lynx",
 	"version": "1.6.6",
 	"main": "dist/index.js",
 	"license": "MIT"

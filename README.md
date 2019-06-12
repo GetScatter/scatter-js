@@ -2,12 +2,12 @@
 
 | type | version | package |
 | ---- | ------- | ------- |
-| core | [![npm version](https://badge.fury.io/js/scatterjs-core.svg)](https://badge.fury.io/js/scatterjs-core) | scatterjs-core |
-| blockchain | [![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs) | scatterjs-plugin-eosjs |
-| blockchain | [![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs2.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs2) | scatterjs-plugin-eosjs2 |
-| blockchain | [![npm version](https://badge.fury.io/js/scatterjs-plugin-web3.svg)](https://badge.fury.io/js/scatterjs-plugin-web3) | scatterjs-plugin-web3 |
-| blockchain | [![npm version](https://badge.fury.io/js/scatterjs-plugin-tron.svg)](https://badge.fury.io/js/scatterjs-plugin-tron) | scatterjs-plugin-tron |
-| wallet | [![npm version](https://badge.fury.io/js/scatterjs-plugin-lynx.svg)](https://badge.fury.io/js/scatterjs-plugin-lynx) | scatterjs-plugin-lynx |
+| core | [![npm version](https://badge.fury.io/js/@scatterjs/core.svg)](https://badge.fury.io/js/@scatterjs/core) | @scatterjs/core |
+| blockchain | [![npm version](https://badge.fury.io/js/scatterjs-plugin-eosjs.svg)](https://badge.fury.io/js/scatterjs-plugin-eosjs) | @scatterjs/eosjs |
+| blockchain | [![npm version](https://badge.fury.io/js/@scatterjs/eosjs2.svg)](https://badge.fury.io/js/@scatterjs/eosjs2) | @scatterjs/eosjs2 |
+| blockchain | [![npm version](https://badge.fury.io/js/@scatterjs/web3.svg)](https://badge.fury.io/js/@scatterjs/web3) | @scatterjs/web3 |
+| blockchain | [![npm version](https://badge.fury.io/js/@scatterjs/tron.svg)](https://badge.fury.io/js/@scatterjs/tron) | @scatterjs/tron |
+| wallet | [![npm version](https://badge.fury.io/js/scatterjs-plugin-lynx.svg)](https://badge.fury.io/js/scatterjs-plugin-lynx) | @scatterjs/lynx |
 
 
 ---------------
@@ -20,10 +20,10 @@ Here's some boilerplates for you to just get starts quickly.
 <details><summary>eosjs@16.0.9</summary>
 <p>
 
-Installation: `npm i -S scatterjs-core scatterjs-plugin-eosjs eosjs@16.0.9`
+Installation: `npm i -S @scatterjs/core @scatterjs/eosjs eosjs@16.0.9`
 ```js
-import ScatterJS from 'scatterjs-core';
-import ScatterEOS from 'scatterjs-plugin-eosjs';
+import ScatterJS from '@scatterjs/core';
+import ScatterEOS from '@scatterjs/eosjs';
 import Eos from 'eosjs';
 
 ScatterJS.plugins( new ScatterEOS() );
@@ -60,10 +60,10 @@ ScatterJS.connect('YourAppName', {network}).then(connected => {
 <details><summary>eosjs@20.0.0</summary>
 <p>
 
-Installation: `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0`
+Installation: `npm i -S @scatterjs/core @scatterjs/eosjs2 eosjs@20.0.0`
 ```js
-import ScatterJS from 'scatterjs-core';
-import ScatterEOS from 'scatterjs-plugin-eosjs2';
+import ScatterJS from '@scatterjs/core';
+import ScatterEOS from '@scatterjs/eosjs2';
 import {JsonRpc, Api} from 'eosjs';
 
 ScatterJS.plugins( new ScatterEOS() );
@@ -122,10 +122,10 @@ ScatterJS.connect('YourAppName', {network}).then(connected => {
 <details><summary>tronweb</summary>
 <p>
 
-Installation: `npm i -S scatterjs-core scatterjs-plugin-tron tronweb`
+Installation: `npm i -S @scatterjs/core @scatterjs/tron tronweb`
 ```js
-import ScatterJS from 'scatterjs-core';
-import ScatterTron from 'scatterjs-plugin-tron';
+import ScatterJS from '@scatterjs/core';
+import ScatterTron from '@scatterjs/tron';
 import TronWeb from 'tronweb';
 
 ScatterJS.plugins( new ScatterTron() );
@@ -168,10 +168,10 @@ ScatterJS.connect('YourAppName', {network}).then(connected => {
 <details><summary>web3</summary>
 <p>
 
-Installation: `npm i -S scatterjs-core scatterjs-plugin-web3 web3`
+Installation: `npm i -S @scatterjs/core @scatterjs/web3 web3`
 ```js
-import ScatterJS from 'scatterjs-core';
-import ScatterETH from 'scatterjs-plugin-web3';
+import ScatterJS from '@scatterjs/core';
+import ScatterETH from '@scatterjs/web3';
 import Web3 from 'web3';
 
 ScatterJS.plugins( new ScatterETH() );
@@ -252,19 +252,20 @@ From that point forward you can mix-match the plugins you require.
 
 | blockchain library | installation command |
 | ---------- | -------- |
-| eosjs | `npm i -S scatterjs-core scatterjs-plugin-eosjs eosjs@16.0.9` |
-| eosjs2 (@20+) | `npm i -S scatterjs-core scatterjs-plugin-eosjs2 eosjs@20.0.0` |
-| tronweb | `npm i -S scatterjs-core scatterjs-plugin-tron tronweb` |
-| web3 | `npm i -S scatterjs-core scatterjs-plugin-web3 web3` |
+| eosjs | `npm i -S @scatterjs/core scatterjs-plugin-eosjs eosjs@16.0.9` |
+| eosjs2 (@20+) | `npm i -S @scatterjs/core @scatterjs/eosjs2 eosjs@20.0.0` |
+| tronweb | `npm i -S @scatterjs/core @scatterjs/tron tronweb` |
+| web3 | `npm i -S @scatterjs/core @scatterjs/web3 web3` |
 
 
 ### CDN
+<!-- TODO: FIX CDN now that we are using an org scope -->
 ```
-<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-core.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/@scatterjs/core.min.js"></script>
 <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs.min.js"></script>
-<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs2.min.js"></script>
-<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-web3.min.js"></script>
-<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-tron.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/@scatterjs/eosjs2.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/@scatterjs/web3.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/@scatterjs/tron.min.js"></script>
 <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-lynx.min.js"></script>
 ```
 
@@ -276,7 +277,7 @@ As early as you can in your project, instantiate both ScatterJS and your selecte
 
 #### Nodejs
 ```js
-import ScatterJS from 'scatterjs-core';
+import ScatterJS from '@scatterjs/core';
 import ScatterEOS from 'scatterjs-plugin-eosjs'
 
 ScatterJS.plugins( new ScatterEOS() );
@@ -284,7 +285,7 @@ ScatterJS.plugins( new ScatterEOS() );
 
 #### Vanilla
 ```html
-<script src="scatterjs-core.min.js"></script>
+<script src="@scatterjs/core.min.js"></script>
 <script src="scatterjs-plugin-eosjs.min.js"></script>
 
 <script>
@@ -295,9 +296,9 @@ ScatterJS.plugins( new ScatterEOS() );
 #### Multiple Plugins
 
 ```js
-import ScatterJS from 'scatterjs-core';
+import ScatterJS from '@scatterjs/core';
 import ScatterEOS from 'scatterjs-plugin-eosjs'
-import ScatterTron from 'scatterjs-plugin-tron'
+import ScatterTron from '@scatterjs/tron'
 import ScatterLynx from 'scatterjs-plugin-lynx'
 
 ScatterJS.plugins( new ScatterEOS(), new ScatterTron(), new ScatterLynx(Eos || {Api, JsonRpc}) );
@@ -331,7 +332,7 @@ ScatterJS.connect('MyAppName', {network}).then(connected => {
 });
 ```
 
-[You can see full scatterjs-core API docs here](https://get-scatter.com/docs/api-reference)
+[You can see full @scatterjs/core API docs here](https://get-scatter.com/docs/api-reference)
 
 
 <br/><br/>
@@ -402,7 +403,7 @@ const result = await eos.transfer(...);
 
 <br/>
 
-[eosjs@20.0.0 ( scatterjs-plugin-eosjs2 )](https://github.com/EOSIO/eosjs)
+[eosjs@20.0.0 ( @scatterjs/eosjs2 )](https://github.com/EOSIO/eosjs)
 ```js
 import {JsonRpc, Api} from 'eosjs'
 const rpc = new JsonRpc(network.fullhost());

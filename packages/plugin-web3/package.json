@@ -1,5 +1,5 @@
 {
-	"name": "scatterjs-plugin-web3",
+	"name": "@scatterjs/web3",
 	"version": "1.5.4",
 	"main": "dist/index.js",
 	"license": "MIT",

@@ -1,5 +1,5 @@
 {
-	"name": "scatterjs-plugin-tron",
+	"name": "@scatterjs/tron",
 	"version": "1.3.0",
 	"main": "dist/index.js",
 	"license": "MIT"
