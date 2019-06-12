@@ -13,9 +13,6 @@ let paired = false;
 let plugin;
 let openRequests = [];
 
-let allowReconnects = true;
-let reconnectionTimeout = null;
-
 
 const sha256 = data => createHash('sha256').update(data).digest('hex');
 
@@ -83,7 +80,7 @@ export default class SocketService {
                 resolve(false);
 
                 if(socket) {
-                    socket.disconnect();
+                    socket.close();
                     socket = null;
                 }
             }, this.timeout)),
@@ -149,39 +146,61 @@ export default class SocketService {
                     };
                 };
 
-                const trySocket = (ssl = true, resolver = null) => {
+                const getHostname = (port, ssl) => ssl ? `local.get-scatter.com:${port}` : `127.0.0.1:${port}`;
+
+                const ports = await (async () => {
+                    const checkPort = (host, cb) => fetch(host).then(r => r.text()).then(r => cb(r === 'scatter')).catch(() => cb(false));
+
+                    let startingPort = 50005;
+                    let availablePorts = [];
+	                [...new Array(5).keys()].map(i => {
+		                const _port = startingPort+(i*1500);
+		                return Promise.all([
+			                checkPort(`https://`+getHostname(_port+1, true), x => x ? availablePorts.push(_port+1) : null),
+			                checkPort(`http://`+getHostname(_port, false), x => x ? availablePorts.push(_port) : null)
+		                ])
+	                });
+
+                    let tries = 0;
+                    while(tries < 50){
+	                    if(availablePorts.length) break;
+	                    await new Promise(r => setTimeout(() => r(true),2));
+	                    tries++;
+                    }
+
+                    return !availablePorts.length ?  /* BACKWARDS COMPAT */ [50006, 50005] : availablePorts.sort((a,b) => {
+	                    // Always try to use SSL first.
+	                    return !(b % 2) ? 1 : !(a % 2) ? -1 : 0;
+                    });
+                })();
+
+
+                const trySocket = (port, resolver = null) => {
                     let promise;
                     if(!resolver) promise = new Promise(r => resolver = r);
-                    const hostname = ssl ? 'local.get-scatter.com:50006' : '127.0.0.1:50005';
+	                const ssl = !(port % 2);
+                    const hostname = ssl ? `local.get-scatter.com:${port}` : `127.0.0.1:${port}`;
                     const protocol = ssl ? 'wss://' : 'ws://';
                     const host = `${protocol}${hostname}${suffix}`;
                     const s = new WebSocket(host);
 
-                    s.onerror = err => {
-                        if(!ssl) {
-                            resolve(false);
-                            resolver(false);
-                        }
-                        else trySocket(false, resolver);
-                    };
-
-                    s.onopen = () => {
-                        socket = s;
-
-                        send();
-                        clearTimeout(reconnectionTimeout);
-                        connected = true;
-                        pair(true).then(() => {
-                            resolve(true);
-                            resolver(true);
-                        });
-
-                        setupSocket();
-                    };
+                    s.onerror = () => resolver(false);
+                    s.onopen = () => resolver(s);
 
                     return promise;
                 };
-                await trySocket();
+
+                for(let i = 0; i < ports.length; i++){
+                    const s = await trySocket(ports[i]);
+                    if(s){
+	                    socket = s;
+	                    send();
+	                    connected = true;
+	                    pair(true).then(() => resolve(true));
+	                    setupSocket();
+	                    break;
+                    }
+                }
 
             })
         ])
@@ -196,13 +215,9 @@ export default class SocketService {
     }
 
     static disconnect(){
+        console.log('disconnect')
         if(socket) socket.close();
         return true;
-    }
-
-    static removeAppKeys(){
-	    StorageService.removeAppKey();
-	    StorageService.removeNonce();
     }
 
     static sendApiRequest(request){
