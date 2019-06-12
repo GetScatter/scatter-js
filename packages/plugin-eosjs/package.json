@@ -1,7 +1,10 @@
 {
 	"name": "@scatterjs/eosjs",
-	"version": "1.5.7",
+	"version": "1.5.8",
 	"main": "dist/index.js",
 	"license": "MIT",
-	"gitHead": "dadb46787c05b190765b3a112b85d9d26c451c08"
+	"gitHead": "dadb46787c05b190765b3a112b85d9d26c451c08",
+	"publishConfig": {
+		"access": "public"
+	}
 }
