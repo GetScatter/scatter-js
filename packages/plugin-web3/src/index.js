@@ -4,7 +4,7 @@ import {
 	Blockchains,
 	Network,
 	SocketService
-} from 'scatterjs-core';
+} from '@scatterjs/core';
 
 import ProviderEngine from 'web3-provider-engine';
 import RpcSubprovider from 'web3-provider-engine/subproviders/rpc';

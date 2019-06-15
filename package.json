@@ -9,7 +9,6 @@
 		"publish": "lerna publish",
 		"testfile": "mocha --require babel-core/register --exit --timeout 1000000",
 		"test": "npm run testfile \"test/**/*.spec.js\" --timeout 1000000",
-		"test-eosjs": "concurrently \"lerna exec -- babel --watch --config ../../.babelrc --out-dir dist src\" \"cd mock-sites/eosjs-esm && npm run start\"",
 		"pack": "webpack-cli --mode=production --display-error-details"
 	},
 	"author": "GetScatter",

@@ -1,4 +1,4 @@
-import {Blockchains, Network, Plugin, PluginTypes, SocketService, WALLET_METHODS} from 'scatterjs-core';
+import {Blockchains, Network, Plugin, PluginTypes, SocketService, WALLET_METHODS} from '@scatterjs/core';
 
 let network;
 
