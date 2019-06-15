@@ -1,11 +1,11 @@
 {
 	"name": "@scatterjs/web3",
-	"version": "1.5.11",
+	"version": "1.5.12",
 	"main": "dist/index.js",
 	"license": "MIT",
 	"dependencies": {
-		"web3-provider-engine": "^14.1.0",
-		"@scatterjs/core":"*"
+		"@scatterjs/core": "^2.7.26",
+		"web3-provider-engine": "^14.1.0"
 	},
 	"gitHead": "dadb46787c05b190765b3a112b85d9d26c451c08",
 	"publishConfig": {
