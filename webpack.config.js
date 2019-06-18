@@ -54,6 +54,6 @@ module.exports = {
 	devtool: false,
 	// devtool: 'inline-source-map',
 	externals: {
-		'scatterjs-core': 'ScatterJS'
+		'@scatterjs/core': 'ScatterJS'
 	}
 }

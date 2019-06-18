@@ -49,6 +49,7 @@
 
 <button onclick="getVersion()">Version</button>
 <button onclick="logout()">Logout</button>
+<button onclick="loginWithoutNetworks()">Login w/o Blockchain</button>
 <button onclick="login()">Login</button>
 <button onclick="loginWithRequirements()">Login with Requirements</button>
 <button onclick="loginAll()">Login All</button>
@@ -163,6 +164,11 @@
         // await scatter.suggestNetwork(network);
         await ScatterJS.login();
         eos = scatter.eos(network, Eos);
+    };
+
+    window.loginWithoutNetworks = async () => {
+        // await scatter.suggestNetwork(network);
+        await ScatterJS.login({accounts:[]});
     };
 
     window.loginAll = async () => {
