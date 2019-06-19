@@ -88,26 +88,36 @@ export default class ScatterLynx extends Plugin {
 	        [WALLET_METHODS.isPaired]:async () => true,
 
 	        [WALLET_METHODS.getIdentity]:async (requiredFields) => {
-		        const accountName = await window.lynxMobile.requestSetAccountName();
-		        if(!accountName) return null;
-		        const accountState = await window.lynxMobile.requestSetAccount(accountName);
-		        if(!accountState) return null;
-		        const perm = accountState.account.permissions.find(x => x.perm_name === 'active');
-		        const publicKey = perm.required_auth.keys[0].key;
-		        const accounts = [{
-			        name:accountState.account.account_name,
-			        authority:perm.perm_name,
-			        publicKey,
-			        blockchain:Blockchains.EOS,
-			        isHardware:false,
-			        chainId:'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906'
-		        }];
+		        let identity;
 
-		        const identity = {
-		            name:accounts[0].name,
-                    accounts,
-			        publicKey
-                };
+		        if(requiredFields.hasOwnProperty('accounts') && requiredFields.accounts.length) {
+			        const requestedChainId = requiredFields.accounts[0].chainId;
+			        const accountState = await window.lynxMobile.requestSetAccount();
+			        if (!accountState) return null;
+			        const perm = accountState.account.permissions.find(x => x.perm_name === 'active');
+			        const publicKey = perm.required_auth.keys[0].key;
+			        const chainId = accountState.account.chainId || requestedChainId;
+			        const accounts = [{
+				        name: accountState.account.account_name,
+				        authority: perm.perm_name,
+				        publicKey,
+				        blockchain: Blockchains.EOS,
+				        isHardware: false,
+				        chainId
+			        }];
+
+			        identity = {
+				        name: accounts[0].name,
+				        accounts,
+				        publicKey
+			        };
+		        } else {
+		        	identity = {
+		        		name:'No Account',
+				        accounts:[],
+				        publicKey:'',
+			        }
+		        }
 
 		        this.context.identity = identity;
 		        return identity;
@@ -132,8 +142,6 @@ export default class ScatterLynx extends Plugin {
 
 	        [WALLET_METHODS.requestSignature]:async ({abis, transaction, network}) => {
 		        let parsed;
-
-		        if(network.chainId !== 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906') throw new Error('Lynx only supports mainnet.');
 
 		        if(this.isEosjs2){
 			        const rpc = new this.eosjs.JsonRpc(Network.fromJson(network).fullhost());
