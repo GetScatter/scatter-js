@@ -97,6 +97,11 @@ export default class ScatterLynx extends Plugin {
 			        const perm = accountState.account.permissions.find(x => x.perm_name === 'active');
 			        const publicKey = perm.required_auth.keys[0].key;
 			        const chainId = accountState.chainId || requestedChainId;
+
+			        if(chainId !== requestedChainId){
+						throw new Error(`User does not have an account with the chainId "${requestedChainId}" selected in Lynx.`);
+			        }
+
 			        const accounts = [{
 				        name: accountState.account.account_name,
 				        authority: perm.perm_name,
