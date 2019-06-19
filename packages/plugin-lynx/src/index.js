@@ -96,7 +96,7 @@ export default class ScatterLynx extends Plugin {
 			        if (!accountState) return null;
 			        const perm = accountState.account.permissions.find(x => x.perm_name === 'active');
 			        const publicKey = perm.required_auth.keys[0].key;
-			        const chainId = accountState.hasOwnProperty('chainId') && accountState.chainId || requestedChainId;
+			        const chainId = accountState.chainId || requestedChainId;
 			        const accounts = [{
 				        name: accountState.account.account_name,
 				        authority: perm.perm_name,
