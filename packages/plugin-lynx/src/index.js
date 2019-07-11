@@ -90,6 +90,8 @@ export default class ScatterLynx extends Plugin {
 	        [WALLET_METHODS.getIdentity]:async (requiredFields) => {
 		        let identity;
 
+		        if(!requiredFields) requiredFields = {};
+
 		        if(requiredFields.hasOwnProperty('accounts') && requiredFields.accounts.length) {
 			        const requestedChainId = requiredFields.accounts[0].chainId;
 			        const accountState = await window.lynxMobile.requestSetAccount();
