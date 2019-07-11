@@ -92,39 +92,34 @@ export default class ScatterLynx extends Plugin {
 
 		        if(!requiredFields) requiredFields = {};
 
-		        if(requiredFields.hasOwnProperty('accounts') && requiredFields.accounts.length) {
-			        const requestedChainId = requiredFields.accounts[0].chainId;
-			        const accountState = await window.lynxMobile.requestSetAccount();
-			        if (!accountState) return null;
-			        const perm = accountState.account.permissions.find(x => x.perm_name === 'active');
-			        const publicKey = perm.required_auth.keys[0].key;
-			        const chainId = accountState.chainId || requestedChainId;
+		        const requestedChainId = requiredFields.hasOwnProperty('accounts') && requiredFields.accounts.length
+			        ? requiredFields.accounts[0].chainId
+		            : 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906';
 
-			        if(chainId !== requestedChainId){
-						throw new Error(`User does not have an account with the chainId "${requestedChainId}" selected in Lynx.`);
-			        }
+		        const accountState = await window.lynxMobile.requestSetAccount();
+		        if (!accountState) return null;
+		        const perm = accountState.account.permissions.find(x => x.perm_name === 'active');
+		        const publicKey = perm.required_auth.keys[0].key;
+		        const chainId = accountState.chainId || requestedChainId;
 
-			        const accounts = [{
-				        name: accountState.account.account_name,
-				        authority: perm.perm_name,
-				        publicKey,
-				        blockchain: Blockchains.EOS,
-				        isHardware: false,
-				        chainId
-			        }];
-
-			        identity = {
-				        name: accounts[0].name,
-				        accounts,
-				        publicKey
-			        };
-		        } else {
-		        	identity = {
-		        		name:'No Account',
-				        accounts:[],
-				        publicKey:'',
-			        }
+		        if(chainId !== requestedChainId){
+			        throw new Error(`User does not have an account with the chainId "${requestedChainId}" selected in Lynx.`);
 		        }
+
+		        const accounts = [{
+			        name: accountState.account.account_name,
+			        authority: perm.perm_name,
+			        publicKey,
+			        blockchain: Blockchains.EOS,
+			        isHardware: false,
+			        chainId
+		        }];
+
+		        identity = {
+			        name: accounts[0].name,
+			        accounts,
+			        publicKey
+		        };
 
 		        this.context.identity = identity;
 		        return identity;

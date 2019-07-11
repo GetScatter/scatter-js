@@ -10,7 +10,7 @@
 
     <script>
 	    window.lynxMobile = {
-            requestSetAccountName:x => {
+		    requestSetAccount:() => {
 	            const accounts = [{
 		            name:'testaccount1',
 		            authority:'active',
@@ -30,7 +30,6 @@
 	            console.log(ScatterJS.scatter.identity);
 	            return identity;
             },
-		    requestSetAccount:name => {},
             requestArbitrarySignature:x => { console.log(x); },
 		    requestSignature:x => { console.log(x); }
 	    };
