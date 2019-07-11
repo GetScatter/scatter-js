@@ -451,6 +451,13 @@ If you're having trouble packaging or compiling your project you probably need t
 
 
 <br/><br/>
+# Fetch issues.
+If you're having trouble with `fetch` not being defined in your nodejs environment you can add it by doing
+- `npm i -S isomorphic-fetch`
+- and then `require('isomorphic-fetch');` at the start of your application
+
+
+<br/><br/>
 # What now?
 Head over to the [Scatter Developer Documentation](https://get-scatter.com/docs/getting-started) to learn about
 all the amazing things you can do with Scatter.
