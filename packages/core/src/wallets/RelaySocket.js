@@ -21,17 +21,18 @@ export default class RelaySocket extends Plugin {
 	connect(pluginName, options = {}){
 		return new Promise(async resolve => {
 			if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
+			options = Object.assign({initTimeout:1000, linkTimeout:3000}, options);
 
 			const uuid = await fetch(`${WEB_HOST}/app/connect`).then(x => x.json());
 			if(!uuid) return resolve(false);
 
 			// Tries to set up LocalSocket Connection
-			SocketService.init(pluginName, options.linkTimeout);
-			SocketService.link(uuid, SOCKET_HOST).then(async authenticated => {
-				if(!authenticated) return false;
+			this.socketService = new SocketService(pluginName, options.linkTimeout);
+			this.socketService.link(uuid, SOCKET_HOST).then(async authenticated => {
+				if(!authenticated) return resolve(false);
 				this.holderFns.get().isExtension = false;
 				if(!this.holderFns.get().wallet) this.holderFns.get().wallet = this.name;
-				return resolve(true);
+				return resolve(this.socketService);
 			});
 		})
 	}

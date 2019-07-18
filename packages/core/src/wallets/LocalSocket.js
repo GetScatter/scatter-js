@@ -20,12 +20,12 @@ export default class LocalSocket extends Plugin {
 
 
 			// Tries to set up LocalSocket Connection
-			SocketService.init(pluginName, options.linkTimeout);
-			SocketService.link().then(async authenticated => {
-				if(!authenticated) return false;
+			this.socketService = new SocketService(pluginName, options.linkTimeout);
+			this.socketService.link().then(async authenticated => {
+				if(!authenticated) return resolve(false);
 				this.holderFns.get().isExtension = false;
 				if(!this.holderFns.get().wallet) this.holderFns.get().wallet = this.name;
-				return resolve(true);
+				return resolve(this.socketService);
 			});
 		})
 	}
@@ -39,79 +39,78 @@ export default class LocalSocket extends Plugin {
 	static getMethods(context){
 		const setAndReturnId = (id, forget) => {
 			if(id || forget) context.holderFns.get().identity = id;
-			// if(forget) SocketService.removeAppKeys();
 			return forget || id;
 		};
 
 		return {
-			[WALLET_METHODS.disconnect]:() => SocketService.disconnect(),
-			[WALLET_METHODS.isConnected]:() => SocketService.isConnected(),
-			[WALLET_METHODS.isPaired]:() => SocketService.isPaired(),
-			[WALLET_METHODS.addEventHandler]:(handler, key = null) => SocketService.addEventHandler(handler, key),
-			[WALLET_METHODS.removeEventHandler]:(key = null) => SocketService.removeEventHandler(key),
-			[WALLET_METHODS.listen]:(handler) => SocketService.addEventHandler(handler),
-			[WALLET_METHODS.getVersion]:() => SocketService.sendApiRequest({ type:'getVersion', payload:{} }),
-			[WALLET_METHODS.getIdentity]:(requiredFields) => SocketService.sendApiRequest({
+			[WALLET_METHODS.disconnect]:() => context.socketService.disconnect(),
+			[WALLET_METHODS.isConnected]:() => context.socketService.isConnected(),
+			[WALLET_METHODS.isPaired]:() => context.socketService.isPaired(),
+			[WALLET_METHODS.addEventHandler]:(handler, key = null) => context.socketService.addEventHandler(handler, key),
+			[WALLET_METHODS.removeEventHandler]:(key = null) => context.socketService.removeEventHandler(key),
+			[WALLET_METHODS.listen]:(handler) => context.socketService.addEventHandler(handler),
+			[WALLET_METHODS.getVersion]:() => context.socketService.sendApiRequest({ type:'getVersion', payload:{} }),
+			[WALLET_METHODS.getIdentity]:(requiredFields) => context.socketService.sendApiRequest({
 				type:'getOrRequestIdentity',
 				payload:{ fields:requiredFields ? requiredFields : {accounts:[context.holderFns.get().network]} }
 			}).then(setAndReturnId),
-			[WALLET_METHODS.getAllAccountsFor]:(requiredFields) => SocketService.sendApiRequest({
+			[WALLET_METHODS.getAllAccountsFor]:(requiredFields) => context.socketService.sendApiRequest({
 				type:'getAllAccountsFor',
 				payload:{ fields:requiredFields }
 			}).then(setAndReturnId),
-			[WALLET_METHODS.getIdentityFromPermissions]:() => SocketService.sendApiRequest({
+			[WALLET_METHODS.getIdentityFromPermissions]:() => context.socketService.sendApiRequest({
 				type:'identityFromPermissions',
 				payload:{}
 			}).then(setAndReturnId),
-			[WALLET_METHODS.forgetIdentity]:() => SocketService.sendApiRequest({
+			[WALLET_METHODS.forgetIdentity]:() => context.socketService.sendApiRequest({
 				type:'forgetIdentity',
 				payload:{}
 			}).then(res => setAndReturnId(null, res)),
-			[WALLET_METHODS.updateIdentity]:({name, kyc}) => SocketService.sendApiRequest({
+			[WALLET_METHODS.updateIdentity]:({name, kyc}) => context.socketService.sendApiRequest({
 				type:'updateIdentity',
 				payload:{name, kyc}
 			}).then(id => id ? setAndReturnId(id) : null),
-			[WALLET_METHODS.authenticate]:(nonce, data = null, publicKey = null) => SocketService.sendApiRequest({
+			[WALLET_METHODS.authenticate]:(nonce, data = null, publicKey = null) => context.socketService.sendApiRequest({
 				type:'authenticate',
 				payload:{ nonce, data, publicKey }
 			}),
-			[WALLET_METHODS.getArbitrarySignature]:(publicKey, data) => SocketService.sendApiRequest({
+			[WALLET_METHODS.getArbitrarySignature]:(publicKey, data) => context.socketService.sendApiRequest({
 				type:'requestArbitrarySignature',
 				payload:{ publicKey, data }
 			}),
-			[WALLET_METHODS.getPublicKey]:(blockchain) => SocketService.sendApiRequest({
+			[WALLET_METHODS.getPublicKey]:(blockchain) => context.socketService.sendApiRequest({
 				type:'getPublicKey',
 				payload:{ blockchain }
 			}),
-			[WALLET_METHODS.linkAccount]:(account, network) => SocketService.sendApiRequest({
+			[WALLET_METHODS.linkAccount]:(account, network) => context.socketService.sendApiRequest({
 				type:'linkAccount',
 				payload:{ account, network:network || context.holderFns.get().network }
 			}),
-			[WALLET_METHODS.hasAccountFor]:(network) => SocketService.sendApiRequest({
+			[WALLET_METHODS.hasAccountFor]:(network) => context.socketService.sendApiRequest({
 				type:'hasAccountFor',
 				payload:{ network:network || context.holderFns.get().network }
 			}),
-			[WALLET_METHODS.suggestNetwork]:(network) => SocketService.sendApiRequest({
+			[WALLET_METHODS.suggestNetwork]:(network) => context.socketService.sendApiRequest({
 				type:'requestAddNetwork',
 				payload:{ network:network || context.holderFns.get().network }
 			}),
-			[WALLET_METHODS.requestTransfer]:(network, to, amount, options = {}) => SocketService.sendApiRequest({
+			[WALLET_METHODS.requestTransfer]:(network, to, amount, options = {}) => context.socketService.sendApiRequest({
 				type:'requestTransfer',
 				payload:{network:network || context.holderFns.get().network, to, amount, options}
 			}),
-			[WALLET_METHODS.getAvatar]:() => SocketService.sendApiRequest({
+			[WALLET_METHODS.getAvatar]:() => context.socketService.sendApiRequest({
 				type:'getAvatar',
 				payload:{}
 			}),
-			[WALLET_METHODS.requestSignature]:(payload) => SocketService.sendApiRequest({
+			[WALLET_METHODS.requestSignature]:(payload) => context.socketService.sendApiRequest({
 				type:'requestSignature',
 				payload
 			}),
-			[WALLET_METHODS.createTransaction]:(blockchain, actions, account, network) => SocketService.sendApiRequest({
+			[WALLET_METHODS.createTransaction]:(blockchain, actions, account, network) => context.socketService.sendApiRequest({
 				type:'createTransaction',
 				payload:{ blockchain, actions, account, network:network || context.holderFns.get().network }
 			}),
-			[WALLET_METHODS.addToken]:(token, network) => SocketService.sendApiRequest({
+			[WALLET_METHODS.addToken]:(token, network) => context.socketService.sendApiRequest({
 				type:'addToken',
 				payload:{ token, network:network || context.holderFns.get().network }
 			}),
