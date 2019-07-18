@@ -249,12 +249,16 @@ export default class SocketService {
 
 
 	getOrigin(){
+		return SocketService.getOriginOrPlugin(this.plugin);
+	}
+
+	static getOriginOrPlugin(plugin){
 		let origin;
 		if(typeof location !== 'undefined')
 			if(location.hasOwnProperty('hostname') && location.hostname.length && location.hostname !== 'localhost')
 				origin = location.hostname;
-			else origin = this.plugin;
-		else origin = this.plugin;
+			else origin = plugin;
+		else origin = plugin;
 		if(origin.substr(0, 4) === 'www.') origin = origin.replace('www.','');
 		return origin;
 	}

@@ -64,7 +64,8 @@ export default class ScatterLynx extends Plugin {
 	    this.socketSetters = socketSetters;
     }
 
-	async connect(){
+	async connect(pluginName){
+    	this.plugin = pluginName;
 		return new Promise(async resolve => {
 			const found = await pollExistence();
 			if(found) {
@@ -132,11 +133,11 @@ export default class ScatterLynx extends Plugin {
 	        [WALLET_METHODS.getIdentityFromPermissions]:async () => this.context.identity,
 
 	        [WALLET_METHODS.getArbitrarySignature]:(publicKey, data) => {
-		        const origin = SocketService.getOrigin();
+		        const origin = SocketService.getOriginOrPlugin(this.plugin);
 		        return window.lynxMobile.requestArbitrarySignature({data, whatFor:`${origin} is requesting an arbitrary signature`});
 	        },
 	        [WALLET_METHODS.authenticate]:async (nonce, data = null, publicKey = null) => {
-		        const origin = SocketService.getOrigin();
+		        const origin = SocketService.getOriginOrPlugin(this.plugin);
 		        data = data ? data : origin;
 		        const toSign = await sha256(await sha256(data)+await sha256(nonce))
 		        return window.lynxMobile.requestArbitrarySignature({data:toSign, whatFor:`${origin} wants to authenticate your public key`});
