@@ -8,7 +8,8 @@
 		"es6-promise": "^4.2.4",
 		"get-random-values": "^1.2.0",
 		"isomorphic-ws": "^4.0.1",
-		"ws": "^6.1.0"
+		"ws": "^6.1.0",
+		"device-uuid": "^1.0.4"
 	},
 	"gitHead": "dadb46787c05b190765b3a112b85d9d26c451c08",
 	"publishConfig": {

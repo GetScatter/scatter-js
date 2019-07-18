@@ -5,10 +5,10 @@ import SocketService from "../services/SocketService";
 import {EVENTS, WALLET_METHODS} from "../index";
 
 
-export default class Desktop extends Plugin {
+export default class LocalSocket extends Plugin {
 	constructor(context, holderFns){
-		super(Blockchains.EOS, PluginTypes.WALLET_SUPPORT);
-		this.name = 'ScatterSockets';
+		super('LocalSocket', PluginTypes.WALLET_SUPPORT);
+		this.name = 'LocalSocket';
 		this.context = context;
 		this.holderFns = holderFns;
 	}
@@ -19,7 +19,7 @@ export default class Desktop extends Plugin {
 			options = Object.assign({initTimeout:1000, linkTimeout:3000}, options);
 
 
-			// Tries to set up Desktop Connection
+			// Tries to set up LocalSocket Connection
 			SocketService.init(pluginName, options.linkTimeout);
 			SocketService.link().then(async authenticated => {
 				if(!authenticated) return false;
@@ -36,9 +36,9 @@ export default class Desktop extends Plugin {
 		return true;
 	}
 
-	methods(){
+	static getMethods(context){
 		const setAndReturnId = (id, forget) => {
-			if(id || forget) this.holderFns.get().identity = id;
+			if(id || forget) context.holderFns.get().identity = id;
 			// if(forget) SocketService.removeAppKeys();
 			return forget || id;
 		};
@@ -53,7 +53,7 @@ export default class Desktop extends Plugin {
 			[WALLET_METHODS.getVersion]:() => SocketService.sendApiRequest({ type:'getVersion', payload:{} }),
 			[WALLET_METHODS.getIdentity]:(requiredFields) => SocketService.sendApiRequest({
 				type:'getOrRequestIdentity',
-				payload:{ fields:requiredFields ? requiredFields : {accounts:[this.holderFns.get().network]} }
+				payload:{ fields:requiredFields ? requiredFields : {accounts:[context.holderFns.get().network]} }
 			}).then(setAndReturnId),
 			[WALLET_METHODS.getAllAccountsFor]:(requiredFields) => SocketService.sendApiRequest({
 				type:'getAllAccountsFor',
@@ -85,19 +85,19 @@ export default class Desktop extends Plugin {
 			}),
 			[WALLET_METHODS.linkAccount]:(account, network) => SocketService.sendApiRequest({
 				type:'linkAccount',
-				payload:{ account, network:network || this.holderFns.get().network }
+				payload:{ account, network:network || context.holderFns.get().network }
 			}),
 			[WALLET_METHODS.hasAccountFor]:(network) => SocketService.sendApiRequest({
 				type:'hasAccountFor',
-				payload:{ network:network || this.holderFns.get().network }
+				payload:{ network:network || context.holderFns.get().network }
 			}),
 			[WALLET_METHODS.suggestNetwork]:(network) => SocketService.sendApiRequest({
 				type:'requestAddNetwork',
-				payload:{ network:network || this.holderFns.get().network }
+				payload:{ network:network || context.holderFns.get().network }
 			}),
 			[WALLET_METHODS.requestTransfer]:(network, to, amount, options = {}) => SocketService.sendApiRequest({
 				type:'requestTransfer',
-				payload:{network:network || this.holderFns.get().network, to, amount, options}
+				payload:{network:network || context.holderFns.get().network, to, amount, options}
 			}),
 			[WALLET_METHODS.getAvatar]:() => SocketService.sendApiRequest({
 				type:'getAvatar',
@@ -109,13 +109,17 @@ export default class Desktop extends Plugin {
 			}),
 			[WALLET_METHODS.createTransaction]:(blockchain, actions, account, network) => SocketService.sendApiRequest({
 				type:'createTransaction',
-				payload:{ blockchain, actions, account, network:network || this.holderFns.get().network }
+				payload:{ blockchain, actions, account, network:network || context.holderFns.get().network }
 			}),
 			[WALLET_METHODS.addToken]:(token, network) => SocketService.sendApiRequest({
 				type:'addToken',
-				payload:{ token, network:network || this.holderFns.get().network }
+				payload:{ token, network:network || context.holderFns.get().network }
 			}),
 		}
+	}
+
+	methods(){
+		return LocalSocket.getMethods(this);
 	}
 
 	async eventHandler(event, payload){

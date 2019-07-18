@@ -2,10 +2,11 @@ import StorageService from './StorageService'
 import getRandomValues from 'get-random-values';
 import createHash from 'create-hash';
 import WebSocket from 'isomorphic-ws';
+import device from "../util/Device";
 
 const suffix = '/socket.io/?EIO=3&transport=websocket';
 
-
+let uuid;
 let socket = null;
 let connected = false;
 let paired = false;
@@ -35,10 +36,9 @@ const getOrigin = () => {
 
 let appkey = StorageService.getAppKey();
 if(!appkey) appkey = 'appkey:'+random();
-
 const send = (type = null, data = null) => {
     if(type === null && data === null) socket.send('40/scatter');
-    else socket.send('42/scatter,' + JSON.stringify([type, data]));
+    else socket.send('42/scatter,' + JSON.stringify([type, Object.assign(data, {device, uuid})]));
 }
 
 let pairingPromise = null;
@@ -72,7 +72,8 @@ export default class SocketService {
 	    delete eventHandlers[key];
     }
 
-    static link(){
+    static link(_uuid = null, socketHost = null){
+	    uuid = _uuid;
 
         return Promise.race([
             new Promise((resolve, reject) => setTimeout(() => {
@@ -146,9 +147,14 @@ export default class SocketService {
                     };
                 };
 
-                const getHostname = (port, ssl) => ssl ? `local.get-scatter.com:${port}` : `127.0.0.1:${port}`;
+                const getHostname = (port, ssl) => {
+                    if(socketHost) return socketHost;
+                    return ssl ? `local.get-scatter.com:${port}` : `127.0.0.1:${port}`;
+                }
 
                 const ports = await (async () => {
+                    if(socketHost) return [50005];
+
                     const checkPort = (host, cb) => fetch(host).then(r => r.text()).then(r => cb(r === 'scatter')).catch(() => cb(false));
 
                     let startingPort = 50005;
@@ -179,7 +185,7 @@ export default class SocketService {
                     let promise;
                     if(!resolver) promise = new Promise(r => resolver = r);
 	                const ssl = !(port % 2);
-                    const hostname = ssl ? `local.get-scatter.com:${port}` : `127.0.0.1:${port}`;
+                    const hostname = getHostname(port, ssl);
                     const protocol = ssl ? 'wss://' : 'ws://';
                     const host = `${protocol}${hostname}${suffix}`;
                     const s = new WebSocket(host);
