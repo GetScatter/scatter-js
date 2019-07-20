@@ -1,8 +1,5 @@
 import * as PluginTypes from "../plugins/PluginTypes";
 import Plugin from "../plugins/Plugin";
-import {Blockchains} from "../models/Blockchains";
-import WalletInterface, {WALLET_METHODS} from "../models/WalletInterface";
-import SocketService from "../services/SocketService";
 
 
 let isAvailable = false;
@@ -20,11 +17,11 @@ const pollExistence = async (resolver = null, tries = 0) => {
 	})
 };
 
-export default class Extension extends Plugin {
+export default class Injection extends Plugin {
 
 	constructor(context, holderFns){
-		super(Blockchains.EOS, PluginTypes.WALLET_SUPPORT);
-		this.name = 'ScatterExtension';
+		super('InjectedWallet', PluginTypes.WALLET_SUPPORT);
+		this.name = 'InjectedWallet';
 		this.context = context;
 		this.holderFns = holderFns;
 	}
@@ -72,9 +69,7 @@ export default class Extension extends Plugin {
 	}
 
 	methods(){ return {
-		[WALLET_METHODS.getIdentity]:(requiredFields) => {
-			console.log('getid')
-		},
+
 	}; }
 
 }

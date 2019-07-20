@@ -5,8 +5,9 @@ import * as PluginTypes from './plugins/PluginTypes';
 import { Blockchains } from './models/Blockchains';
 import Network from './models/Network';
 import WalletInterface, {WALLET_METHODS} from './models/WalletInterface';
-import Desktop from "./wallets/Desktop";
-import Extension from "./wallets/Extension";
+import LocalSocket from "./wallets/LocalSocket";
+import RelaySocket from "./wallets/RelaySocket";
+import Injection from "./wallets/Injection";
 import Token from "./models/Token";
 
 let origin;
@@ -16,7 +17,6 @@ const EVENTS = {
 	LoggedOut:'logout',
 };
 
-let socketService = SocketService;
 let socketSetters = [];
 let holderFns = {};
 class Index {
@@ -25,8 +25,9 @@ class Index {
 		this.identity = null;
 		this.network = null;
 
-		PluginRepository.loadPlugin(new Desktop(this, holderFns));
-		PluginRepository.loadPlugin(new Extension(this, holderFns));
+		PluginRepository.loadPlugin(new RelaySocket(this, holderFns));
+		PluginRepository.loadPlugin(new LocalSocket(this, holderFns));
+		PluginRepository.loadPlugin(new Injection(this, holderFns));
 	}
 
 	loadPlugin(plugin){
@@ -52,7 +53,8 @@ class Index {
 
 		const wallets = PluginRepository.wallets();
 		return await Promise.race(wallets.map(wallet => {
-			return wallet.connect(pluginName, options).then(async () => {
+			return wallet.connect(pluginName, options).then(async socketService => {
+				if(socketService) socketSetters.map(x => x(socketService));
 				if(typeof wallet.runBeforeInterfacing === 'function') await wallet.runBeforeInterfacing();
 				new WalletInterface(wallet.name, wallet.methods(), holderFns.get());
 				if(typeof wallet.runAfterInterfacing === 'function') await wallet.runAfterInterfacing();
