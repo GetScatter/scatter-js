@@ -33,10 +33,6 @@ export default class SocketService {
 	    if(!this.appkey) this.appkey = 'appkey:'+random();
     }
 
-    getOrigin(){
-        return this.getOrigin();
-    }
-
     addEventHandler(handler, key){
         if(!key) key = 'app';
 	    this.eventHandlers[key] = handler;
