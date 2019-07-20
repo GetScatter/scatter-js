@@ -31,7 +31,7 @@ export default class Injection extends Plugin {
 			const found = await pollExistence();
 			if(found) {
 				if(this.holderFns && !this.holderFns.get().wallet) this.holderFns.get().wallet = this.name;
-				resolve(true);
+				resolve('injection');
 			}
 		})
 	}

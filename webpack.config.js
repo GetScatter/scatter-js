@@ -51,8 +51,8 @@ module.exports = {
 		// new UglifyJsPlugin()
 	],
 	stats: { colors: true },
-	devtool: false,
-	// devtool: 'inline-source-map',
+	// devtool: false,
+	devtool: 'inline-source-map',
 	externals: {
 		'@scatterjs/core': 'ScatterJS'
 	}

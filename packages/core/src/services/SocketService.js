@@ -124,7 +124,7 @@ export default class SocketService {
                 }
 
                 const ports = await (async () => {
-                    if(socketHost) return [50005];
+                    if(socketHost) return [50006];
 
                     const checkPort = (host, cb) => fetch(host).then(r => r.text()).then(r => cb(r === 'scatter')).catch(() => cb(false));
 

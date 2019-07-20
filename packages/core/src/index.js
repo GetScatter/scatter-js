@@ -58,12 +58,15 @@ class Index {
 		const wallets = PluginRepository.wallets();
 		return await Promise.race(wallets.map(wallet => {
 			return wallet.connect(pluginName, options).then(async socketService => {
-				if(socketService) socketSetters.map(x => x(socketService));
-				if(typeof wallet.runBeforeInterfacing === 'function') await wallet.runBeforeInterfacing();
-				new WalletInterface(wallet.name, wallet.methods(), holderFns.get());
-				if(typeof wallet.runAfterInterfacing === 'function') await wallet.runAfterInterfacing();
-				WalletInterface.bindBasics(holderFns.get());
-				return true;
+				if(socketService) {
+					if(socketService !== 'injection') socketSetters.map(x => x(socketService));
+					if(typeof wallet.runBeforeInterfacing === 'function') await wallet.runBeforeInterfacing();
+					new WalletInterface(wallet.name, wallet.methods(), holderFns.get());
+					if(typeof wallet.runAfterInterfacing === 'function') await wallet.runAfterInterfacing();
+					WalletInterface.bindBasics(holderFns.get());
+					return true;
+				}
+
 			})
 		}).concat(new Promise(r => setTimeout(() => r(false), options.initTimeout || 5000))));
 

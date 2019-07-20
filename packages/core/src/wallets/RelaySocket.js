@@ -4,11 +4,12 @@ import * as PluginTypes from "../plugins/PluginTypes";
 import SocketService from "../services/SocketService";
 import {EVENTS, WALLET_METHODS} from "../index";
 import LocalSocket from "./LocalSocket";
+import device from '../util/Device';
 
 
 
-const WEB_HOST = `http://localhost:50001`;
-const SOCKET_HOST = `localhost:50005`;
+const WEB_HOST = `https://relay.get-scatter.com:443`;
+const SOCKET_HOST = `relaysock.get-scatter.com:443`;
 
 export default class RelaySocket extends Plugin {
 	constructor(context, holderFns){
@@ -23,7 +24,8 @@ export default class RelaySocket extends Plugin {
 			if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
 			options = Object.assign({initTimeout:1000, linkTimeout:3000}, options);
 
-			const uuid = await fetch(`${WEB_HOST}/app/connect`).then(x => x.json());
+			const uuid = await fetch(`${WEB_HOST}/app/connect/${device}`).then(x => x.json());
+			console.log('uuid', uuid);
 			if(!uuid) return resolve(false);
 
 			// Tries to set up LocalSocket Connection
@@ -38,7 +40,7 @@ export default class RelaySocket extends Plugin {
 	}
 
 	async runAfterInterfacing(){
-		this.holderFns.get().addEventHandler((t,x) => this.eventHandler(t,x), 'internal');
+		// this.holderFns.get().addEventHandler((t,x) => this.eventHandler(t,x), 'internal');
 		this.holderFns.get().identity = await this.holderFns.get().getIdentityFromPermissions();
 		return true;
 	}
