@@ -7,7 +7,7 @@ import LocalSocket from "./LocalSocket";
 
 
 
-const WEB_HOST = `http://localhost:8081`;
+const WEB_HOST = `http://localhost:50001`;
 const SOCKET_HOST = `localhost:50005`;
 
 export default class RelaySocket extends Plugin {
