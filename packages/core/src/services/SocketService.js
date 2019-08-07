@@ -67,6 +67,9 @@ export default class SocketService {
                         // Real message
                         const [type, data] = JSON.parse(msg.data.replace('42/scatter,', ''));
 
+		                if(type === 'pong') return;
+		                if(type === 'ping') return this.socket.send(`42/scatter,["pong"]`);
+
                         switch(type){
                             case 'paired': return msg_paired(data);
                             case 'rekey': return msg_rekey();
