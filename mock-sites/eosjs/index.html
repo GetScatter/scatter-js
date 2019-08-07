@@ -106,7 +106,6 @@
 
     console.log(typeof Eos);
 	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
-    ScatterJS.useRelay();
 
     const network2 = ScatterJS.Network.fromJson({
         blockchain:'eos',

@@ -54,7 +54,6 @@
 
 
 	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx({Api:eosjs_api.Api, JsonRpc:eosjs_jsonrpc.JsonRpc, textEncoder:() => {}}) );
-	ScatterJS.useRelay();
 
 	const network = ScatterJS.Network.fromJson({
 		blockchain:'eos',

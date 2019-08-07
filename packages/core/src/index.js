@@ -25,13 +25,9 @@ class Index {
 		this.identity = null;
 		this.network = null;
 
+		PluginRepository.loadPlugin(new RelaySocket(this, holderFns));
 		PluginRepository.loadPlugin(new LocalSocket(this, holderFns));
 		PluginRepository.loadPlugin(new Injection(this, holderFns));
-	}
-
-	useRelay(){
-		console.log('Using relay')
-		PluginRepository.loadPlugin(new RelaySocket(this, holderFns));
 	}
 
 	loadPlugin(plugin){
