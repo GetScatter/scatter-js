@@ -138,6 +138,7 @@
     }, 1);
 
     ScatterJS.connect('LernaVanillaTest', {network}).then(async connected => {
+    	console.log('connected', connected);
         if(!connected) return false;
         scatter = ScatterJS.scatter;
         eos = scatter.eos(network, Eos);

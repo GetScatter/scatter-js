@@ -52,20 +52,29 @@ class Index {
 		this.network = options.hasOwnProperty('network') ? options.network : null;
 
 		const wallets = PluginRepository.wallets();
-		return await Promise.race(wallets.map(wallet => {
-			return wallet.connect(pluginName, options).then(async socketService => {
-				if(socketService) {
-					if(socketService !== 'injection') socketSetters.map(x => x(socketService));
-					if(typeof wallet.runBeforeInterfacing === 'function') await wallet.runBeforeInterfacing();
-					new WalletInterface(wallet.name, wallet.methods(), holderFns.get());
-					if(typeof wallet.runAfterInterfacing === 'function') await wallet.runAfterInterfacing();
-					WalletInterface.bindBasics(holderFns.get());
-					return true;
-				}
 
-			})
-		}).concat(new Promise(r => setTimeout(() => r(false), options.initTimeout || 5000))));
+		let connected = false;
+		let promises = [];
+		for(let i = 0; i < wallets.length; i++){
+			const wallet = wallets[i];
+			promises.push(Promise.race([
+				wallet.connect(pluginName, options).then(async socketService => {
+					if(socketService) {
+						if(socketService !== 'injection') socketSetters.map(x => x(socketService));
+						if(typeof wallet.runBeforeInterfacing === 'function') await wallet.runBeforeInterfacing();
+						new WalletInterface(wallet.name, wallet.methods(), holderFns.get());
+						if(typeof wallet.runAfterInterfacing === 'function') await wallet.runAfterInterfacing();
+						WalletInterface.bindBasics(holderFns.get());
+						connected = true;
+						return true;
+					}
+				}),
+				new Promise(r => setTimeout(() => r(false), options.initTimeout || 3500))
+			]))
+		}
 
+		await Promise.all(promises);
+		return connected;
 	}
 }
 
