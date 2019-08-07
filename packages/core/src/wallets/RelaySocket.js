@@ -25,7 +25,6 @@ export default class RelaySocket extends Plugin {
 			options = Object.assign({initTimeout:1000, linkTimeout:3000}, options);
 
 			const uuid = await fetch(`${WEB_HOST}/app/connect/${device}`).then(x => x.json());
-			console.log('uuid', uuid);
 			if(!uuid) return resolve(false);
 
 			// Tries to set up LocalSocket Connection
