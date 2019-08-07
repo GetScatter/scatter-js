@@ -79,6 +79,7 @@
 <button onclick="contract()">Contract</button>
 <button onclick="multi()">Multi Action Contract</button>
 <button onclick="donate()">Donate</button>
+<button onclick="donateFreely()">Donate Freely</button>
 
 <br>
 <br>
@@ -364,9 +365,13 @@
     };
 
     window.donate = () => {
-        const tokenDetails = {contract:'eosio.token', symbol:'EOS', memo:'', decimals:4};
-        // scatter.requestTransfer(network, 'eosio', 0, tokenDetails).then(res => console.log(res));
+        const tokenDetails = {contract:'eosio.token', symbol:'EOS', memo:'testing memo field', decimals:4};
         scatter.requestTransfer(network, 'eosio', '1.0000', tokenDetails).then(res => console.log(res));
+    };
+
+    window.donateFreely = () => {
+        const tokenDetails = {contract:'eosio.token', symbol:'EOS', memo:'testing memo field', decimals:4};
+        scatter.requestTransfer(network, 'eosio', 0, tokenDetails).then(res => console.log(res));
     };
 
     window.contract = () => {
