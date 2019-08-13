@@ -56,7 +56,7 @@ export default class LocalSocket extends Plugin {
 			}).then(setAndReturnId),
 			[WALLET_METHODS.getAllAccountsFor]:(requiredFields) => context.socketService.sendApiRequest({
 				type:'getAllAccountsFor',
-				payload:{ fields:requiredFields }
+				payload:{ fields:requiredFields ? requiredFields : {accounts:[context.holderFns.get().network]} }
 			}).then(setAndReturnId),
 			[WALLET_METHODS.getIdentityFromPermissions]:() => context.socketService.sendApiRequest({
 				type:'identityFromPermissions',

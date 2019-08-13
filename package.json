@@ -7,23 +7,25 @@
 		"build": "lerna exec -- babel --out-dir dist src",
 		"links": "lerna exec -- yarn link",
 		"publish": "lerna publish",
-		"testfile": "mocha --require babel-core/register --exit --timeout 1000000",
-		"test": "npm run testfile \"test/**/*.spec.js\" --timeout 1000000",
+		"testfile": "mocha --require @babel/register --exit --timeout 1000000",
+		"test": "npm run testfile \"./packages/**/test/**/*.spec.js\"",
 		"pack": "webpack-cli --mode=production --display-error-details"
 	},
 	"author": "GetScatter",
 	"license": "ISC",
 	"dependencies": {
+		"@babel/runtime": "^7.5.4"
+	},
+	"devDependencies": {
 		"@babel/cli": "^7.4.4",
 		"@babel/core": "^7.4.5",
 		"@babel/plugin-transform-async-to-generator": "^7.4.4",
 		"@babel/plugin-transform-runtime": "^7.0.0",
 		"@babel/preset-env": "^7.4.5",
+		"@babel/register": "^7.5.5",
 		"@babel/runtime": "^7.0.0",
 		"babel-loader": "^8.0.2",
-		"babel-preset-minify": "^0.5.0-alpha.3cc09dcf"
-	},
-	"devDependencies": {
+		"babel-preset-minify": "^0.5.0-alpha.3cc09dcf",
 		"chai": "^4.1.2",
 		"concurrently": "^4.0.1",
 		"lerna": "^3.15.0",

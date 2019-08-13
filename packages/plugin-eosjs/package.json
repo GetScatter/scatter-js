@@ -7,6 +7,9 @@
 	"publishConfig": {
 		"access": "public"
 	},
+	"files": [
+		"dist"
+	],
 	"dependencies": {
 		"@scatterjs/core": "^2.7.36"
 	}

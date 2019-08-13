@@ -1,15 +1,20 @@
-import {DeviceUUID} from 'device-uuid';
 
-if(typeof navigator === 'undefined' && typeof global.navigator === 'undefined') global.navigator = {};
-if(typeof screen === 'undefined' && typeof global.screen === 'undefined') global.screen = {};
+let device;
 
-const du = new DeviceUUID().parse();
-const dua = [
-	du.language,
-	du.platform,
-	du.os,
-	du.cpuCores,
-	du.colorDepth,
-];
-const device = du.hashMD5(dua.join(':'));
+if(typeof navigator === 'undefined'){
+	device = 'nodejs_env'
+} else {
+	const {DeviceUUID} = require('device-uuid');
+
+	const du = new DeviceUUID().parse();
+	const dua = [
+		du.language,
+		du.platform,
+		du.os,
+		du.cpuCores,
+		du.colorDepth,
+	];
+	device = du.hashMD5(dua.join(':'));
+}
+
 export default device;

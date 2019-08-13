@@ -1,3 +1,112 @@
-"use strict";var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:!0}),exports["default"]=void 0;var _regenerator=_interopRequireDefault(require("@babel/runtime/regenerator")),_asyncToGenerator2=_interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator")),_classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck")),_createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass")),_possibleConstructorReturn2=_interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn")),_getPrototypeOf2=_interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf")),_inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits")),_core=require("@scatterjs/core"),socketService=_core.SocketService,proxy=function(a,b){return new Proxy(a,b)},ScatterEOS=/*#__PURE__*/function(a){function b(){return(0,_classCallCheck2["default"])(this,b),(0,_possibleConstructorReturn2["default"])(this,(0,_getPrototypeOf2["default"])(b).call(this,_core.Blockchains.EOS,_core.PluginTypes.BLOCKCHAIN_SUPPORT))}return(0,_inherits2["default"])(b,a),(0,_createClass2["default"])(b,[{key:"setSocketService",value:function setSocketService(a){socketService=a}},{key:"hookProvider",value:function hookProvider(a){return function(b){return new Promise(function(c,d){var e=Object.assign(b,{blockchain:_core.Blockchains.EOS,network:a,requiredFields:{}});socketService.sendApiRequest({type:"requestSignature",payload:e}).then(function(a){return c(a.signatures)})["catch"](function(a){return d(a)})})}}},{key:"signatureProvider",value:function signatureProvider(){var a=0>=arguments.length?void 0:arguments[0];return function(b,c){var d=2<arguments.length&&void 0!==arguments[2]?arguments[2]:{};b=_core.Network.fromJson(b);var e,f=b.hasOwnProperty("chainId")&&b.chainId.length?b.chainId:d.chainId,g=/*#__PURE__*/function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(b){return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return a.abrupt("return",e(b));case 1:case"end":return a.stop();}},a)}));return function(){return a.apply(this,arguments)}}();return proxy(c({httpEndpoint:b.fullhost(),chainId:f,signProvider:g}),{get:function get(c,d){if("function"!=typeof c[d])return c[d];var f=null;return function(){for(var g=arguments.length,h=Array(g),i=0;i<g;i++)h[i]=arguments[i];if(h.find(function(a){return a.hasOwnProperty("keyProvider")}))throw Error.usedKeyProvider();return e=/*#__PURE__*/function(){var c=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function c(d){var e,g,i,j;return _regenerator["default"].wrap(function(c){for(;;)switch(c.prev=c.next){case 0:return a(),e=h.find(function(a){return a.hasOwnProperty("requiredFields")})||{requiredFields:{}},g=Object.assign(d,{blockchain:_core.Blockchains.EOS,network:b,requiredFields:e.requiredFields}),c.next=5,socketService.sendApiRequest({type:"requestSignature",payload:g});case 5:if(i=c.sent,i){c.next=8;break}return c.abrupt("return",null);case 8:if(!i.hasOwnProperty("signatures")){c.next=13;break}return f=i.returnedFields,j=h.find(function(a){return a.hasOwnProperty("signProvider")}),j&&i.signatures.push(j.signProvider(d.buf,d.sign)),c.abrupt("return",i.signatures);case 13:return c.abrupt("return",i);case 14:case"end":return c.stop();}},c)}));return function(){return c.apply(this,arguments)}}(),new Promise(function(a,b){c[d].apply(c,h).then(function(b){return b.hasOwnProperty("fc")?void// This is a contract
-a(proxy(b,{get:function get(a,b){return"then"===b?a[b]:function(){for(var c=arguments.length,d=Array(c),e=0;e<c;e++)d[e]=arguments[e];return new Promise(/*#__PURE__*/function(){var c=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function c(e,g){return _regenerator["default"].wrap(function(c){for(;;)switch(c.prev=c.next){case 0:a[b].apply(a,d).then(function(a){e(Object.assign(a,{returnedFields:f}))})["catch"](g);case 1:case"end":return c.stop();}},c)}));return function(){return c.apply(this,arguments)}}())}}})):a(Object.assign(b,{returnedFields:f}))})["catch"](b)})}}});// Proxy
-}}}]),b}(_core.Plugin);exports["default"]=ScatterEOS,"undefined"!=typeof window&&(window.ScatterEOS=ScatterEOS);
+import { Plugin, PluginTypes, Blockchains, Network, SocketService } from '@scatterjs/core';
+let socketService = SocketService;
+
+const proxy = (dummy, handler) => new Proxy(dummy, handler);
+
+export default class ScatterEOS extends Plugin {
+  constructor() {
+    super(Blockchains.EOS, PluginTypes.BLOCKCHAIN_SUPPORT);
+  }
+
+  setSocketService(_s) {
+    socketService = _s;
+  }
+
+  hookProvider(network) {
+    return signargs => {
+      return new Promise((resolve, reject) => {
+        const payload = Object.assign(signargs, {
+          blockchain: Blockchains.EOS,
+          network,
+          requiredFields: {}
+        });
+        socketService.sendApiRequest({
+          type: 'requestSignature',
+          payload
+        }).then(x => resolve(x.signatures)).catch(x => reject(x));
+      });
+    };
+  }
+
+  signatureProvider(...args) {
+    const throwIfNoIdentity = args[0];
+    return (network, _eos, _options = {}) => {
+      network = Network.fromJson(network);
+      const chainId = network.hasOwnProperty('chainId') && network.chainId.length ? network.chainId : _options.chainId;
+
+      let prov,
+          proxyProvider = async args => prov(args);
+
+      return proxy(_eos({
+        httpEndpoint: network.fullhost(),
+        chainId,
+        signProvider: proxyProvider
+      }), {
+        get(instance, method) {
+          if (typeof instance[method] !== 'function') return instance[method];
+          let returnedFields = null;
+          return (...args) => {
+            if (args.find(arg => arg.hasOwnProperty('keyProvider'))) throw Error.usedKeyProvider();
+
+            prov = async signargs => {
+              throwIfNoIdentity();
+              const requiredFields = args.find(arg => arg.hasOwnProperty('requiredFields')) || {
+                requiredFields: {}
+              };
+              const payload = Object.assign(signargs, {
+                blockchain: Blockchains.EOS,
+                network,
+                requiredFields: requiredFields.requiredFields
+              });
+              const result = await socketService.sendApiRequest({
+                type: 'requestSignature',
+                payload
+              }); // No signature
+
+              if (!result) return null;
+
+              if (result.hasOwnProperty('signatures')) {
+                returnedFields = result.returnedFields;
+                let multiSigKeyProvider = args.find(arg => arg.hasOwnProperty('signProvider'));
+                if (multiSigKeyProvider) result.signatures.push(multiSigKeyProvider.signProvider(signargs.buf, signargs.sign));
+                return result.signatures;
+              }
+
+              return result;
+            };
+
+            return new Promise((resolve, reject) => {
+              instance[method](...args).then(result => {
+                if (!result.hasOwnProperty('fc')) return resolve(Object.assign(result, {
+                  returnedFields
+                })); // This is a contract
+
+                resolve(proxy(result, {
+                  get(instance, method) {
+                    if (method === 'then') return instance[method];
+                    return (...args) => {
+                      return new Promise(async (res, rej) => {
+                        instance[method](...args).then(actionResult => {
+                          res(Object.assign(actionResult, {
+                            returnedFields
+                          }));
+                        }).catch(rej);
+                      });
+                    };
+                  }
+
+                }));
+              }).catch(reject);
+            });
+          };
+        }
+
+      }); // Proxy
+    };
+  }
+
+}
+
+if (typeof window !== 'undefined') {
+  window.ScatterEOS = ScatterEOS;
+}

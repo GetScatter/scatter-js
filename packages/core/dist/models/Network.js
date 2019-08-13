@@ -1,1 +1,33 @@
-"use strict";var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:!0}),exports["default"]=void 0;var _classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck")),_createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass")),_Blockchains=require("./Blockchains"),_Token=_interopRequireDefault(require("./Token")),Network=/*#__PURE__*/function(){function a(){var b=0<arguments.length&&void 0!==arguments[0]?arguments[0]:"",c=1<arguments.length&&void 0!==arguments[1]?arguments[1]:"https",d=2<arguments.length&&void 0!==arguments[2]?arguments[2]:"",e=3<arguments.length&&void 0!==arguments[3]?arguments[3]:0,f=4<arguments.length&&void 0!==arguments[4]?arguments[4]:_Blockchains.Blockchains.EOS,g=5<arguments.length&&void 0!==arguments[5]?arguments[5]:"";(0,_classCallCheck2["default"])(this,a),this.name=b,this.protocol=c,this.host=d,this.port=e,this.blockchain=f,this.chainId=g.toString(),this.token=null}return(0,_createClass2["default"])(a,[{key:"fullhost",value:function fullhost(){return"".concat(this.protocol,"://").concat(this.host).concat(this.port?":":"").concat(this.port)}},{key:"unique",value:function unique(){return("".concat(this.blockchain,":")+(this.chainId.length?"chain:".concat(this.chainId):"".concat(this.host,":").concat(this.port))).toLowerCase()}}],[{key:"placeholder",value:function placeholder(){return new a}},{key:"fromJson",value:function fromJson(b){var c=Object.assign(a.placeholder(),b);return c.chainId=c.chainId?c.chainId.toString():"",c.token=b.hasOwnProperty("token")&&b.token?_Token["default"].fromJson(b.token):null,c}}]),a}();exports["default"]=Network;
+import { Blockchains } from './Blockchains';
+import Token from "./Token";
+export default class Network {
+  constructor(_name = '', _protocol = 'https', _host = '', _port = 0, blockchain = Blockchains.EOS, chainId = '') {
+    this.name = _name;
+    this.protocol = _protocol;
+    this.host = _host;
+    this.port = _port;
+    this.blockchain = blockchain;
+    this.chainId = chainId.toString();
+    this.token = null;
+  }
+
+  static placeholder() {
+    return new Network();
+  }
+
+  static fromJson(json) {
+    const p = Object.assign(Network.placeholder(), json);
+    p.chainId = p.chainId ? p.chainId.toString() : '';
+    p.token = json.hasOwnProperty('token') && json.token ? Token.fromJson(json.token) : null;
+    return p;
+  }
+
+  fullhost() {
+    return `${this.protocol}://${this.host}${this.port ? ':' : ''}${this.port}`;
+  }
+
+  unique() {
+    return (`${this.blockchain}:` + (this.chainId.length ? `chain:${this.chainId}` : `${this.host}:${this.port}`)).toLowerCase();
+  }
+
+}

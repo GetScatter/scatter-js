@@ -1,2 +1,225 @@
-"use strict";var _interopRequireDefault=require("@babel/runtime/helpers/interopRequireDefault");Object.defineProperty(exports,"__esModule",{value:!0}),exports["default"]=void 0;var network,_defineProperty2=_interopRequireDefault(require("@babel/runtime/helpers/defineProperty")),_classCallCheck2=_interopRequireDefault(require("@babel/runtime/helpers/classCallCheck")),_createClass2=_interopRequireDefault(require("@babel/runtime/helpers/createClass")),_possibleConstructorReturn2=_interopRequireDefault(require("@babel/runtime/helpers/possibleConstructorReturn")),_getPrototypeOf2=_interopRequireDefault(require("@babel/runtime/helpers/getPrototypeOf")),_inherits2=_interopRequireDefault(require("@babel/runtime/helpers/inherits")),_regenerator=_interopRequireDefault(require("@babel/runtime/regenerator")),_asyncToGenerator2=_interopRequireDefault(require("@babel/runtime/helpers/asyncToGenerator")),_core=require("@scatterjs/core"),isAvailable=!1;"undefined"!=typeof window&&("undefined"==typeof window.lynxMobile?window.addEventListener("lynxMobileLoaded",function(){return isAvailable=!0}):isAvailable=!0);var pollExistence=/*#__PURE__*/function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(){var b,c,d=arguments;return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return b=0<d.length&&void 0!==d[0]?d[0]:null,c=1<d.length&&void 0!==d[1]?d[1]:0,a.abrupt("return",new Promise(function(a){return b||(b=a),isAvailable?b(!0):5<c?b(!1):void setTimeout(function(){return pollExistence(b,c+1)},100)}));case 3:case"end":return a.stop();}},a)}));return function(){return a.apply(this,arguments)}}(),hashHex=function(a){for(var b,c="",d=new DataView(a),e=0;e<d.byteLength;e+=4)b="00000000",c+=("00000000"+d.getUint32(e).toString(16)).slice(-8);return c},sha256=/*#__PURE__*/function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(b){var c;return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return c=new TextEncoder("utf-8").encode(b),a.t0=hashHex,a.next=4,crypto.subtle.digest("SHA-256",c);case 4:return a.t1=a.sent,a.abrupt("return",(0,a.t0)(a.t1));case 6:case"end":return a.stop();}},a)}));return function(){return a.apply(this,arguments)}}(),ScatterLynx=/*#__PURE__*/function(a){function b(a){var c;if((0,_classCallCheck2["default"])(this,b),c=(0,_possibleConstructorReturn2["default"])(this,(0,_getPrototypeOf2["default"])(b).call(this,_core.Blockchains.EOS,_core.PluginTypes.WALLET_SUPPORT)),!a)return console.error("Lynx Plugin: You must pass in an eosjs version. Either ({Api, JsonRpc}) for eosjs2 or (Eos) for eosjs1"),(0,_possibleConstructorReturn2["default"])(c);// eosjs2
-if(c.name="Lynx",c.isEosjs2=!1,a.hasOwnProperty("JsonRpc"))c.eosjs=a,c.isEosjs2=!0;else{if("function"!=typeof a)throw new Error("Lynx Plugin: Invalid eosjs. Please use 16.0.9 or 20+");c.eosjs=a}return c}return(0,_inherits2["default"])(b,a),(0,_createClass2["default"])(b,[{key:"init",value:function init(a,b,c){this.context=a,this.holderFns=b,this.socketSetters=c}},{key:"connect",value:function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(b){var c=this;return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return this.plugin=b,a.abrupt("return",new Promise(/*#__PURE__*/function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(b){var d;return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return a.next=2,pollExistence();case 2:d=a.sent,d&&(!c.holderFns.get().wallet&&(c.holderFns.get().wallet=c.name),b(!0));case 4:case"end":return a.stop();}},a)}));return function(){return a.apply(this,arguments)}}()));case 2:case"end":return a.stop();}},a,this)}));return function connect(){return a.apply(this,arguments)}}()},{key:"runAfterInterfacing",value:function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(){var b,c=this;return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return this.methods()[_core.WALLET_METHODS.getIdentity](),b={sendApiRequest:function sendApiRequest(a){return c.methods()[a.type](a.payload)}},this.socketSetters.map(function(a){return a(b)}),a.abrupt("return",!0);case 4:case"end":return a.stop();}},a,this)}));return function runAfterInterfacing(){return a.apply(this,arguments)}}()},{key:"methods",value:function methods(){var a,b=this;return a={},(0,_defineProperty2["default"])(a,_core.WALLET_METHODS.isConnected,(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(){return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return a.abrupt("return",!0);case 1:case"end":return a.stop();}},a)}))),(0,_defineProperty2["default"])(a,_core.WALLET_METHODS.disconnect,(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(){return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return a.abrupt("return",!0);case 1:case"end":return a.stop();}},a)}))),(0,_defineProperty2["default"])(a,_core.WALLET_METHODS.isPaired,(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(){return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return a.abrupt("return",!0);case 1:case"end":return a.stop();}},a)}))),(0,_defineProperty2["default"])(a,_core.WALLET_METHODS.getIdentity,function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(c){var d,e,f,g,h,i,j;return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return c||(c={}),e=c.hasOwnProperty("accounts")&&c.accounts.length?c.accounts[0].chainId:"aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906",a.next=4,window.lynxMobile.requestSetAccount();case 4:if(f=a.sent,f){a.next=7;break}return a.abrupt("return",null);case 7:if(g=f.account.permissions.find(function(a){return"active"===a.perm_name}),h=g.required_auth.keys[0].key,i=f.chainId||e,i===e){a.next=12;break}throw new Error("User does not have an account with the chainId \"".concat(e,"\" selected in Lynx."));case 12:return j=[{name:f.account.account_name,authority:g.perm_name,publicKey:h,blockchain:_core.Blockchains.EOS,isHardware:!1,chainId:i}],d={name:j[0].name,accounts:j,publicKey:h},b.context.identity=d,a.abrupt("return",d);case 16:case"end":return a.stop();}},a)}));return function(){return a.apply(this,arguments)}}()),(0,_defineProperty2["default"])(a,_core.WALLET_METHODS.forgetIdentity,(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(){return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return b.context.identity=null,a.abrupt("return",!0);case 2:case"end":return a.stop();}},a)}))),(0,_defineProperty2["default"])(a,"identityFromPermissions",function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(){return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return a.abrupt("return",b.context.identity);case 1:case"end":return a.stop();}},a)}));return function identityFromPermissions(){return a.apply(this,arguments)}}()),(0,_defineProperty2["default"])(a,_core.WALLET_METHODS.getIdentityFromPermissions,(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(){return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return a.abrupt("return",b.context.identity);case 1:case"end":return a.stop();}},a)}))),(0,_defineProperty2["default"])(a,_core.WALLET_METHODS.getArbitrarySignature,function(a,c){var d=_core.SocketService.getOriginOrPlugin(b.plugin);return window.lynxMobile.requestArbitrarySignature({data:c,whatFor:"".concat(d," is requesting an arbitrary signature")})}),(0,_defineProperty2["default"])(a,_core.WALLET_METHODS.authenticate,function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(c){var d,e,f,g,h=arguments;return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return d=1<h.length&&void 0!==h[1]?h[1]:null,e=2<h.length&&void 0!==h[2]?h[2]:null,f=_core.SocketService.getOriginOrPlugin(b.plugin),d=d?d:f,a.t0=sha256,a.next=7,sha256(d);case 7:return a.t1=a.sent,a.next=10,sha256(c);case 10:return a.t2=a.sent,a.t3=a.t1+a.t2,a.next=14,(0,a.t0)(a.t3);case 14:return g=a.sent,a.abrupt("return",window.lynxMobile.requestArbitrarySignature({data:g,whatFor:"".concat(f," wants to authenticate your public key")}));case 16:case"end":return a.stop();}},a)}));return function(){return a.apply(this,arguments)}}()),(0,_defineProperty2["default"])(a,_core.WALLET_METHODS.requestSignature,function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(c){var d,e,f,g,h,i,j,k,l,m,n;return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:if(d=c.abis,e=c.transaction,f=c.network,!b.isEosjs2){a.next=12;break}return h=new b.eosjs.JsonRpc(_core.Network.fromJson(f).fullhost()),i={rpc:h},Object.keys(b.eosjs).map(function(a){"JsonRpc"===a||"Api"===a||(i[a]=b.eosjs[a])}),j=new b.eosjs.Api(i),e.abis.map(function(a){var b=a.account_name,c=a.abi;return j.cachedAbis.set(b,{rawAbi:c,abi:j.rawAbiToJson(c)})}),a.next=9,j.deserializeTransactionWithActions(e.serializedTransaction);case 9:g=a.sent,a.next=24;break;case 12:return k=new b.eosjs({httpEndpoint:_core.Network.fromJson(f).fullhost(),chainId:f.chainId}),l={},m=e.actions.map(function(a){return a.account}).reduce(function(a,b){return a.includes(b)||a.push(b),a},[]),a.next=17,Promise.all(m.map(/*#__PURE__*/function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(b){return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return a.next=2,k.contract(b);case 2:l[b]=a.sent.fc;case 3:case"end":return a.stop();}},a)}));return function(){return a.apply(this,arguments)}}()));case 17:return a.next=19,Promise.all(e.actions.map(/*#__PURE__*/function(){var a=(0,_asyncToGenerator2["default"])(/*#__PURE__*/_regenerator["default"].mark(function a(b){var c,d,e,f,g;return _regenerator["default"].wrap(function(a){for(;;)switch(a.prev=a.next){case 0:return c=b.account,d=l[c],e=d.abi.actions.find(function(a){return a.name===b.name}).type,f=d.fromBuffer(e,b.data),g=d.abi.actions.find(function(a){return a.name===b.name}),k.fc.abiCache.abi(c,d.abi),a.abrupt("return",{data:f,account:b.account,name:b.name,authorization:b.authorization});case 7:case"end":return a.stop();}},a)}));return function(){return a.apply(this,arguments)}}()));case 19:a.t0=a.sent,g={actions:a.t0},n=Object.assign({},e),delete n.actions,g=Object.assign(g,n);case 24:return a.abrupt("return",window.lynxMobile.requestSignature(g));case 25:case"end":return a.stop();}},a)}));return function(){return a.apply(this,arguments)}}()),(0,_defineProperty2["default"])(a,_core.WALLET_METHODS.requestTransfer,function(a,b,c){var d=3<arguments.length&&void 0!==arguments[3]?arguments[3]:{},e=d.contract,f=d.symbol,g=d.memo,h=d.decimals;return e||(e="eosio.token"),f||(f="EOS"),window.lynxMobile.transfer({contract:e,symbol:f,toAccount:b,amount:c,memo:g})}),a}}]),b}(_core.Plugin);exports["default"]=ScatterLynx,"undefined"!=typeof window&&(window.ScatterLynx=ScatterLynx);
+import { Blockchains, Network, Plugin, PluginTypes, SocketService, WALLET_METHODS } from '@scatterjs/core';
+let network;
+let isAvailable = false;
+
+if (typeof window !== 'undefined') {
+  if (typeof window.lynxMobile !== 'undefined') isAvailable = true;else window.addEventListener('lynxMobileLoaded', () => isAvailable = true);
+}
+
+const pollExistence = async (resolver = null, tries = 0) => {
+  return new Promise(r => {
+    if (!resolver) resolver = r;
+    if (isAvailable) return resolver(true);
+    if (tries > 5) return resolver(false);
+    setTimeout(() => pollExistence(resolver, tries + 1), 100);
+  });
+};
+
+const hashHex = buffer => {
+  let digest = '';
+  let view = new DataView(buffer);
+
+  for (let i = 0; i < view.byteLength; i += 4) {
+    const PADDING = '00000000';
+    digest += (PADDING + view.getUint32(i).toString(16)).slice(-PADDING.length);
+  }
+
+  return digest;
+};
+
+const sha256 = async data => {
+  const buffer = new TextEncoder("utf-8").encode(data);
+  return hashHex((await crypto.subtle.digest('SHA-256', buffer)));
+};
+
+export default class ScatterLynx extends Plugin {
+  constructor(eosjs) {
+    super(Blockchains.EOS, PluginTypes.WALLET_SUPPORT);
+
+    if (!eosjs) {
+      console.error('Lynx Plugin: You must pass in an eosjs version. Either ({Api, JsonRpc}) for eosjs2 or (Eos) for eosjs1');
+      return;
+    }
+
+    this.name = 'Lynx';
+    this.isEosjs2 = false; // eosjs2
+
+    if (eosjs.hasOwnProperty('JsonRpc')) {
+      this.eosjs = eosjs;
+      this.isEosjs2 = true;
+    } else {
+      if (typeof eosjs !== 'function') throw new Error('Lynx Plugin: Invalid eosjs. Please use 16.0.9 or 20+');
+      this.eosjs = eosjs;
+    }
+  }
+
+  init(context, holderFns, socketSetters) {
+    this.context = context;
+    this.holderFns = holderFns;
+    this.socketSetters = socketSetters;
+  }
+
+  async connect(pluginName) {
+    this.plugin = pluginName;
+    return new Promise(async resolve => {
+      const found = await pollExistence();
+
+      if (found) {
+        if (!this.holderFns.get().wallet) this.holderFns.get().wallet = this.name;
+        resolve(true);
+      }
+    });
+  }
+
+  async runAfterInterfacing() {
+    this.methods()[WALLET_METHODS.getIdentity]();
+    const selfSocket = {
+      sendApiRequest: x => this.methods()[x.type](x.payload)
+    };
+    this.socketSetters.map(x => x(selfSocket));
+    return true;
+  }
+
+  methods() {
+    return {
+      [WALLET_METHODS.isConnected]: async () => true,
+      [WALLET_METHODS.disconnect]: async () => true,
+      [WALLET_METHODS.isPaired]: async () => true,
+      [WALLET_METHODS.getIdentity]: async requiredFields => {
+        let identity;
+        if (!requiredFields) requiredFields = {};
+        const requestedChainId = requiredFields.hasOwnProperty('accounts') && requiredFields.accounts.length ? requiredFields.accounts[0].chainId : 'aca376f206b8fc25a6ed44dbdc66547c36c6c33e3a119ffbeaef943642f0e906';
+        const accountState = await window.lynxMobile.requestSetAccount();
+        if (!accountState) return null;
+        const perm = accountState.account.permissions.find(x => x.perm_name === 'active');
+        const publicKey = perm.required_auth.keys[0].key;
+        const chainId = accountState.chainId || requestedChainId;
+
+        if (chainId !== requestedChainId) {
+          throw new Error(`User does not have an account with the chainId "${requestedChainId}" selected in Lynx.`);
+        }
+
+        const accounts = [{
+          name: accountState.account.account_name,
+          authority: perm.perm_name,
+          publicKey,
+          blockchain: Blockchains.EOS,
+          isHardware: false,
+          chainId
+        }];
+        identity = {
+          name: accounts[0].name,
+          accounts,
+          publicKey
+        };
+        this.context.identity = identity;
+        return identity;
+      },
+      [WALLET_METHODS.forgetIdentity]: async () => {
+        this.context.identity = null;
+        return true;
+      },
+      ['identityFromPermissions']: async () => this.context.identity,
+      [WALLET_METHODS.getIdentityFromPermissions]: async () => this.context.identity,
+      [WALLET_METHODS.getArbitrarySignature]: (publicKey, data) => {
+        const origin = SocketService.getOriginOrPlugin(this.plugin);
+        return window.lynxMobile.requestArbitrarySignature({
+          data,
+          whatFor: `${origin} is requesting an arbitrary signature`
+        });
+      },
+      [WALLET_METHODS.authenticate]: async (nonce, data = null, publicKey = null) => {
+        const origin = SocketService.getOriginOrPlugin(this.plugin);
+        data = data ? data : origin;
+        const toSign = await sha256((await sha256(data)) + (await sha256(nonce)));
+        return window.lynxMobile.requestArbitrarySignature({
+          data: toSign,
+          whatFor: `${origin} wants to authenticate your public key`
+        });
+      },
+      [WALLET_METHODS.requestSignature]: async ({
+        abis,
+        transaction,
+        network
+      }) => {
+        let parsed;
+
+        if (this.isEosjs2) {
+          const rpc = new this.eosjs.JsonRpc(Network.fromJson(network).fullhost());
+          const OPTIONS = {
+            rpc
+          };
+          Object.keys(this.eosjs).map(key => {
+            if (key === 'JsonRpc' || key === 'Api') return;
+            OPTIONS[key] = this.eosjs[key];
+          });
+          const api = new this.eosjs.Api(OPTIONS);
+          transaction.abis.map(({
+            account_name,
+            abi: rawAbi
+          }) => api.cachedAbis.set(account_name, {
+            rawAbi,
+            abi: api.rawAbiToJson(rawAbi)
+          }));
+          parsed = await api.deserializeTransactionWithActions(transaction.serializedTransaction);
+        } else {
+          const eos = new this.eosjs({
+            httpEndpoint: Network.fromJson(network).fullhost(),
+            chainId: network.chainId
+          });
+          let abis = {};
+          const contracts = transaction.actions.map(action => action.account).reduce((acc, x) => {
+            if (!acc.includes(x)) acc.push(x);
+            return acc;
+          }, []);
+          await Promise.all(contracts.map(async contractAccount => {
+            abis[contractAccount] = (await eos.contract(contractAccount)).fc;
+          }));
+          parsed = {
+            actions: await Promise.all(transaction.actions.map(async (action, index) => {
+              const contractAccountName = action.account;
+              let abi = abis[contractAccountName];
+              const typeName = abi.abi.actions.find(x => x.name === action.name).type;
+              const data = abi.fromBuffer(typeName, action.data);
+              const actionAbi = abi.abi.actions.find(fcAction => fcAction.name === action.name);
+              eos.fc.abiCache.abi(contractAccountName, abi.abi);
+              return {
+                data,
+                account: action.account,
+                name: action.name,
+                authorization: action.authorization
+              };
+            }))
+          };
+          const clone = Object.assign({}, transaction);
+          delete clone.actions;
+          parsed = Object.assign(parsed, clone);
+        }
+
+        return window.lynxMobile.requestSignature(parsed);
+      },
+      [WALLET_METHODS.requestTransfer]: (network, to, amount, options = {}) => {
+        let {
+          contract,
+          symbol,
+          memo,
+          decimals
+        } = options;
+        if (!contract) contract = 'eosio.token';
+        if (!symbol) symbol = 'EOS';
+        return window.lynxMobile.transfer({
+          contract,
+          symbol,
+          toAccount: to,
+          amount,
+          memo
+        });
+      }
+    };
+  }
+
+}
+
+if (typeof window !== 'undefined') {
+  window.ScatterLynx = ScatterLynx;
+}
