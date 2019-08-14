@@ -148,7 +148,7 @@ export default class SocketService {
 	                    tries++;
                     }
 
-                    return !availablePorts.length ?  /* BACKWARDS COMPAT */ [50006, 50005] : availablePorts.sort((a,b) => {
+                    return (!availablePorts.length ?  /* BACKWARDS COMPAT */ [50006, 50005] : availablePorts).sort((a,b) => {
 	                    // Always try to use SSL first.
 	                    return !(b % 2) ? 1 : !(a % 2) ? -1 : 0;
                     });
