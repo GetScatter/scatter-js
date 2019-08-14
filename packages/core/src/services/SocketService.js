@@ -171,14 +171,18 @@ export default class SocketService {
                 };
 
                 for(let i = 0; i < ports.length; i++){
-                    const s = await trySocket(ports[i]);
-                    if(s){
-	                    this.socket = s;
-	                    this.send();
-	                    this.connected = true;
-	                    this.pair(true).then(() => resolve(true));
-	                    setupSocket();
-	                    break;
+                    try {
+	                    const s = await trySocket(ports[i]);
+	                    if(s){
+		                    this.socket = s;
+		                    this.send();
+		                    this.connected = true;
+		                    this.pair(true).then(() => resolve(true));
+		                    setupSocket();
+		                    break;
+	                    }
+                    } catch(e){
+                    	break;
                     }
                 }
 
