@@ -38,7 +38,7 @@ export default class SocketService {
     delete this.eventHandlers[key];
   }
 
-  link(_uuid = null, socketHost = null) {
+  link(allowHttp = true, _uuid = null, socketHost = null) {
     this.uuid = _uuid;
     return Promise.race([new Promise((resolve, reject) => setTimeout(() => {
       if (this.connected) return;
@@ -133,7 +133,7 @@ export default class SocketService {
         [...new Array(5).keys()].map(i => {
           const _port = startingPort + i * 1500;
 
-          return Promise.all([checkPort(`https://` + getHostname(_port + 1, true), x => x ? availablePorts.push(_port + 1) : null), checkPort(`http://` + getHostname(_port, false), x => x ? availablePorts.push(_port) : null)]);
+          return Promise.all([checkPort(`https://` + getHostname(_port + 1, true), x => x ? availablePorts.push(_port + 1) : null), allowHttp ? checkPort(`http://` + getHostname(_port, false), x => x ? availablePorts.push(_port) : null) : null]);
         });
         let tries = 0;
 
@@ -145,7 +145,10 @@ export default class SocketService {
 
         return (!availablePorts.length ?
         /* BACKWARDS COMPAT */
-        [50006, 50005] : availablePorts).sort((a, b) => {
+        [50006, 50005] : availablePorts).filter(x => {
+          if (allowHttp) return true;
+          return !(x % 2);
+        }).sort((a, b) => {
           // Always try to use SSL first.
           return !(b % 2) ? 1 : !(a % 2) ? -1 : 0;
         });
@@ -168,18 +171,14 @@ export default class SocketService {
       };
 
       for (let i = 0; i < ports.length; i++) {
-        try {
-          const s = await trySocket(ports[i]);
+        const s = await trySocket(ports[i]);
 
-          if (s) {
-            this.socket = s;
-            this.send();
-            this.connected = true;
-            this.pair(true).then(() => resolve(true));
-            setupSocket();
-            break;
-          }
-        } catch (e) {
+        if (s) {
+          this.socket = s;
+          this.send();
+          this.connected = true;
+          this.pair(true).then(() => resolve(true));
+          setupSocket();
           break;
         }
       }

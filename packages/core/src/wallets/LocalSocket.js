@@ -16,12 +16,12 @@ export default class LocalSocket extends Plugin {
 	connect(pluginName, options = {}){
 		return new Promise(resolve => {
 			if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
-			options = Object.assign({initTimeout:1000, linkTimeout:3000}, options);
+			options = Object.assign({initTimeout:1000, linkTimeout:3000, allowHttp:true}, options);
 
 
 			// Tries to set up LocalSocket Connection
 			this.socketService = new SocketService(pluginName, options.linkTimeout);
-			this.socketService.link().then(async authenticated => {
+			this.socketService.link(options.allowHttp).then(async authenticated => {
 				if(!authenticated) return resolve(false);
 				this.holderFns.get().isExtension = false;
 				if(!this.holderFns.get().wallet) this.holderFns.get().wallet = this.name;
