@@ -137,7 +137,7 @@
 	    setStatus();
     }, 1);
 
-    ScatterJS.connect('LernaVanillaTest', {network, allowHttp:false}).then(async connected => {
+    ScatterJS.connect('LernaVanillaTest', {network, allowHttp:true}).then(async connected => {
     	console.log('connected', connected);
         if(!connected) return false;
         scatter = ScatterJS.scatter;

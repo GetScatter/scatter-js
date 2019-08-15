@@ -123,27 +123,15 @@ export default class SocketService {
         return ssl ? `local.get-scatter.com:${port}` : `127.0.0.1:${port}`;
       };
 
-      const ports = await (async () => {
-        if (socketHost) return [50006];
+      const ports = await new Promise(async portResolver => {
+        if (socketHost) return portResolver([50006]);
 
         const checkPort = (host, cb) => fetch(host).then(r => r.text()).then(r => cb(r === 'scatter')).catch(() => cb(false));
 
         let startingPort = 50005;
         let availablePorts = [];
-        [...new Array(5).keys()].map(i => {
-          const _port = startingPort + i * 1500;
 
-          return Promise.all([checkPort(`https://` + getHostname(_port + 1, true), x => x ? availablePorts.push(_port + 1) : null), allowHttp ? checkPort(`http://` + getHostname(_port, false), x => x ? availablePorts.push(_port) : null) : null]);
-        });
-        let tries = 0;
-
-        while (tries < 50) {
-          if (availablePorts.length) break;
-          await new Promise(r => setTimeout(() => r(true), 2));
-          tries++;
-        }
-
-        return (!availablePorts.length ?
+        const preparePorts = () => (!availablePorts.length ?
         /* BACKWARDS COMPAT */
         [50006, 50005] : availablePorts).filter(x => {
           if (allowHttp) return true;
@@ -152,7 +140,18 @@ export default class SocketService {
           // Always try to use SSL first.
           return !(b % 2) ? 1 : !(a % 2) ? -1 : 0;
         });
-      })();
+
+        const resolveAndPushPort = port => {
+          availablePorts.push(port);
+          portResolver(preparePorts());
+        };
+
+        [...new Array(5).keys()].map(i => {
+          const _port = startingPort + i * 1500;
+
+          return Promise.all([checkPort(`https://` + getHostname(_port + 1, true), x => x ? resolveAndPushPort(_port + 1) : null), allowHttp ? checkPort(`http://` + getHostname(_port, false), x => x ? resolveAndPushPort(_port) : null) : true]);
+        });
+      });
 
       const trySocket = (port, resolver = null) => {
         let promise;
