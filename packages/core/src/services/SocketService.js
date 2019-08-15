@@ -142,19 +142,23 @@ export default class SocketService {
 		                return !(b % 2) ? 1 : !(a % 2) ? -1 : 0;
 	                });
 
-	                const resolveAndPushPort = port => {
-		                availablePorts.push(port);
+	                const resolveAndPushPort = (port = null) => {
+		                if(port !== null) availablePorts.push(port);
 		                portResolver(preparePorts());
 	                }
 
-	                [...new Array(5).keys()].map(i => {
+	                await Promise.all([...new Array(5).keys()].map(async i => {
 		                const _port = startingPort + i * 1500;
 
-		                return Promise.all([
-			                checkPort(`https://` + getHostname(_port + 1, true), x => x ? resolveAndPushPort(_port + 1) : null),
-			                allowHttp ? checkPort(`http://` + getHostname(_port, false), x => x ? resolveAndPushPort(_port) : null) : true
-		                ]);
-	                })
+		                await checkPort(`https://` + getHostname(_port + 1, true), x => x ? resolveAndPushPort(_port + 1) : null);
+		                if(allowHttp){
+			                await checkPort(`http://` + getHostname(_port, false), x => x ? resolveAndPushPort(_port) : null);
+		                }
+
+		                return true;
+	                }));
+
+	                resolveAndPushPort();
                 });
 
 
