@@ -4,7 +4,7 @@
 	"description": "",
 	"scripts": {
 		"postinstall": "lerna bootstrap",
-		"build": "lerna exec -- babel --out-dir dist src",
+		"build": "lerna exec -- babel --config-file ../../babel.config.js --out-dir dist src",
 		"links": "lerna exec -- yarn link",
 		"publish": "lerna publish",
 		"testfile": "mocha --require @babel/register --exit --timeout 1000000",
