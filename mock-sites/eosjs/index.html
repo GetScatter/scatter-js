@@ -137,16 +137,16 @@
 	    setStatus();
     }, 1);
 
-    // ScatterJS.connect('LernaVanillaTest', {network, allowHttp:false}).then(async connected => {
-    // 	console.log('connected', connected);
-    //     if(!connected) return false;
-    //     scatter = ScatterJS.scatter;
-    //     eos = scatter.eos(network, Eos);
-    //
-    //     scatter.addEventHandler((event, payload) => {
-    //         console.log('app event', event, payload);
-    //     });
-    // });
+    ScatterJS.connect('LernaVanillaTest', {network, allowHttp:false}).then(async connected => {
+    	console.log('connected', connected);
+        if(!connected) return false;
+        scatter = ScatterJS.scatter;
+        eos = scatter.eos(network, Eos);
+
+        scatter.addEventHandler((event, payload) => {
+            console.log('app event', event, payload);
+        });
+    });
 
     window.getVersion = async () => {
         const version = await scatter.getVersion();
@@ -154,16 +154,14 @@
     };
 
     window.login = async () => {
-	    // await ScatterJS.login();
-	    // eos = scatter.eos(network, Eos);
+	    await ScatterJS.login();
+	    eos = scatter.eos(network, Eos);
 
-	    ScatterJS.connect('LernaVanillaTest', {network, allowHttp:false}).then(async connected => {
-		    console.log('connected from dapp', connected);
-		    if(!connected) return false;
-		    // scatter = ScatterJS.scatter;
-		    // eos = scatter.eos(network, Eos);
-		    await ScatterJS.login();
-	    });
+	    // ScatterJS.connect('LernaVanillaTest', {network, allowHttp:false}).then(async connected => {
+		//     console.log('connected from dapp', connected);
+		//     if(!connected) return false;
+		//     await ScatterJS.login();
+	    // });
     };
 
     window.loginWithoutNetworks = async () => {
