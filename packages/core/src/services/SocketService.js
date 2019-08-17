@@ -46,151 +46,140 @@ export default class SocketService {
     link(allowHttp = true, _uuid = null, socketHost = null){
 	    this.uuid = _uuid;
 
-        return Promise.race([
-            new Promise((resolve, reject) => setTimeout(() => {
-                if(this.connected) return;
-                resolve(false);
+        return new Promise(async resolve => {
 
-                if(this.socket) {
-	                this.socket.close();
-	                this.socket = null;
-                }
-            }, this.timeout)),
-            new Promise(async (resolve, reject) => {
-
-                const setupSocket = () => {
-	                this.socket.onmessage = msg => {
-                        // Handshaking/Upgrading
-                        if(msg.data.indexOf('42/scatter') === -1) return false;
+	        const setupSocket = () => {
+		        this.socket.onmessage = msg => {
+			        // Handshaking/Upgrading
+			        if(msg.data.indexOf('42/scatter') === -1) return false;
 
 
-                        // Real message
-                        const [type, data] = JSON.parse(msg.data.replace('42/scatter,', ''));
+			        // Real message
+			        const [type, data] = JSON.parse(msg.data.replace('42/scatter,', ''));
 
-		                if(type === 'pong') return;
-		                if(type === 'ping') return this.socket.send(`42/scatter,["pong"]`);
+			        if(type === 'pong') return;
+			        if(type === 'ping') return this.socket.send(`42/scatter,["pong"]`);
 
-                        switch(type){
-                            case 'paired': return msg_paired(data);
-                            case 'rekey': return msg_rekey();
-                            case 'api': return msg_api(data);
-                            case 'event': return event_api(data);
-                        }
-                    };
-
-
-                    const msg_paired = result => {
-	                    this.paired = result;
-
-                        if(this.paired) {
-                            const savedKey = StorageService.getAppKey();
-                            const hashed = this.appkey.indexOf('appkey:') > -1 ? sha256(this.appkey) : this.appkey;
-
-                            if (!savedKey || savedKey !== hashed) {
-                                StorageService.setAppKey(hashed);
-	                            this.appkey = StorageService.getAppKey();
-                            }
-                        }
-
-	                    this.pairingPromise.resolve(result);
-                    };
-
-                    const msg_rekey = () => {
-	                    this.appkey = 'appkey:'+random();
-	                    this.send('rekeyed', {data:{ appkey:this.appkey, origin:this.getOrigin() }, plugin:this.plugin});
-                    };
-
-                    const msg_api = response => {
-                        const openRequest = this.openRequests.find(x => x.id === response.id);
-                        if(!openRequest) return;
-
-	                    this.openRequests = this.openRequests.filter(x => x.id !== response.id);
-
-                        const isErrorResponse = typeof response.result === 'object'
-                            && response.result !== null
-                            && response.result.hasOwnProperty('isError');
-
-                        if(isErrorResponse) openRequest.reject(response.result);
-                        else openRequest.resolve(response.result);
-                    };
-
-                    const event_api = ({event, payload}) => {
-						if(Object.keys(this.eventHandlers).length) Object.keys(this.eventHandlers).map(key => {
-							this.eventHandlers[key](event, payload);
-						});
-                    };
-                };
-
-                const getHostname = (port, ssl) => {
-                    if(socketHost) return socketHost;
-                    return ssl ? `local.get-scatter.com:${port}` : `127.0.0.1:${port}`;
-                }
-
-                const ports = await new Promise(async (portResolver) => {
-	                if(socketHost) return portResolver([50006]);
-
-	                const checkPort = (host, cb) => fetch(host).then(r => r.text()).then(r => cb(r === 'scatter')).catch(() => cb(false));
-
-	                let startingPort = 50005;
-	                let availablePorts = [];
-
-	                const preparePorts = () => (!availablePorts.length ?  /* BACKWARDS COMPAT */ [50006, 50005] : availablePorts).filter(x => {
-		                if(allowHttp) return true;
-		                return !(x % 2);
-	                }).sort((a,b) => {
-		                // Always try to use SSL first.
-		                return !(b % 2) ? 1 : !(a % 2) ? -1 : 0;
-	                });
-
-	                const resolveAndPushPort = (port = null) => {
-		                if(port !== null) availablePorts.push(port);
-		                portResolver(preparePorts());
-	                }
-
-	                await Promise.all([...new Array(5).keys()].map(async i => {
-		                const _port = startingPort + i * 1500;
-
-		                await checkPort(`https://` + getHostname(_port + 1, true), x => x ? resolveAndPushPort(_port + 1) : null);
-		                if(allowHttp){
-			                await checkPort(`http://` + getHostname(_port, false), x => x ? resolveAndPushPort(_port) : null);
-		                }
-
-		                return true;
-	                }));
-
-	                resolveAndPushPort();
-                });
+			        switch(type){
+				        case 'paired': return msg_paired(data);
+				        case 'rekey': return msg_rekey();
+				        case 'api': return msg_api(data);
+				        case 'event': return event_api(data);
+			        }
+		        };
 
 
-                const trySocket = (port, resolver = null) => {
-                    let promise;
-                    if(!resolver) promise = new Promise(r => resolver = r);
-	                const ssl = !(port % 2);
-                    const hostname = getHostname(port, ssl);
-                    const protocol = ssl ? 'wss://' : 'ws://';
-                    const host = `${protocol}${hostname}${suffix}`;
-                    const s = new WebSocket(host);
+		        const msg_paired = result => {
+			        this.paired = result;
 
-                    s.onerror = () => resolver(false);
-                    s.onopen = () => resolver(s);
+			        if(this.paired) {
+				        const savedKey = StorageService.getAppKey();
+				        const hashed = this.appkey.indexOf('appkey:') > -1 ? sha256(this.appkey) : this.appkey;
 
-                    return promise;
-                };
+				        if (!savedKey || savedKey !== hashed) {
+					        StorageService.setAppKey(hashed);
+					        this.appkey = StorageService.getAppKey();
+				        }
+			        }
 
-                for(let i = 0; i < ports.length; i++){
-                    const s = await trySocket(ports[i]);
-                    if(s){
-	                    this.socket = s;
-	                    this.send();
-	                    this.connected = true;
-	                    this.pair(true).then(() => resolve(true));
-	                    setupSocket();
-	                    break;
-                    }
-                }
+			        this.pairingPromise.resolve(result);
+		        };
 
-            })
-        ])
+		        const msg_rekey = () => {
+			        this.appkey = 'appkey:'+random();
+			        this.send('rekeyed', {data:{ appkey:this.appkey, origin:this.getOrigin() }, plugin:this.plugin});
+		        };
+
+		        const msg_api = response => {
+			        const openRequest = this.openRequests.find(x => x.id === response.id);
+			        if(!openRequest) return;
+
+			        this.openRequests = this.openRequests.filter(x => x.id !== response.id);
+
+			        const isErrorResponse = typeof response.result === 'object'
+				        && response.result !== null
+				        && response.result.hasOwnProperty('isError');
+
+			        if(isErrorResponse) openRequest.reject(response.result);
+			        else openRequest.resolve(response.result);
+		        };
+
+		        const event_api = ({event, payload}) => {
+			        if(Object.keys(this.eventHandlers).length) Object.keys(this.eventHandlers).map(key => {
+				        this.eventHandlers[key](event, payload);
+			        });
+		        };
+	        };
+
+	        const getHostname = (port, ssl) => {
+		        if(socketHost) return socketHost;
+		        return ssl ? `local.get-scatter.com:${port}` : `127.0.0.1:${port}`;
+	        }
+
+	        const ports = await new Promise(async (portResolver) => {
+		        if(socketHost) return portResolver([50006]);
+
+		        const checkPort = (host, cb) => fetch(host).then(r => r.text()).then(r => cb(r === 'scatter')).catch(() => cb(false));
+
+		        let startingPort = 50005;
+		        let availablePorts = [];
+
+		        const preparePorts = () => (!availablePorts.length ?  /* BACKWARDS COMPAT */ [50006, 50005] : availablePorts).filter(x => {
+			        if(allowHttp) return true;
+			        return !(x % 2);
+		        }).sort((a,b) => {
+			        // Always try to use SSL first.
+			        return !(b % 2) ? 1 : !(a % 2) ? -1 : 0;
+		        });
+
+		        let returned = false;
+		        const resolveAndPushPort = (port = null) => {
+			        if(returned) return;
+			        returned = true;
+			        if(port !== null) availablePorts.push(port);
+			        portResolver(preparePorts());
+		        }
+
+		        await Promise.all([...new Array(5).keys()].map(async i => {
+			        if(returned) return;
+			        const _port = startingPort + i * 1500;
+
+			        await checkPort(`https://` + getHostname(_port + 1, true), x => x ? resolveAndPushPort(_port + 1) : null);
+			        if(allowHttp) await checkPort(`http://` + getHostname(_port, false), x => x ? resolveAndPushPort(_port) : null);
+
+			        return true;
+		        }));
+
+		        resolveAndPushPort();
+	        });
+
+	        const trySocket = port => new Promise(socketResolver => {
+		        const ssl = !(port % 2);
+		        const hostname = getHostname(port, ssl);
+		        const protocol = ssl ? 'wss://' : 'ws://';
+		        const s = new WebSocket(`${protocol}${hostname}${suffix}`);
+
+		        s.onerror = () => socketResolver(false);
+		        s.onopen = () => socketResolver(s);
+	        });
+
+	        let connected = false;
+	        for(let i = 0; i < ports.length; i++){
+		        if(connected) continue;
+		        const s = await trySocket(ports[i]);
+		        if(s){
+			        connected = true;
+			        this.socket = s;
+			        this.send();
+			        this.connected = true;
+			        setupSocket();
+			        this.pairingPromise = null;
+			        this.pair(true).then(() => resolve(true));
+			        break;
+		        }
+	        }
+
+        })
     }
 
     isConnected(){
@@ -202,7 +191,6 @@ export default class SocketService {
     }
 
     disconnect(){
-        console.log('disconnect')
         if(this.socket) this.socket.close();
         return true;
     }

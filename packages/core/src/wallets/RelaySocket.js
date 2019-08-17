@@ -22,7 +22,7 @@ export default class RelaySocket extends Plugin {
 	connect(pluginName, options = {}){
 		return new Promise(async resolve => {
 			if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
-			options = Object.assign({initTimeout:1000, linkTimeout:3000, allowHttp:true}, options);
+			options = Object.assign({linkTimeout:3000, allowHttp:true}, options);
 
 			const uuid = await fetch(`${WEB_HOST}/app/connect/${device}`).then(x => x.json());
 			if(!uuid) return resolve(false);

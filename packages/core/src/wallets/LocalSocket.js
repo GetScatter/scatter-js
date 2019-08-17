@@ -16,8 +16,7 @@ export default class LocalSocket extends Plugin {
 	connect(pluginName, options = {}){
 		return new Promise(resolve => {
 			if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
-			options = Object.assign({initTimeout:1000, linkTimeout:3000, allowHttp:true}, options);
-
+			options = Object.assign({linkTimeout:3000, allowHttp:true}, options);
 
 			// Tries to set up LocalSocket Connection
 			this.socketService = new SocketService(pluginName, options.linkTimeout);

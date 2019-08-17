@@ -14,6 +14,7 @@ const EVENTS = {
   Disconnected: 'dced',
   LoggedOut: 'logout'
 };
+let socket = null;
 let socketSetters = [];
 let holderFns = {};
 
@@ -50,14 +51,20 @@ class Index {
       if (!options) options = {};
       this.network = options.hasOwnProperty('network') ? options.network : null;
       const wallets = PluginRepository.wallets();
+      if (socket) socket.disconnect();
       let connected = false;
       let promises = [];
 
       for (let i = 0; i < wallets.length; i++) {
+        if (connected) return;
         const wallet = wallets[i];
         promises.push(Promise.race([wallet.connect(pluginName, options).then(async socketService => {
           if (socketService) {
-            if (socketService !== 'injection') socketSetters.map(x => x(socketService));
+            if (socketService !== 'injection') {
+              socket = socketService;
+              socketSetters.map(x => x(socketService));
+            }
+
             if (typeof wallet.runBeforeInterfacing === 'function') await wallet.runBeforeInterfacing();
             new WalletInterface(wallet.name, wallet.methods(), holderFns.get());
             if (typeof wallet.runAfterInterfacing === 'function') await wallet.runAfterInterfacing();
@@ -65,11 +72,11 @@ class Index {
             connected = true;
             resolve(true);
           }
-        }), new Promise(r => setTimeout(() => r(false), options.initTimeout || 3500))]));
+        }).catch(() => false), new Promise(r => setTimeout(() => r(false), 5000))]));
       }
 
       await Promise.all(promises);
-      return resolve(connected);
+      resolve(false);
     });
   }
 

@@ -40,15 +40,7 @@ export default class SocketService {
 
   link(allowHttp = true, _uuid = null, socketHost = null) {
     this.uuid = _uuid;
-    return Promise.race([new Promise((resolve, reject) => setTimeout(() => {
-      if (this.connected) return;
-      resolve(false);
-
-      if (this.socket) {
-        this.socket.close();
-        this.socket = null;
-      }
-    }, this.timeout)), new Promise(async (resolve, reject) => {
+    return new Promise(async resolve => {
       const setupSocket = () => {
         this.socket.onmessage = msg => {
           // Handshaking/Upgrading
@@ -141,54 +133,56 @@ export default class SocketService {
           return !(b % 2) ? 1 : !(a % 2) ? -1 : 0;
         });
 
+        let returned = false;
+
         const resolveAndPushPort = (port = null) => {
+          if (returned) return;
+          returned = true;
           if (port !== null) availablePorts.push(port);
           portResolver(preparePorts());
         };
 
         await Promise.all([...new Array(5).keys()].map(async i => {
+          if (returned) return;
+
           const _port = startingPort + i * 1500;
 
           await checkPort(`https://` + getHostname(_port + 1, true), x => x ? resolveAndPushPort(_port + 1) : null);
-
-          if (allowHttp) {
-            await checkPort(`http://` + getHostname(_port, false), x => x ? resolveAndPushPort(_port) : null);
-          }
-
+          if (allowHttp) await checkPort(`http://` + getHostname(_port, false), x => x ? resolveAndPushPort(_port) : null);
           return true;
         }));
         resolveAndPushPort();
       });
 
-      const trySocket = (port, resolver = null) => {
-        let promise;
-        if (!resolver) promise = new Promise(r => resolver = r);
+      const trySocket = port => new Promise(socketResolver => {
         const ssl = !(port % 2);
         const hostname = getHostname(port, ssl);
         const protocol = ssl ? 'wss://' : 'ws://';
-        const host = `${protocol}${hostname}${suffix}`;
-        const s = new WebSocket(host);
+        const s = new WebSocket(`${protocol}${hostname}${suffix}`);
 
-        s.onerror = () => resolver(false);
+        s.onerror = () => socketResolver(false);
 
-        s.onopen = () => resolver(s);
+        s.onopen = () => socketResolver(s);
+      });
 
-        return promise;
-      };
+      let connected = false;
 
       for (let i = 0; i < ports.length; i++) {
+        if (connected) continue;
         const s = await trySocket(ports[i]);
 
         if (s) {
+          connected = true;
           this.socket = s;
           this.send();
           this.connected = true;
-          this.pair(true).then(() => resolve(true));
           setupSocket();
+          this.pairingPromise = null;
+          this.pair(true).then(() => resolve(true));
           break;
         }
       }
-    })]);
+    });
   }
 
   isConnected() {
@@ -200,7 +194,6 @@ export default class SocketService {
   }
 
   disconnect() {
-    console.log('disconnect');
     if (this.socket) this.socket.close();
     return true;
   }
