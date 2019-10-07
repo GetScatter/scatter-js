@@ -6,6 +6,7 @@
 
     <script src='assets/eosjs-api.js'></script>
     <script src='assets/eosjs-jsonrpc.js'></script>
+    <script src='assets/eosjs-jssig.js'></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
 
     <!--<script>-->
@@ -47,13 +48,14 @@
 <button onclick="logout()">Forget Identity</button>
 <button onclick="transfer()">Transfer</button>
 <button onclick="hookTransfer()">Hook Transfer</button>
+<button onclick="transferDualSign()">Multi Hook Transfer</button>
 <button onclick="authenticate()">Authenticate</button>
 
 <script>
 
 
 
-	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx({Api:eosjs_api.Api, JsonRpc:eosjs_jsonrpc.JsonRpc, textEncoder:() => {}}) );
+	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx({Api:eosjs_api.default, JsonRpc:eosjs_jsonrpc.default, textEncoder:() => {}}) );
 
 	const network = ScatterJS.Network.fromJson({
 		blockchain:'eos',
@@ -81,11 +83,11 @@
 
 	let scatter = null;
 
-	const rpc = new eosjs_jsonrpc.JsonRpc(network.fullhost());
+	const rpc = new eosjs_jsonrpc.default(network.fullhost());
 
-	const getApi = (signatureProvider) => new eosjs_api.Api({ rpc, signatureProvider });
+	const getApi = (signatureProvider) => new eosjs_api.default({ rpc, signatureProvider });
 
-	const getScatterEos = () => scatter.eos(network, eosjs_api.Api, {rpc});
+	const getScatterEos = () => scatter.eos(network, eosjs_api.default, {rpc});
 
 	const setStatus = () => {
 		const status = document.getElementById('status');
@@ -111,6 +113,72 @@
 	window.transfer = async () => {
 		const api = getScatterEos();
 		tryTransfer(api);
+	};
+
+	window.transferDualSign = async () => {
+		const backendApiSigner = {
+			getAvailableKeys:async () => {
+				return fetch('https://backend.com/keys');
+			},
+
+			sign:async (signargs) => {
+				return fetch('https://backend.com/sign', {
+					method:"POST",
+                    body:JSON.stringify(signargs)
+                })
+			}
+		}
+
+
+		const SECONDARY_ACCOUNT_NAME = '';
+
+		// DONT EVER DO THIS FROM A FRONT END!
+		const localSigner = new eosjs_jssig.default([
+			'SOME_PRIVATE_KEY',
+        ]);
+
+		// EXAMPLE OF AN API BASED SIGNER
+        // MAKE SURE THAT YOU VALIDATE THE TRANSACTION DETAILS IN YOUR API!
+        // const apiSigner = {
+        //     getAvailableKeys:async () => fetch('https://your.api/keys'),
+        //     sign:async (signargs) => fetch('https://your.api/sign', {
+        //     	method:"POST",
+        //         body:JSON.stringify(signargs)
+        //     }),
+        // };
+
+		const signatureProvider = scatter.eosMultiHook(network, [localSigner]);
+
+		const api = new eosjs_api.default({ rpc, signatureProvider });
+		const from = scatter.identity.accounts[0];
+		try {
+			const from = scatter.account('eos');
+			const result = await api.transact({
+				actions: [{
+					account: 'eosio.token',
+					name: 'transfer',
+					authorization: [{
+						actor: from.name,
+						permission: from.authority,
+					},{
+						actor: SECONDARY_ACCOUNT_NAME,
+						permission: 'active',
+					}],
+					data: {
+						from: from.name,
+						to: 'safetransfer',
+						quantity: '0.0001 EOS',
+						memo: from.name,
+					},
+				}]
+			}, {
+				blocksBehind: 3,
+				expireSeconds: 30,
+			});
+			console.log('result', result);
+		} catch (e) {
+			console.error(e);
+		}
 	};
 
 	window.hookTransfer = async () => {

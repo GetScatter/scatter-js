@@ -52,6 +52,69 @@ export default class ScatterEOS extends Plugin {
         }
     }
 
+    multiHook(network, signers){
+        const scatterSigner = this.eosHook(network);
+
+        if(!Array.isArray(signers)) signers = [signers];
+
+        return {
+            getAvailableKeys:async () => {
+	            try {
+		            const scatterKeys = await scatterSigner.getAvailableKeys();
+
+		            let otherKeys = [];
+		            await Promise.all(signers.map(async signer => {
+			            await signer.getAvailableKeys().then(keys => {
+				            keys.map(key => otherKeys.push(key));
+			            });
+		            	return true;
+		            }));
+
+		            return scatterKeys.concat(otherKeys)
+	            } catch(e){
+		            throw new Error(e);
+	            }
+            },
+
+            sign:async (signargs) => {
+	            try {
+		            const serializedTransaction = Buffer.from(signargs.serializedTransaction, 'hex');
+
+		            const individualSignArgs = async provider => ({
+			            abis:signargs.abis,
+			            chainId: network.chainId,
+			            requiredKeys: await provider.getAvailableKeys(),
+			            serializedTransaction
+		            });
+
+		            const pullOutSignatures = result => {
+			            if(typeof result === 'object' && result.hasOwnProperty('signatures')) return result.signatures;
+			            return result;
+		            };
+
+		            const scatterSigs = await scatterSigner
+			            .sign(await individualSignArgs(scatterSigner))
+			            .then(x => pullOutSignatures(x));
+
+		            let otherSigs = [];
+		            await Promise.all(signers.map(async signer => {
+			            await signer.sign(await individualSignArgs(signer)).then(result => {
+				            pullOutSignatures(result).map(sig => otherSigs.push(sig));
+			            });
+			            return true;
+		            }));
+
+		            return {
+			            signatures: scatterSigs.concat(otherSigs),
+			            serializedTransaction
+		            }
+	            } catch(e){
+	            	throw new Error(e);
+	            }
+            }
+        }
+    }
+
     signatureProvider(...args){
 
         const throwIfNoIdentity = args[0];

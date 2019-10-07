@@ -40,6 +40,7 @@ class Index {
 		if(plugin.type === PluginTypes.BLOCKCHAIN_SUPPORT){
 			this[plugin.name] = plugin.signatureProvider(noIdFunc, () => holderFns.get().identity);
 			this[plugin.name+'Hook'] = plugin.hookProvider;
+			if(typeof plugin.multiHook === 'function') this[plugin.name+'MultiHook'] = plugin.multiHook;
 			socketSetters.push(plugin.setSocketService);
 		}
 
