@@ -1,6 +1,7 @@
 const path = require('path');
 const webpack = require('webpack')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
+const WebpackAutoInject = require('webpack-auto-inject-version');
 
 
 const getPackagePath = x => `./packages/${x}/src/index.js`;
@@ -48,7 +49,19 @@ module.exports = {
 		],
 	},
 	plugins: [
+		new webpack.BannerPlugin({
+			banner:(x) => {
+				const packageName = x.filename.replace('scatterjs-', '').replace('.min.js', '');
+				const version = require(`./packages/${packageName}/package.json`).version;
+				return `
+ScatterJS - ${packageName} v${version}
+https://github.com/GetScatter/scatter-js/
+Released under the MIT license.
+				`;
+			}
+		}),
 		// new UglifyJsPlugin()
+
 	],
 	stats: { colors: true },
 	// devtool: false,

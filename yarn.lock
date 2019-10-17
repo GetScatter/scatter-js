@@ -7195,6 +7195,11 @@ webidl-conversions@^4.0.2:
   resolved "https://registry.yarnpkg.com/webidl-conversions/-/webidl-conversions-4.0.2.tgz#a855980b1f0b6b359ba1d5d9fb39ae941faa63ad"
   integrity sha512-YQ+BmxuTgd6UXZW3+ICGfyqRyHXVlD5GtQr5+qjiNW7bF0cqrzX500HVXPBOvgXb5YnzDd+h0zqyv61KUD7+Sg==
 
+webpack-auto-inject-version@^1.2.2:
+  version "1.2.2"
+  resolved "https://registry.yarnpkg.com/webpack-auto-inject-version/-/webpack-auto-inject-version-1.2.2.tgz#8fa15f6ea7c4a2a4adcdc5d8b1dc47693dddc971"
+  integrity sha512-duFSWzZe/OY8zyr2DpymzZeY8yI1RSZ9hu9wDwZy/fhxwntgpEzTwyIB/U7ig+FB26mif8xx5zS1E3Co9c5cYA==
+
 webpack-cli@^3.3.9:
   version "3.3.9"
   resolved "https://registry.yarnpkg.com/webpack-cli/-/webpack-cli-3.3.9.tgz#79c27e71f94b7fe324d594ab64a8e396b9daa91a"

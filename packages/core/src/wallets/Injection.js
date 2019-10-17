@@ -1,17 +1,26 @@
 import * as PluginTypes from "../plugins/PluginTypes";
 import Plugin from "../plugins/Plugin";
+import WalletAPI from "./WalletAPI";
 
 
 let isAvailable = false;
-if(typeof window !== 'undefined' && typeof document !== 'undefined') {
-	if(typeof window.scatter !== 'undefined') isAvailable = true;
-	else document.addEventListener('scatterLoaded', () => isAvailable = true);
+if(typeof document !== 'undefined'){
+	document.addEventListener('walletLoaded', () => isAvailable = true);
 }
+
+const checkForWallet = () => {
+	if(typeof window !== 'undefined' && typeof window.wallet !== 'undefined') {
+		isAvailable = true;
+		return true;
+	}
+	return false;
+};
+
 
 const pollExistence = async (resolver = null, tries = 0) => {
 	return new Promise(r => {
 		if(!resolver) resolver = r;
-		if(isAvailable) return resolver(true);
+		if(isAvailable || checkForWallet()) return resolver(true);
 		if(tries > 5) return resolver(false);
 		setTimeout(() => pollExistence(resolver, tries + 1), 100);
 	})
@@ -20,8 +29,8 @@ const pollExistence = async (resolver = null, tries = 0) => {
 export default class Injection extends Plugin {
 
 	constructor(context, holderFns){
-		super('InjectedWallet', PluginTypes.WALLET_SUPPORT);
-		this.name = 'InjectedWallet';
+		super('InjectedWalletV2', PluginTypes.WALLET_SUPPORT);
+		this.name = 'InjectedWalletV2';
 		this.context = context;
 		this.holderFns = holderFns;
 	}
@@ -31,45 +40,21 @@ export default class Injection extends Plugin {
 			const found = await pollExistence();
 			if(found) {
 				if(this.holderFns && !this.holderFns.get().wallet) this.holderFns.get().wallet = this.name;
-				resolve('injection');
+				resolve({
+					disconnect:() => {},
+					sendApiRequest:window.wallet.sendApiRequest
+				});
 			}
 		})
 	}
 
-	async runBeforeInterfacing(){
-		const network = this.context.network;
-
-		if(network){
-			const getId = window.scatter.getIdentity.bind(window.scatter);
-			const useIdentity = window.scatter.useIdentity.bind(window.scatter);
-			window.scatter.getIdentity = fields => getId(fields ? fields : {accounts:[network]}).then(id => {
-				this.holderFns.get().identity = id;
-				useIdentity(id);
-				return id;
-			});
-
-			const suggest = window.scatter.suggestNetwork.bind(window.scatter);
-			window.scatter.suggestNetwork = net => suggest(net ? net : network);
-		}
-
-		if(this.holderFns.get().wallet === this.name){
-			window.scatter.wallet = this.name;
-		}
-
-		this.holderFns.set(window.scatter);
-		this.context = this.holderFns.get();
-
-		return true;
-	}
-
 	async runAfterInterfacing(){
-		this.context.isExtension = true;
-		this.context.connect = this.connect;
+		this.holderFns.get().identity = await this.holderFns.get().getIdentityFromPermissions();
 		return true;
 	}
 
-	methods(){ return {
-
-	}; }
+	methods(){
+		return WalletAPI.getMethods(this, window.wallet);
+	}
 
 }
