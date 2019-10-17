@@ -7,6 +7,7 @@ import Network from './models/Network';
 import WalletInterface, {WALLET_METHODS} from './models/WalletInterface';
 import LocalSocket from "./wallets/LocalSocket";
 import RelaySocket from "./wallets/RelaySocket";
+import LegacyInjection from "./wallets/LegacyInjection";
 import Injection from "./wallets/Injection";
 import Token from "./models/Token";
 
@@ -29,6 +30,7 @@ class Index {
 		PluginRepository.loadPlugin(new RelaySocket(this, holderFns));
 		PluginRepository.loadPlugin(new LocalSocket(this, holderFns));
 		PluginRepository.loadPlugin(new Injection(this, holderFns));
+		PluginRepository.loadPlugin(new LegacyInjection(this, holderFns));
 	}
 
 	loadPlugin(plugin){
