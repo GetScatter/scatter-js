@@ -1,7 +1,6 @@
 const path = require('path');
 const webpack = require('webpack')
 const UglifyJsPlugin = require('uglifyjs-webpack-plugin')
-const WebpackAutoInject = require('webpack-auto-inject-version');
 
 
 const getPackagePath = x => `./packages/${x}/src/index.js`;
