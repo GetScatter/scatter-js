@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>Web Tester</title>
 
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/vConsole/3.3.4/vconsole.min.js'></script>
     <script src='assets/eosjs-api.js'></script>
     <script src='assets/eosjs-jsonrpc.js'></script>
     <script src='assets/eosjs-jssig.js'></script>
@@ -53,7 +55,7 @@
 
 <script>
 
-
+	const vConsole = new VConsole({});
 
 	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx({Api:eosjs_api.default, JsonRpc:eosjs_jsonrpc.default, textEncoder:() => {}}) );
 
@@ -105,9 +107,13 @@
 		console.log('connect', connected);
 		if(!connected) return false;
 		scatter = ScatterJS.scatter;
+		console.log('scatter', ScatterJS);
 	});
 
-	window.login = async () => await scatter.login();
+	window.login = async () => {
+		console.log('login', await scatter.login());
+		console.log('scatter', ScatterJS);
+	}
 	window.logout = () => scatter.logout();
 
 	window.transfer = async () => {

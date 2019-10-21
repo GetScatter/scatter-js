@@ -91,6 +91,12 @@ export default class SocketService {
 		        };
 
 		        const msg_api = response => {
+			        try {
+				        response = JSON.parse(response)
+			        } catch(e){
+			        	console.error('Error parsing json for response: ', response);
+			        }
+
 			        const openRequest = this.openRequests.find(x => x.id === response.id);
 			        if(!openRequest) return;
 
@@ -99,6 +105,7 @@ export default class SocketService {
 			        const isErrorResponse = typeof response.result === 'object'
 				        && response.result !== null
 				        && response.result.hasOwnProperty('isError');
+
 
 			        if(isErrorResponse) openRequest.reject(response.result);
 			        else openRequest.resolve(response.result);
@@ -220,6 +227,7 @@ export default class SocketService {
 
 
 		        this.openRequests.push(Object.assign(request, {resolve, reject}));
+
 		        this.send('api', {data:request, plugin:this.plugin})
             })
         });

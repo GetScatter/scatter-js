@@ -5,6 +5,8 @@
     <title>Web Tester</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/vConsole/3.3.4/vconsole.min.js'></script>
     <script src="https://cdn.jsdelivr.net/npm/eosjs@16.0.9/lib/eos.min.js"></script>
     <script src="../../bundles/scatterjs-core.min.js"></script>
     <script src="../../bundles/scatterjs-plugin-eosjs.min.js"></script>
@@ -103,6 +105,7 @@
 </a>
 
 <script>
+	const vConsole = new VConsole({});
 
     console.log(typeof Eos);
 	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
