@@ -1,6 +1,6 @@
 {
 	"name": "@scatterjs/eosjs",
-	"version": "1.5.29",
+	"version": "1.5.30",
 	"main": "dist/index.js",
 	"license": "MIT",
 	"gitHead": "dadb46787c05b190765b3a112b85d9d26c451c08",
@@ -11,6 +11,6 @@
 		"dist"
 	],
 	"dependencies": {
-		"@scatterjs/core": "^2.7.46"
+		"@scatterjs/core": "^2.7.47"
 	}
 }
