@@ -263,7 +263,6 @@ From that point forward you can mix-match the plugins you require.
 | tronweb | `npm i -S @scatterjs/core @scatterjs/tron tronweb` |
 | web3 | `npm i -S @scatterjs/core @scatterjs/web3 web3` |
 
-
 ### CDN
 <!-- TODO: FIX CDN now that we are using an org scope -->
 ```
@@ -275,6 +274,24 @@ From that point forward you can mix-match the plugins you require.
 <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-lynx.min.js"></script>
 ```
 
+### Building the minified bundles from Git
+
+If you don't want to use Scatter's CDN, and you can't/don't want to use the NPM packages, then you can also
+build the Scatter-JS bundles from source. 
+
+Webpack will automatically add a version/license header to the top of the bundle files, so that you can identify 
+the version of each Scatter-JS component after you've copied them into a project.
+
+To generate the `.min.js` files from the source code in this repository, simply run the following commands:
+
+```bash
+git clone https://github.com/GetScatter/scatter-js.git
+cd scatter-js
+# Install NPM dependencies
+yarn install        # alternative: npm install
+# Generate the .min.js minified JS bundles into the folder 'bundles/' using Webpack
+yarn run pack       # alternative: npm run pack
+```
 
 
 <br/><br/>
