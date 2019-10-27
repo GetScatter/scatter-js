@@ -13,7 +13,8 @@
 		"ws": "^6.1.0"
 	},
 	"files": [
-		"dist"
+		"dist",
+		"types"
 	],
 	"gitHead": "dadb46787c05b190765b3a112b85d9d26c451c08",
 	"publishConfig": {
