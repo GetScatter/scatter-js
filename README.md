@@ -430,7 +430,7 @@ const result = await eos.transfer(...);
 ```js
 import {JsonRpc, Api} from 'eosjs'
 const rpc = new JsonRpc(network.fullhost());
-const eos = ScatterJS.eos(network, Api, {rpc}));
+const eos = ScatterJS.eos(network, Api, {rpc});
 
 const result = await eos.transact({...});
 ```
