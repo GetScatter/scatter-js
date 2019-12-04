@@ -187,7 +187,6 @@
 
 	window.hookTransfer = async () => {
 		const api = getApi(scatter.eosHook(network));
-		const from = scatter.identity.accounts[0];
 		tryTransfer(api);
 	};
 

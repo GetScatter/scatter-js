@@ -91,11 +91,8 @@ export default class SocketService {
 		        };
 
 		        const msg_api = response => {
-			        try {
-				        response = JSON.parse(response)
-			        } catch(e){
-			        	console.error('Error parsing json for response: ', response);
-			        }
+		        	// If not already parsed into JSON
+			        try { response = JSON.parse(response); } catch(e){}
 
 			        const openRequest = this.openRequests.find(x => x.id === response.id);
 			        if(!openRequest) return;

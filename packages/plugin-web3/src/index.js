@@ -24,7 +24,7 @@ class ScatterEthereumWallet {
     }
 
     async getAccounts(callback) {
-	    const result = await SocketService.sendApiRequest({
+	    const result = await socketService.sendApiRequest({
 		    type:'identityFromPermissions',
 		    payload:{}
 	    });
