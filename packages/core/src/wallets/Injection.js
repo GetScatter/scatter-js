@@ -54,7 +54,7 @@ export default class Injection extends Plugin {
 	}
 
 	methods(){
-		return WalletAPI.getMethods(this, window.wallet);
+		return WalletAPI.getMethods(this, () => window.wallet);
 	}
 
 }

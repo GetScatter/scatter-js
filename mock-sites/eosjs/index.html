@@ -77,6 +77,7 @@
 <h1>EOSIO</h1>
 
 <button onclick="transfer()">Transfer</button>
+<button onclick="stableTransfer()">Fiat/Stable-coin Transfer</button>
 <button onclick="transferWithFields()">Transfer with Fields</button>
 <button onclick="contract()">Contract</button>
 <button onclick="multi()">Multi Action Contract</button>
@@ -105,7 +106,7 @@
 </a>
 
 <script>
-	const vConsole = new VConsole({});
+	// const vConsole = new VConsole({});
 
     console.log(typeof Eos);
 	ScatterJS.plugins( new ScatterEOS(), new ScatterLynx(Eos) );
@@ -157,15 +158,16 @@
     };
 
     window.login = async () => {
-	    await ScatterJS.login();
-	    eos = scatter.eos(network, Eos);
+	    // await ScatterJS.login();
+	    // eos = scatter.eos(network, Eos);
 
-	    // ScatterJS.connect('LernaVanillaTest', {network, allowHttp:false}).then(async connected => {
-		//     console.log('connected from dapp', connected);
-		//     if(!connected) return false;
-		//     await ScatterJS.login();
-		//     scatter = ScatterJS;
-	    // });
+	    ScatterJS.connect('LernaVanillaTest', {network, allowHttp:false}).then(async connected => {
+		    console.log('connected from dapp', connected);
+		    if(!connected) return false;
+		    scatter = ScatterJS.scatter;
+		    eos = scatter.eos(network, Eos);
+		    await ScatterJS.login();
+	    });
     };
 
     window.loginWithoutNetworks = async () => {
@@ -350,6 +352,18 @@
         })
     };
 
+    window.stableTransfer = async () => {
+	    const account = ScatterJS.account('eos');
+        const opts = { authorization:[`${account.name}@${account.authority}`], requiredFields:{} };
+	    eos.contract('eosdtsttoken').then(contract => {
+		    contract.transfer(account.name, 'safetransfer', '1.0000 EOSDT', account.name, opts).then(trx => {
+			    console.log('trx', trx);
+		    }).catch(err => {
+			    console.error(err);
+		    })
+	    })
+    };
+
     window.transferWithFields = async () => {
         const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
         const requiredFields = {
@@ -377,13 +391,6 @@
     window.contract = () => {
         const account = scatter.identity.accounts.find(x => x.blockchain === 'eos');
         const opts = { authorization:[`${account.name}@${account.authority}`] };
-        // eos.contract('eosio.token', {requiredFields:{}}).then(contract => {
-        //     contract.transfer(account.name, 'eosio', '1.0000 EOS', '', opts).then(trx => {
-        //         console.log('trx', trx);
-        //     }).catch(err => {
-        //         console.error(err);
-        //     })
-        // })
         eos.contract('wizardstoken').then(contract => {
             contract.createwizard(opts).then(trx => {
                 console.log('trx', trx);
