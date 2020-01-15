@@ -187,7 +187,7 @@ export default class SocketService {
     }
 
     isConnected(){
-    	return this.socket.readyState === 1;
+    	return this.socket && this.socket.readyState === 1;
         //return this.connected;
     }
 
