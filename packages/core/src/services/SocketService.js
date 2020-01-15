@@ -187,7 +187,8 @@ export default class SocketService {
     }
 
     isConnected(){
-        return this.connected;
+    	return this.socket.readyState === 1;
+        //return this.connected;
     }
 
     isPaired(){

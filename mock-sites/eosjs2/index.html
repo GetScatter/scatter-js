@@ -111,6 +111,7 @@
 	});
 
 	window.login = async () => {
+		console.log('conn', ScatterJS.isConnected());
 		console.log('login', await scatter.login());
 		console.log('scatter', ScatterJS);
 	}
