@@ -3,7 +3,10 @@
 	"version": "1.5.37",
 	"main": "dist/index.js",
 	"license": "MIT",
-	"repository": "github:GetScatter/scatter-js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/GetScatter/scatter-js"
+	},
 	"dependencies": {
 		"@scatterjs/core": "^2.7.51",
 		"web3-provider-engine": "^14.1.0"

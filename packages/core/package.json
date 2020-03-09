@@ -3,7 +3,10 @@
 	"version": "2.7.51",
 	"main": "dist/index.js",
 	"license": "MIT",
-	"repository": "github:GetScatter/scatter-js",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/GetScatter/scatter-js"
+	},
 	"dependencies": {
 		"create-hash": "^1.2.0",
 		"device-uuid": "^1.0.4",
