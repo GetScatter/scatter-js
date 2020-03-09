@@ -1,22 +1,22 @@
 {
-    "name": "@scatterjs/core",
-    "version": "2.7.51",
-    "main": "dist/index.js",
-    "license": "MIT",
-    "repository": "github:GetScatter/scatter-js",
-    "dependencies": {
-        "create-hash": "^1.2.0",
-        "device-uuid": "^1.0.4",
-        "es6-promise": "^4.2.4",
-        "get-random-values": "^1.2.0",
-        "isomorphic-ws": "^4.0.1",
-        "ws": "^6.1.0"
-    },
-    "files": [
-        "dist"
-    ],
-    "gitHead": "dadb46787c05b190765b3a112b85d9d26c451c08",
-    "publishConfig": {
-        "access": "public"
-    }
+	"name": "@scatterjs/core",
+	"version": "2.7.51",
+	"main": "dist/index.js",
+	"license": "MIT",
+	"repository": "github:GetScatter/scatter-js",
+	"dependencies": {
+		"create-hash": "^1.2.0",
+		"device-uuid": "^1.0.4",
+		"es6-promise": "^4.2.4",
+		"get-random-values": "^1.2.0",
+		"isomorphic-ws": "^4.0.1",
+		"ws": "^6.1.0"
+	},
+	"files": [
+		"dist"
+	],
+	"gitHead": "dadb46787c05b190765b3a112b85d9d26c451c08",
+	"publishConfig": {
+		"access": "public"
+	}
 }

@@ -1,17 +1,17 @@
 {
-    "name": "@scatterjs/eosjs2",
-    "version": "1.5.33",
-    "main": "dist/index.js",
-    "license": "MIT",
-    "repository": "github:GetScatter/scatter-js",
-    "gitHead": "dadb46787c05b190765b3a112b85d9d26c451c08",
-    "publishConfig": {
-        "access": "public"
-    },
-    "files": [
-        "dist"
-    ],
-    "dependencies": {
-        "@scatterjs/core": "^2.7.51"
-    }
+	"name": "@scatterjs/eosjs2",
+	"version": "1.5.33",
+	"main": "dist/index.js",
+	"license": "MIT",
+	"repository": "github:GetScatter/scatter-js",
+	"gitHead": "dadb46787c05b190765b3a112b85d9d26c451c08",
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": [
+		"dist"
+	],
+	"dependencies": {
+		"@scatterjs/core": "^2.7.51"
+	}
 }
