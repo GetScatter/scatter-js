@@ -49,6 +49,8 @@
 <button onclick="login()">Get Identity</button>
 <button onclick="logout()">Forget Identity</button>
 <button onclick="transfer()">Transfer</button>
+<button onclick="multiTokenTransfer()">Multi token transfer</button>
+<button onclick="multiActionTokenTransfer()">Multi action token transfer</button>
 <button onclick="hookTransfer()">Hook Transfer</button>
 <button onclick="transferDualSign()">Multi Hook Transfer</button>
 <button onclick="authenticate()">Authenticate</button>
@@ -120,6 +122,91 @@
 	window.transfer = async () => {
 		const api = getScatterEos();
 		tryTransfer(api);
+	};
+
+	window.multiTokenTransfer = async () => {
+		const api = getScatterEos();
+		try {
+			const from = scatter.account('eos');
+			const result = await api.transact({
+				actions: [{
+                        account: 'eosio.token',
+                        name: 'transfer',
+                        authorization: [{
+                            actor: from.name,
+                            permission: from.authority,
+                        }],
+                        data: {
+                            from: from.name,
+                            to: 'safetransfer',
+                            quantity: '0.0001 EOS',
+                            memo: from.name,
+                        },
+				    },
+					{
+						account: 'eosdtsttoken',
+						name: 'transfer',
+						authorization: [{
+							actor: from.name,
+							permission: from.authority,
+						}],
+						data: {
+							from: from.name,
+							to: 'safetransfer',
+							quantity: '20.0001 EOSDT',
+							memo: from.name,
+						},
+					}]
+			}, {
+				blocksBehind: 3,
+				expireSeconds: 30,
+			});
+			console.log('result', result);
+		} catch (e) {
+			console.error(e);
+		}
+	};
+
+	window.multiActionTokenTransfer = async () => {
+		const api = getScatterEos();
+		try {
+			const from = scatter.account('eos');
+			const result = await api.transact({
+				actions: [{
+                        account: 'eosio.token',
+                        name: 'transfer',
+                        authorization: [{
+                            actor: from.name,
+                            permission: from.authority,
+                        }],
+                        data: {
+                            from: from.name,
+                            to: 'safetransfer',
+                            quantity: '0.0001 EOS',
+                            memo: from.name,
+                        },
+				    },
+					{
+						account: 'eosdtsttoken',
+						name: 'retire',
+						authorization: [{
+							actor: from.name,
+							permission: from.authority,
+						}],
+						data: {
+							from: from.name,
+							quantity: '20.0001 EOSDT',
+							memo: from.name,
+						},
+					}]
+			}, {
+				blocksBehind: 3,
+				expireSeconds: 30,
+			});
+			console.log('result', result);
+		} catch (e) {
+			console.error(e);
+		}
 	};
 
 	window.transferDualSign = async () => {
