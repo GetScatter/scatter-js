@@ -7,6 +7,7 @@
 | blockchain | [![npm version](https://badge.fury.io/js/%40scatterjs%2Feosjs2.svg)](https://badge.fury.io/js/%40scatterjs%2Feosjs2) | @scatterjs/eosjs2 |
 | blockchain | [![npm version](https://badge.fury.io/js/%40scatterjs%2Fweb3.svg)](https://badge.fury.io/js/%40scatterjs%2Fweb3) | @scatterjs/web3 |
 | blockchain | [![npm version](https://badge.fury.io/js/%40scatterjs%2Ftron.svg)](https://badge.fury.io/js/%40scatterjs%2Ftron) | @scatterjs/tron |
+| blockchain | [![npm version](https://badge.fury.io/js/%40scatterjs%2Ffio.svg)](https://badge.fury.io/js/%40scatterjs%2Ffio) | @scatterjs/fio |
 | wallet | [![npm version](https://badge.fury.io/js/%40scatterjs%2Flynx.svg)](https://badge.fury.io/js/%40scatterjs%2Flynx) | @scatterjs/lynx |
 
 
@@ -208,6 +209,61 @@ ScatterJS.connect('YourAppName', {network}).then(connected => {
 </p>
 </details>
 
+<details><summary>fio</summary>
+<p>
+
+Installation: `npm i -S @scatterjs/core @scatterjs/fio @fioprotocol/fiojs`
+```js
+import ScatterJS from '@scatterjs/core';
+import ScatterEOS from '@scatterjs/eosjs2';
+import Fio from '@fioprotocol/fiojs';
+
+ScatterJS.plugins( new ScatterFIO() );
+
+const network = ScatterJS.Network.fromJson({
+    blockchain:'fio',
+    chainId:'b20901380af44ef59c5918439a1f9a41d83669020319a80574b804a5f95cbd7e',
+    host:'testnet.fioprotocol.io',
+    port:443,
+    protocol:'https'
+});
+
+ScatterJS.connect('YourAppName', {network}).then(connected => {
+    if(!connected) return console.error('no scatter');
+
+    const api = ScatterJS.fio(network, Fio, {
+        textEncoder:new TextEncoder(),
+        textDecoder:new TextDecoder(),
+    });
+
+    ScatterJS.login().then(async id => {
+        if(!id) return console.error('no identity');
+
+        const from = ScatterJS.account('fio');
+        const transactionOptions = await api.getTransactionOptions();
+        const tx = await api.transact(Object.assign(transactionOptions, {
+            actions: [{
+                account:'fio.token',
+                name: 'trnsfiopubky',
+                authorization: [{ actor: from.name, permission: 'active', }],
+                data: {
+                    payee_public_key: 'FIO6QizWWbLMkUVBfEbs7a5mHaCNSpgaJR5NEhqhqv3v4xgaMSM1a',
+                    amount: '1000000000', max_fee: 2000000000,
+                    tpid:'',
+                    actor: from.name
+                },
+            }]
+        }));
+
+        console.log('result', tx);
+        const result = await fetch(network.fullhost() + '/v1/chain/push_transaction', { body: JSON.stringify(tx), method: 'POST', }).then(x => x.json());
+    });
+});
+```
+
+</p>
+</details>
+
 ----------------
 
 
@@ -224,7 +280,7 @@ their wallet and mimic our existing APIs.
 
 | dapp supported blockchains | platform | wallet | libs |
 | ---------- | -------- | -------- | -------- |
-| EOSIO, Tron, Ethereum | [Scatter Desktop](https://get-scatter.com/) | Desktop | eosjs@16.0.9, eosjs@20+, tronweb, web3 | 
+| EOSIO, Tron, Ethereum | [Scatter Desktop](https://get-scatter.com/) | Desktop | eosjs@16.0.9, eosjs@20+, tronweb, web3 |
 | EOSIO, Ethereum | Scatter Extension | Desktop | eosjs@16.0.9, web3 |
 | EOSIO | [TokenPocket](https://www.tokenpocket.pro/) | Mobile | eosjs@16.0.9, eosjs@20+ |
 | EOSIO | [MEET.ONE](https://meet.one/) | Mobile | eosjs@16.0.9, eosjs@20+ |
@@ -271,15 +327,16 @@ From that point forward you can mix-match the plugins you require.
 <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-eosjs2.min.js"></script>
 <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-web3.min.js"></script>
 <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-tron.min.js"></script>
+<script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-fio.min.js"></script>
 <script src="https://cdn.scattercdn.com/file/scatter-cdn/js/latest/scatterjs-plugin-lynx.min.js"></script>
 ```
 
 ### Building the minified bundles from Git
 
 If you don't want to use Scatter's CDN, and you can't/don't want to use the NPM packages, then you can also
-build the Scatter-JS bundles from source. 
+build the Scatter-JS bundles from source.
 
-Webpack will automatically add a version/license header to the top of the bundle files, so that you can identify 
+Webpack will automatically add a version/license header to the top of the bundle files, so that you can identify
 the version of each Scatter-JS component after you've copied them into a project.
 
 To generate the `.min.js` files from the source code in this repository, simply run the following commands:
@@ -456,6 +513,21 @@ import Web3 from 'web3';
 const web3 = ScatterJS.web3(network, Web3);
 
 const result = await web3.eth.sendTransaction(...)
+```
+
+<br/>
+
+[fio](https://github.com/fioprotocol/fiojs)
+```js
+import Fio from '@fioprotocol/fiojs';
+const api = ScatterJS.fio(network, Fio, {
+    textEncoder:new TextEncoder(),
+    textDecoder:new TextDecoder(),
+});
+
+const transactionOptions = await api.getTransactionOptions();
+const tx = await api.transact(Object.assign(transactionOptions, { actions: [...] }));
+const result = await fetch('HOST/v1/chain/push_transaction', { body: JSON.stringify(tx), method: 'POST', }).then(x => x.json());
 ```
 
 

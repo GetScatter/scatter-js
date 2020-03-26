@@ -74,9 +74,7 @@
 	const tryTransfer = async api => {
 		try {
 			const from = scatter.account('fio');
-
 			const transactionOptions = await api.getTransactionOptions();
-
 			const tx = await api.transact(Object.assign(transactionOptions, {
 				actions: [{
 					account:'fio.token',
