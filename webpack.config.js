@@ -9,6 +9,7 @@ const packageFiles = [
 	'core',
 	'plugin-eosjs',
 	'plugin-eosjs2',
+	'plugin-fio',
 	'plugin-web3',
 	'plugin-tron',
 	'plugin-lynx',

@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Tester</title>
+
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src='assets/chain-api.js'></script>
+    <script src='assets/chain-jsonrpc.js'></script>
+    <script src='assets/chain-jssig.js'></script>
+    <script src='assets/chain-numeric.js'></script>
+    <script src="../../bundles/scatterjs-core.min.js"></script>
+    <script src="../../bundles/scatterjs-plugin-fio.min.js"></script>
+</head>
+<body>
+<div id="status"></div>
+<br>
+<br>
+
+<button onclick="login()">Get Identity</button>
+<button onclick="logout()">Forget Identity</button>
+<button onclick="transfer()">Transfer</button>
+
+<script>
+
+    const Api = window.chain_api.Api;
+    const Numeric = window.chain_numeric;
+
+	ScatterJS.plugins( new ScatterFIO() );
+
+	const network = ScatterJS.Network.fromJson({
+		blockchain:'fio',
+		chainId:'b20901380af44ef59c5918439a1f9a41d83669020319a80574b804a5f95cbd7e',
+		host:'testnet.fioprotocol.io',
+		port:443,
+		protocol:'https'
+	});
+
+	let scatter = null;
+
+	const getSignableApi = () => scatter.fio(network, {Api, Numeric}, {
+        textEncoder:new TextEncoder(),
+        textDecoder:new TextDecoder(),
+    });
+
+	const setStatus = () => {
+		const status = document.getElementById('status');
+		if(!scatter) return status.innerText = 'No Scatter';
+		if(!scatter.identity) return status.innerText = 'No Identity';
+		status.innerText = scatter.identity.name;
+	};
+
+	setStatus();
+	setInterval(() => {
+		setStatus();
+	}, 50);
+
+	ScatterJS.scatter.connect('fio-test', {network}).then(connected => {
+		console.log('connect', connected);
+		if(!connected) return false;
+		scatter = ScatterJS.scatter;
+	});
+
+	window.login = async () => {
+		console.log('suggest', await scatter.suggestNetwork(network));
+		console.log('login', await scatter.login());
+	}
+	window.logout = () => scatter.logout();
+
+	window.transfer = async () => {
+		tryTransfer(getSignableApi());
+	};
+
+	const tryTransfer = async api => {
+		try {
+			const from = scatter.account('fio');
+
+			const transactionOptions = await api.getTransactionOptions();
+
+			const tx = await api.transact(Object.assign(transactionOptions, {
+				actions: [{
+					account:'fio.token',
+					name: 'trnsfiopubky',
+					authorization: [{ actor: from.name, permission: 'active', }],
+					data: {
+						payee_public_key: 'FIO6QizWWbLMkUVBfEbs7a5mHaCNSpgaJR5NEhqhqv3v4xgaMSM1a',
+						amount: '1000000000', max_fee: 2000000000,
+						tpid:'',
+						actor: from.name
+					},
+				}]
+			}));
+
+			console.log('result', tx);
+			const result = await fetch(network.fullhost() + '/v1/chain/push_transaction', { body: JSON.stringify(tx), method: 'POST', }).then(x => x.json());
+			console.log('result', result);
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+</script>
+</body>
+</html>

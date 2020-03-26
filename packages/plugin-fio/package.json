@@ -1,0 +1,15 @@
+{
+	"name": "@scatterjs/fio",
+	"version": "1.5.33",
+	"main": "dist/index.js",
+	"license": "MIT",
+	"publishConfig": {
+		"access": "public"
+	},
+	"files": [
+		"dist"
+	],
+	"dependencies": {
+		"@scatterjs/core": "^2.7.51"
+	}
+}
