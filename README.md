@@ -215,7 +215,7 @@ ScatterJS.connect('YourAppName', {network}).then(connected => {
 Installation: `npm i -S @scatterjs/core @scatterjs/fio @fioprotocol/fiojs`
 ```js
 import ScatterJS from '@scatterjs/core';
-import ScatterEOS from '@scatterjs/eosjs2';
+import ScatterFIO from '@scatterjs/fio';
 import Fio from '@fioprotocol/fiojs';
 
 ScatterJS.plugins( new ScatterFIO() );
