@@ -20,6 +20,7 @@
 <button onclick="login()">Get Identity</button>
 <button onclick="logout()">Forget Identity</button>
 <button onclick="transfer()">Transfer</button>
+<button onclick="vote()">Vote</button>
 
 <script>
 
@@ -70,6 +71,51 @@
 	window.transfer = async () => {
 		tryTransfer(getSignableApi());
 	};
+
+	window.vote = async () => {
+		const api = getSignableApi();
+		try {
+			const from = scatter.account('fio');
+			const transactionOptions = await api.getTransactionOptions();
+
+
+            const fio_address = await fetch(`https://testnet.fioprotocol.io/v1/chain/get_fio_names`, {
+            	method:"POST",
+                body:JSON.stringify({
+                    fio_public_key:from.publicKey
+                })
+            }).then(x => x.json()).catch(() => null).then(x => x.fio_addresses[0].fio_address);
+
+            const producers = await fetch(`https://testnet.fioprotocol.io/v1/chain/get_producers`, {
+            	method:"POST",
+                body:JSON.stringify({})
+            }).then(x => x.json()).catch(() => null).then(result => {
+            	return result.producers.sort((a,b) => parseFloat(b.total_votes) - parseFloat(a.total_votes)).slice(0, 21).map(x => x.fio_address).sort();
+            });
+
+            if(!producers) return;
+
+			const tx = await api.transact(Object.assign(transactionOptions, {
+				actions: [{
+					account:'eosio',
+					name: 'voteproducer',
+					authorization: [{ actor: from.name, permission: 'active', }],
+					data: {
+						producers,
+						fio_address,
+						actor:from.name,
+						max_fee: 600000000,
+					},
+				}]
+			}));
+
+			console.log('result', tx);
+			const result = await fetch(network.fullhost() + '/v1/chain/push_transaction', { body: JSON.stringify(tx), method: 'POST', }).then(x => x.json());
+			console.log('result', result);
+		} catch (e) {
+			console.error(e);
+		}
+    };
 
 	const tryTransfer = async api => {
 		try {
