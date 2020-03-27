@@ -31,8 +31,8 @@
 
 	const network = ScatterJS.Network.fromJson({
 		blockchain:'fio',
-		chainId:'b20901380af44ef59c5918439a1f9a41d83669020319a80574b804a5f95cbd7e',
-		host:'testnet.fioprotocol.io',
+		chainId:'21dcae42c0182200e93f954a074011f9048a7624c6fe81d3c9541a614a88bd1c',
+		host:'fio.greymass.com',
 		port:443,
 		protocol:'https'
 	});
@@ -79,14 +79,14 @@
 			const transactionOptions = await api.getTransactionOptions();
 
 
-            const fio_address = await fetch(`https://testnet.fioprotocol.io/v1/chain/get_fio_names`, {
+            const fio_address = await fetch(`${network.fullhost()}/v1/chain/get_fio_names`, {
             	method:"POST",
                 body:JSON.stringify({
                     fio_public_key:from.publicKey
                 })
             }).then(x => x.json()).catch(() => null).then(x => x.fio_addresses[0].fio_address);
 
-            const producers = await fetch(`https://testnet.fioprotocol.io/v1/chain/get_producers`, {
+            const producers = await fetch(`${network.fullhost()}/v1/chain/get_producers`, {
             	method:"POST",
                 body:JSON.stringify({})
             }).then(x => x.json()).catch(() => null).then(result => {
