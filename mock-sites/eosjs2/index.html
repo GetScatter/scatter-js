@@ -54,6 +54,7 @@
 <button onclick="hookTransfer()">Hook Transfer</button>
 <button onclick="transferDualSign()">Multi Hook Transfer</button>
 <button onclick="authenticate()">Authenticate</button>
+<button onclick="createSharedSecret()">Shared Secret</button>
 
 <script>
 
@@ -285,6 +286,13 @@
 		console.log('randomString', randomString);
 		await scatter.authenticate(randomString).then(res => console.log(res));
 	};
+
+	window.createSharedSecret = async () => {
+		const scatterPublicKey = scatter.account('eos').publicKey;
+		const otherPublicKey = 'EOS8RgVArXfQmk5FK7isetkQf51ERnxpmi1eJStytcmWaDLWM5GLd';
+		const sharedSecret = await scatter.createSharedSecret(scatterPublicKey, otherPublicKey);
+		console.log(sharedSecret);
+    };
 
 	const tryTransfer = async api => {
 		try {

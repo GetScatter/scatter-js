@@ -42,7 +42,6 @@ export default class ScatterFIO extends Plugin {
 
             sign:async (signargs) => {
                 const requiredFields = fieldsFetcher ? fieldsFetcher() : {};
-                console.log('signargs', signargs);
                 signargs.serializedTransaction = Buffer.from(signargs.serializedTransaction).toString('hex');
 
                 return new Promise(async (resolve, reject) => {

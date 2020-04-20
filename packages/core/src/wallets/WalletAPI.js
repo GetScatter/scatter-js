@@ -79,6 +79,10 @@ export default class WalletAPI {
 				type:'addToken',
 				payload:{ token, network:network || context.holderFns.get().network }
 			}),
+			[WALLET_METHODS.createSharedSecret]:(scatterPublicKey, otherPublicKey) => wallet().sendApiRequest({
+				type:'createSharedSecret',
+				payload:{ scatterPublicKey, otherPublicKey }
+			}),
 		}
 	}
 }
