@@ -23,7 +23,7 @@ export const WALLET_METHODS = {
 	requestSignature:'requestSignature',
 	createTransaction:'createTransaction',
 	addToken:'addToken',
-	createSharedSecret:'createSharedSecret',
+	createEncryptionKey:'createEncryptionKey',
 };
 
 const ALTERNATES = {
