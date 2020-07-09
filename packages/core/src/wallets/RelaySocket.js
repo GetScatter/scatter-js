@@ -24,7 +24,7 @@ export default class RelaySocket extends Plugin {
 			if(!pluginName || !pluginName.length) throw new Error("You must specify a name for this connection");
 			options = Object.assign({linkTimeout:3000, allowHttp:true}, options);
 
-			const uuid = await fetch(`${WEB_HOST}/app/connect/${device}`).then(x => x.json());
+			const uuid = await fetch(`${WEB_HOST}/app/connect/${device}`).then(x => x.status === 200 ? x.json() : null);
 			if(!uuid) return resolve(false);
 
 			// Tries to set up LocalSocket Connection
