@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Web Tester</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1.0">
+    <script src='https://cdnjs.cloudflare.com/ajax/libs/vConsole/3.3.4/vconsole.min.js'></script>
+    <script src='assets/eosjs-api.js'></script>
+    <script src='assets/eosjs-jsonrpc.js'></script>
+    <script src='assets/eosjs-jssig.js'></script>
+    <script src="../../bundles/scatterjs-core.min.js"></script>
+    <script src="../../bundles/scatterjs-plugin-cyberway.min.js"></script>
+</head>
+<body>
+<div id="status"></div>
+<br>
+<br>
+
+<button onclick="login()">Get Identity</button>
+<button onclick="logout()">Forget Identity</button>
+<button onclick="transfer()">Transfer</button>
+<button onclick="multiTokenTransfer()">Multi token transfer</button>
+<button onclick="multiActionTokenTransfer()">Multi action token transfer</button>
+<button onclick="hookTransfer()">Hook Transfer</button>
+<button onclick="transferDualSign()">Multi Hook Transfer</button>
+<button onclick="createAccount()">Create Account</button>
+<button onclick="udateFunds()">Update Funds</button>
+<button onclick="authenticate()">Authenticate</button>
+<button onclick="createEncryptionKey()">Shared Secret</button>
+
+<script>
+
+    const SAFETRANSFER = 'safetransfer';
+    const TRANSACT_OPTIONS = {
+        blocksBehind: 3,
+        expireSeconds: 60,
+    };
+
+    // const vConsole = new VConsole({});
+
+	ScatterJS.plugins( new ScatterCyberWay() );
+
+	const network = ScatterJS.Network.fromJson({
+        blockchain:'cyber',
+        chainId:'591c8aa5cade588b1ce045d26e5f2a162c52486262bd2d7abcb7fa18247e17ec',
+        host:'scatter.cyberway.io',
+        port:443,
+        protocol:'https'
+	});
+
+	let scatter = null;
+	const rpc = new eosjs_jsonrpc.default(network.fullhost());
+	const getApi = (signatureProvider) => new eosjs_api.default({ rpc, signatureProvider });
+	const getScatterApi = () => scatter.cyber(network, eosjs_api.default, {rpc});
+
+	const setStatus = () => {
+		const status = document.getElementById('status');
+		if(!scatter) return status.innerText = 'No Scatter';
+		if(!scatter.identity) return status.innerText = 'No Identity';
+		status.innerText = scatter.identity.name;
+	};
+
+	setStatus();
+	setInterval(setStatus, 50);
+
+	ScatterJS.scatter.connect('cyberway-test', {network}).then(connected => {
+		console.log('connect', connected);
+		if(!connected) return false;
+		scatter = ScatterJS.scatter;
+		console.log('scatter', ScatterJS);
+	});
+
+	window.login = async () => {
+		console.log('conn', ScatterJS.isConnected());
+		console.log('login', await scatter.login());
+		console.log('scatter', ScatterJS);
+	}
+	window.logout = () => scatter.logout();
+
+    const makeAuthorization = account => ({
+        actor: account.name,
+        permission: account.authority
+    });
+    const makeTransferAction = ({from, to, quantity, memo='scatter', contract='cyber.token'}) => ({
+        account: contract,
+        name: 'transfer',
+        authorization: [makeAuthorization(from)],
+        data: {from: from.name, to, quantity, memo}
+    });
+
+	window.transfer = async () => {
+		const api = getScatterApi();
+		tryTransfer(api);
+	};
+
+	window.multiTokenTransfer = async () => {
+		const api = getScatterApi();
+		try {
+			const from = scatter.account('cyber');
+			const result = await api.transact({
+				actions: [
+                    makeTransferAction({from, to: SAFETRANSFER, quantity: '0.0001 CYBER'}),
+                    makeTransferAction({from, to: SAFETRANSFER, quantity: '0.001 CWAY', contract: 'c.point'})
+				]
+			}, TRANSACT_OPTIONS);
+			console.log('result', result);
+		} catch (e) {
+			console.error(e);
+		}
+	};
+
+	window.multiActionTokenTransfer = async () => {
+		const api = getScatterApi();
+		try {
+			const from = scatter.account('cyber');
+			const result = await api.transact({
+				actions: [
+                    makeTransferAction({from, to: SAFETRANSFER, quantity: '0.0001 CYBER'}),
+					{
+						account: 'cyber.stake',
+						name: 'updatefunds',
+						authorization: [makeAuthorization(from)],
+						data: {
+							account: from.name,
+							token_code: 'CYBER',
+						},
+					}]
+			}, TRANSACT_OPTIONS);
+			console.log('result', result);
+		} catch (e) {
+			console.error(e);
+		}
+	};
+
+	window.transferDualSign = async () => {
+		const SECONDARY_ACCOUNT_NAME = '';
+
+		// DON'T EVER DO THIS FROM A FRONT END! YOU WILL LOSE YOUR KEYS!
+        // Check out the API signer flow below.
+		const localSigner = new eosjs_jssig.default([
+			'SOME_PRIVATE_KEY',
+        ]);
+
+		const signatureProvider = scatter.cyberMultiHook(network, [localSigner]);
+
+		const api = new eosjs_api.default({ rpc, signatureProvider });
+		try {
+            const from = scatter.account('cyber');
+            const result = await api.transact({
+                actions: [
+                    makeTransferAction({from, to: SAFETRANSFER, quantity: '0.0001 CYBER'}),
+                    {
+                        // Add `providebw` to pay for resources
+                        account: 'cyber',
+                        name: 'providebw',
+                        authorization: [{
+                            actor: SECONDARY_ACCOUNT_NAME,
+                            permission: 'active',
+                        }],
+                        data: {
+                            provider: SECONDARY_ACCOUNT_NAME,
+                            account: from.name,
+                        },
+                    }
+                ]
+            }, TRANSACT_OPTIONS);
+			console.log('result', result);
+		} catch (e) {
+			console.error(e);
+		}
+
+
+
+        // EXAMPLE OF AN API BASED SIGNER FOR THE FRONT END
+        // This simply forwards requests from the front end to your filtering API.
+        /*
+        const apiSigner = {
+            getAvailableKeys:async () => fetch('https://your.api/keys'),
+            sign:async (signargs) => fetch('https://your.api/sign', {
+                method:"POST",
+                body:JSON.stringify(signargs)
+            }),
+        };
+        */
+
+        // SEE HERE FOR SECURITY CONCERNS AND BACKEND API SIGNING EXAMPLE CODE:
+        // https://gist.github.com/nsjames/44d9c18879342449a211c49e53c74ccb
+
+	};
+
+	window.hookTransfer = async () => {
+		const api = getApi(scatter.cyberHook(network));
+		tryTransfer(api);
+	};
+
+	window.authenticate = async () => {
+		const getRandom = () => Math.round(Math.random() * 8 + 1).toString();
+		let randomString = '';
+		for(let i = 0; i < 12; i++) randomString += getRandom();
+		console.log('randomString', randomString);
+		await scatter.authenticate(randomString).then(console.log);
+	};
+
+	window.createEncryptionKey = async () => {
+		const scatterPublicKey = scatter.account('cyber').publicKey;
+		const otherPublicKey = 'EOS8RgVArXfQmk5FK7isetkQf51ERnxpmi1eJStytcmWaDLWM5GLd';
+		const sharedSecret = await scatter.createEncryptionKey(scatterPublicKey, otherPublicKey);
+		console.log(sharedSecret);
+    };
+
+    window.createAccount = async () => {
+        const api = getScatterApi();
+        try {
+            const creator = scatter.account('cyber');
+            const result = await api.transact({
+                actions: [{
+                        account: 'cyber',
+                        name: 'newaccount',
+                        authorization: [makeAuthorization(creator)],
+                        data: {
+                            creator: creator.name,
+                            name: SAFETRANSFER,
+                            owner: {
+                                threshold: 1,
+                                keys: [{key: "GLS56NR492EjELXuQayvnUV945FDZq1CGqsGFTstCjKSxHiaEVdwb", weight: 1}],
+                                accounts: [],
+                                waits: []
+                            },
+                            active: {
+                                threshold: 1,
+                                keys: [{key: "GLS56NR492EjELXuQayvnUV945FDZq1CGqsGFTstCjKSxHiaEVdwb", weight: 1}],
+                                accounts: [],
+                                waits: []
+                            },
+                        },
+                    }]
+            }, TRANSACT_OPTIONS);
+            console.log('result', result);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+    window.udateFunds = async () => {
+        const api = getScatterApi();
+        try {
+            const bp = scatter.account('cyber');
+            const result = await api.transact({
+                actions: [{
+                        account: 'cyber.stake',
+                        name: 'updatefunds',
+                        authorization: [makeAuthorization(bp)],
+                        data: {
+                            account: bp.name,
+                            token_code: 'CYBER',
+                        },
+                    }]
+            }, TRANSACT_OPTIONS);
+            console.log('result', result);
+        } catch (e) {
+            console.error(e);
+        }
+    };
+
+	const tryTransfer = async api => {
+		try {
+			const from = scatter.account('cyber');
+			const result = await api.transact({
+				actions: [makeTransferAction({from, to: SAFETRANSFER, quantity: '0.0001 CYBER'})]
+			}, TRANSACT_OPTIONS);
+			console.log('result', result);
+		} catch (e) {
+			console.error(e);
+		}
+	}
+
+</script>
+</body>
+</html>

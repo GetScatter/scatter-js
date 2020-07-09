@@ -13,6 +13,7 @@ const packageFiles = [
 	'plugin-web3',
 	'plugin-tron',
 	'plugin-lynx',
+	'plugin-cyberway',
 ];
 
 const entry = packageFiles.reduce((o, file) => Object.assign(o, {[`${file}.min.js`]: getPackagePath(file)}), {});
