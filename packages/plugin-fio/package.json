@@ -1,6 +1,6 @@
 {
 	"name": "@scatterjs/fio",
-	"version": "1.5.36",
+	"version": "1.5.37",
 	"main": "dist/index.js",
 	"license": "MIT",
 	"publishConfig": {
@@ -10,6 +10,6 @@
 		"dist"
 	],
 	"dependencies": {
-		"@scatterjs/core": "^2.7.53"
+		"@scatterjs/core": "^2.7.54"
 	}
 }
